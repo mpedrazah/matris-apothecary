@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Products - Bascom Bread</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <script defer src="cart.js"></script>
+   
+    <!-- Open Graph Meta Tags for Link Previews -->
+  <meta property="og:title" content="Bascom Bread - Fresh Milled Sourdough" />
+  <meta property="og:description" content="Organic, fresh-milled sourdough loaves baked with love in Irving, TX." />
+  <meta property="og:image" content="https://www.bascombreadco.com/images/bread-logoV2.webp" />
+  <meta property="og:url" content="https://www.bascombreadco.com/" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter Card (optional but recommended) -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Bascom Bread - Fresh Milled Sourdough" />
+  <meta name="twitter:description" content="Organic, fresh-milled sourdough loaves baked with love in Irving, TX." />
+  <meta name="twitter:image" content="https://www.bascombreadco.com/images/bread-logoV2.webp" />
+
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+        <img src="images/bread-logoV2.webp" alt="Bascom Bread Logo" class="logo">
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="products.html">Shop</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="checkout.html">Cart (<span id="cart-count">0</span>)</a></li>
+      </ul>
+    </nav>
+  </header>
+
+<!-- Seasonal Specials Banner 
+<a id="specials-banner" href="#specials" class="hidden">
+  🌼 Check out our May Babka Specials 🌼 
+  </a> -->
+
+  <section class="product-grid">
+    <h2>Our Products</h2>
+    <div class="grid-container" id="regular-products">
+      <!-- Regular product listings -->
+      <!-- Product Catalog -->
+      <!-- Fresh Milled Sourdough Loaf 
+      <div class="product-card">
+        <img src="images/Classic-Loaf.webp" alt="Classic Loaf" class="product-image">
+        <div class="product-info">
+          <h3>Classic Loaf</h3>
+          <p class="product-description">
+            Our original loaf, made with fresh-milled hard red wheat and organic all purpose flour. Hearty, soft and delicious!
+          </p>
+          <p>Fresh Milled Hard White Wheat Flour, Baja Gold Salt, Water
+          </p>
+          <p class="price">$12.00</p>
+          <button class="add-to-cart" onclick="addToCart('Classic Loaf', 12.00,'images/Classic-Loaf.webp')">Add to Cart 🛒</button>
+        </div>
+      </div>-->
+
+      <div class="product-card">
+        <img src="images/classic_rectangle.webp" alt="The BBC Classic" class="product-image">
+        <div class="product-info">
+          <h3>Classic Loaf</h3>
+          <p class="product-description">
+            Our original loaf, made with fresh-milled hard red wheat and organic all purpose flour. Hearty, soft and delicious!
+          </p>
+          <p>Fresh Milled Hard White Wheat Flour, Baja Gold Salt, Water
+          </p>
+            <select id="classic-option">
+              <option value="Sandwich"> Sandwich Loaf – $12</option>
+              <option value="Boule">Boule Loaf– $12</option>
+            </select>
+          </p>
+          <button class="add-to-cart" onclick="addClassicToCart()">Add to Cart 🛒</button>
+        </div>
+      </div>
+
+      <!-- Chocolate Chunk Loaf -->
+      <div class="product-card">
+        <img src="images/Chocolate_Chunk.webp" alt="Chocolate Chunk Loaf" class="product-image">
+        <div class="product-info">
+          <h3>Chocolate Chunk Loaf</h3>
+          <p class="product-description">
+            This decadent chocolate loaf is bursting with flavor and chocolate chunks. It’ll be hard to resist going back for a second slice!
+          </p>
+          <p>Fresh Milled Hard White Wheat Flour, Organic Honey, Organic Cocoa Powder, Salt, Water
+          </p>
+          <p class="price">$14.00</p>
+          <button class="add-to-cart" onclick="addToCart('Chocolate Chunk Loaf', 14.00,'images/Chocolate_Chunk.webp')">Add to Cart 🛒</button>
+        </div>
+      </div>
+
+
+      
+    <!-- Einkorn Loaf 
+    <div class="product-card">
+      <img src="images/Einkorn.webp" alt="Einkorn Loaf" class="product-image">
+      <div class="product-info">
+        <h3>Einkorn Loaf</h3>
+        <p class="product-description">
+          This loaf is made with 100 percent Einkorn Flour, giving it a hearty and nutty flavor. 
+        </p>
+        <p>Fresh milled Einkorn Wheat, Honey, Salt, Water
+        </p>
+        <p> </p>
+        <p class="price">$14.00</p>
+        <button class="add-to-cart" onclick="addToCart('Einkorn Loaf', 14.00,'images/Einkorn.webp')">Add to Cart 🛒</button>
+      </div>
+    </div>-->
+
+    <!-- Bacon Loaf 
+    <div class="product-card">
+      <img src="images/Bacon Loaf.webp" alt="Bacon Loaf" class="product-image">
+      <div class="product-info">
+        <h3>Bacon Loaf</h3>
+        <p class="product-description">
+          A savory sourdough packed with crispy bacon in every slice.
+        </p>
+        <p>Fresh Milled Hard White Wheat Flour, Bacon, Salt, Water</p>
+        <p class="price">$14.00</p>
+        <button class="add-to-cart" onclick="addToCart('Bacon Loaf', 14.00,'images/Bacon Loaf.webp')">Add to Cart 🛒</button>
+      </div>
+    </div> --> 
+
+    <!-- Everything Bagel Croissant Loaf 
+    <div class="product-card">
+      <img src="images/everything-bagel.webp" alt="Everything Bagel Croissant Loaf" class="product-image">
+      <div class="product-info">
+        <h3>Everything Bagel Croissant Loaf</h3>
+        <p class="product-description">
+          A croissant-style loaf, topped with everything bagel seasoning. Buttery, crispy, and flaky.
+        </p>
+        <p>Fresh Milled Hard White Wheat Flour, Butter, Salt, Everything Bagel Seasoning, Water</p>
+        <p class="price">$14.00</p>
+        <button class="add-to-cart" onclick="addToCart('Everything Bagel Croissant Loaf', 14.00,'images/everything-bagel.webp')">Add to Cart 🛒</button>
+      </div>
+    </div> -->
+<!-- The BBC Classic -->
+<div class="product-card">
+  <img src="images/cookies.webp" alt="The BBC Classic" class="product-image">
+  <div class="product-info">
+    <h3>The BBC Classic</h3>
+    <p class="product-description">
+      This is not your average cookie. Made with freshly milled soft white wheat, toasted oats, rich browned butter, sweetened naturally with organic coconut sugar, and just the right amount of chocolate chips, each one is deeply flavorful, soft and chewy.
+    </p>
+    <p>
+      <select id="bbc-option">
+        <option value="two">2 Cookies – $4</option>
+        <option value="dozen">Dozen – $18</option>
+      </select>
+    </p>
+    <button class="add-to-cart" onclick="addBBCToCart()">Add to Cart 🛒</button>
+  </div>
+</div>
+
+</div>
+</section>
+      
+<section class="product-grid">
+  <h2>Our Fresh Milled Flours</h2>
+  <div class="grid-container">
+
+    <!-- Hard Red Wheat -->
+    <div class="product-card">
+      <img src="images/hard-red-flour.jpeg" alt="Hard Red Wheat Flour" class="product-image">
+      <div class="product-info">
+        <h3>Hard Red Wheat Flour</h3>
+        <p class="product-description">
+          Bold, full-flavored whole grain flour. Ideal for hearty breads and sourdough.
+        </p>
+        <select id="red-wheat-option">
+          <option value="2.5">2.5 lb – $7.50</option>
+          <option value="5">5 lb – $15.00</option>
+        </select>
+        <button class="add-to-cart" onclick="addFlourToCart('Hard Red Wheat Flour')">Add to Cart 🛒</button>
+      </div>
+    </div>
+
+    <!-- Hard White Wheat -->
+    <div class="product-card">
+      <img src="images/hard-white-flour.jpeg" alt="Hard White Wheat Flour" class="product-image">
+      <div class="product-info">
+        <h3>Hard White Wheat Flour</h3>
+        <p class="product-description">
+          Mild and sweet whole grain flour. Great for soft, wholesome breads.
+        </p>
+        <select id="white-wheat-option">
+          <option value="2.5">2.5 lb – $7.50</option>
+          <option value="5">5 lb – $15.00</option>
+        </select>
+        <button class="add-to-cart" onclick="addFlourToCart('Hard White Wheat Flour')">Add to Cart 🛒</button>
+      </div>
+    </div>
+
+    <!-- Soft White Wheat -->
+    <div class="product-card">
+      <img src="images/soft-white-flour.jpeg" alt="Soft White Wheat Flour" class="product-image">
+      <div class="product-info">
+        <h3>Soft White Wheat Flour</h3>
+        <p class="product-description">
+          Delicate, low-protein flour ideal for cookies, muffins, and pancakes.
+        </p>
+        <select id="soft-wheat-option">
+          <option value="2.5">2.5 lb – $5.00</option>
+          <option value="5">5 lb – $10.00</option>
+        </select>
+        <button class="add-to-cart" onclick="addFlourToCart('Soft White Wheat Flour')">Add to Cart 🛒</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+  <!-- Seasonal Specials Section 
+  <div class="seasonal" id="specials">
+    <h3>🌼 May Babka Specials 🌼 </h3>
+    <div class="grid-container">
+      <div class="product-card">
+        <img src="images/chocolate-babka.webp" alt="Double Chocolate Hazelnut Babka" class="product-image">
+        <div class="product-info">
+          <h3>Double Chocolate Hazelnut Babka </h3>
+          <p class="product-description">
+            A soft, braided sweet bread filled with rich semi-sweet chocolate and creamy hazelnut butter. Made with 100 percent freshly milled flour. 
+          </p>
+          <p class="price">$16.00</p>
+          <button class="add-to-cart" onclick="addToCart('Double Chocolate Hazelnut Babka', 16.00,'images/chocolate-babka.webp')">Add to Cart 🛒</button>
+        </div>
+      </div>
+      <div class="product-card">
+        <img src="images/strawberry-babka.webp" alt="Strawberry Cream Cheese Babka" class="product-image">
+        <div class="product-info">
+          <h3>Strawberry Cream Cheese Babka </h3>
+          <p class="product-description">
+            A soft, braided sweet bread filled with smooth strawberry cream cheese for a rich, fruity twist. Baked until golden and finished with a light glaze for added shine and moisture.
+          </p>
+          <p class="price">$16.00</p>
+          <button class="add-to-cart" onclick="addToCart('Strawberry Cream Cheese Babka', 16.00,'images/strawberry-babka.webp')">Add to Cart 🛒</button>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+     <!-- Easter 
+  <div class="seasonal" id="easter-specials" class="hidden">
+    <h3>🌼 Easter & Divine Mercy Sunday Specials</h3>
+    <div class="grid-container">
+      <div class="product-card">
+        <img src="images/cinnamon-rolls.webp" alt="Cinnamon Rolls (dozen)" class="product-image">
+        <div class="product-info">
+          <h3>Cinnamon Rolls (dozen) </h3>
+          <p class="product-description">
+            Classic gooey cinnamon rolls with a soft fluffy texture, baked fresh for your Easter table.
+          </p>
+          <p class="price">$24.00</p>
+          <button class="add-to-cart" onclick="addToCart('Cinnamon Rolls (dozen)', 24.00)">Add to Cart 🛒</button>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+      <!-- Mardi Gras Specials 
+      <div class="seasonal" id="mardigras-specials" class="hidden">
+        <h3>Mardi Gras Specials</h3>
+         <div class="product-card">
+          <img src="images/cinammon-babka.webp" alt="Cinnamon Babka" class="product-image">
+          <div class="product-info">
+            <h3>Cinammon Babka</h3>
+            <p class="price">$14.00</p>
+            <button onclick="addToCart('Cinammon Babka', 14.00)">Add to Cart 🛒</button>
+          </div>
+        </div>
+        <div class="product-card">
+          <img src="images/almond-babka.webp" alt="Almond Babka" class="product-image">
+          <div class="product-info">
+            <h3>Almond Babka</h3>
+            <p class="price">$14.00</p>
+            <button onclick="addToCart('Almond Babka', 14.00)">Add to Cart 🛒</button>
+          </div>
+        </div>
+      </div>-->
+
+      <!-- St. Patrick's Specials 
+      <div class="seasonal" id="stpatricks-specials" class="hidden">
+        <h3>☘️ St. Patrick's Specials ☘️</h3>
+        <div class="product-card">
+          <img src="images/beer-bread.webp" alt="Guinness Sourdough" class="product-image">
+          <div class="product-info">
+            <h3>Guinness Sourdough</h3>
+            <p>Fresh milled Hard Red Wheat, Organic AP Flour, Guinness, Salt
+            </p>
+            <p class="price">$14.00</p>
+            <button onclick="addToCart('Guinness Sourdough', 14.00)">Add to Cart 🛒</button>
+          </div>
+        </div>
+      </div>-->
+
+    </div>
+  </section>
+</body>
+</html>
+

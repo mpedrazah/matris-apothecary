@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cart - Bascom Bread</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Navigation -->
+  <header>
+    <div class="logo-container">
+      <img src="images/bread-logoV2.PNG" alt="Bascom Bread Logo" class="logo">
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="products.html">Shop</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="checkout.html">Cart (<span id="cart-count">0</span>)</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Two-Column Layout for Checkout -->
+  <div class="checkout-wrapper">
+    <!-- Left Column: Pickup Scheduler (No Confirm Button) -->
+    <section id="pickup-scheduler">
+      <h3>Schedule Your Pickup</h3>
+      <form id="pickup-form">
+        <label for="pickup-day">Select a Day:</label>
+        <select id="pickup-day" name="pickup-day">
+          <!-- Options will be inserted by JavaScript -->
+        </select>
+        <br><br>
+        <label for="pickup-time">Select a Time:</label>
+        <select id="pickup-time" name="pickup-time">
+          <!-- Options will be inserted by JavaScript -->
+        </select>
+      </form>
+    </section>
+
+    <!-- Right Column: Order Review & Payment -->
+    <section class="checkout-container">
+      <h2>Review Your Order</h2>
+      <!-- Email Input Moved to Top -->
+      <div class="email-container">
+        <label for="email">Email for Order Confirmation:</label>
+        <input type="email" id="email" placeholder="you@example.com" required />
+      </div>
+      <div id="cart-items"></div>
+      <h3 id="cart-total">Total: $0.00</h3>
+      <button onclick="checkout()">Proceed to Payment</button>
+    </section>
+  </div>
+
+  <script src="cart.js"></script>
+</body>
+</html>

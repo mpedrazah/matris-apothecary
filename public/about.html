@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - Bascom Bread</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Optional: Google Fonts for a modern look -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <header>
+    <div class="logo-container">
+        <img src="images/bread-logoV2.webp" alt="Bascom Bread Logo" class="logo">
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="products.html">Shop</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="checkout.html">Cart (<span id="cart-count">0</span>)</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- About Us Section -->
+  <section id="about" class="about-section">
+    <h2>About Bascom Bread</h2>
+    <div class="about-content">
+      <!-- Left Column: Image -->
+      <div class="about-image">
+        <img src="images/bascoms.webp" alt="Bascom Bread" class="about-image">
+      </div>
+
+      <!-- Right Column: About Text -->
+      <div class="about-text">
+        <p>
+          My name is Margaret, and together with my family,  I am hoping to bring our love of fresh bread to you. </p>
+        <p>My sourdough journey started back in 2018, when I got a random whim to make my own starter. After years of perfecting my craft, I began using fresh-milled flour and got hooked on the flavor! As bread is a major staple in our home, I take pride in knowing that the bread we are eating is nourishing my family with the best possible ingredients. 
+        </p>
+        <p>Thank you for being here! 
+          You can see more behind the scenes on Instagram or Facebook @BascomBreadCo
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Two-Column Layout for Social Media -->
+  <section class="social-media-layout">
+    <!-- Facebook Column -->
+    <div class="social-column">
+      <h3>Follow Us on Facebook</h3>
+      <div id="fb-root"></div>
+      <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v22.0"></script>
+      <div class="fb-page" 
+           data-href="https://www.facebook.com/profile.php?id=61572686411579" 
+           data-tabs="timeline" 
+           data-width="400" 
+           data-height="500" 
+           data-small-header="false" 
+           data-adapt-container-width="false" 
+           data-hide-cover="false" 
+           data-show-facepile="true">
+        <blockquote cite="https://www.facebook.com/profile.php?id=61572686411579" class="fb-xfbml-parse-ignore">
+          <a href="https://www.facebook.com/profile.php?id=61572686411579">Bascom Bread Co</a>
+        </blockquote>
+      </div>
+    </div>
+
+   <!-- Instagram Column -->
+   <div class="social-column">
+    <h3>Follow Us on Instagram</h3>
+    <iframe src="https://www.instagram.com/bascombreadco/embed/" width="400" height="500" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+  </div>
+</section>
+<script defer src="cart.js"></script>
+<script defer src="script.js"></script>
+</body>
+</html>
+
