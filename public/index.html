@@ -1,122 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bascom Bread</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
-    <!-- Open Graph Meta Tags for Link Previews -->
-    <meta property="og:title" content="Bascom Bread - Fresh Milled Sourdough" />
-    <meta property="og:description" content="Organic, fresh-milled sourdough loaves baked with love in Irving, TX." />
-    <meta property="og:image" content="https://www.bascombreadco.com/images/bread-logoV2.webp" />
-    <meta property="og:url" content="https://www.bascombreadco.com/" />
-    <meta property="og:type" content="website" />
-
-    <!-- Twitter Card (optional but recommended) -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Bascom Bread - Fresh Milled Sourdough" />
-    <meta name="twitter:description" content="Organic, fresh-milled sourdough loaves baked with love in Irving, TX." />
-    <meta name="twitter:image" content="https://www.bascombreadco.com/images/bread-logoV2.webp" />
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matris Apothecary | Nourishing Tallow & Mineral Skincare</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <meta property="og:title" content="Matris Apothecary - Tallow Creams & Mineral Sunscreen" />
+  <meta property="og:description" content="Luxurious skincare made with grass-fed tallow, beeswax, nourishing oils, and mineral zinc–reminiscent of timeless, natural recipes." />
+  <meta property="og:image" content="images/logo.webp" />
+  <meta property="og:url" content="https://www.matrisapothecary.com" />
 </head>
 <body>
+  <!-- Header & Navigation -->
+  <header>
+    <div class="logo-container">
+      <img src="images/logo_trans.png" alt="Matris Apothecary Logo" class="logo"/>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="products.html">Shop</a></li>
+        <li><a href="about.html">Our Story</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="checkout.html">Cart (<span id="cart-count">0</span>)</a></li>
+      </ul>
+    </nav>
+  </header>
 
-    <!-- Navigation Bar -->
-    <header>
-        <div class="logo-container">
-            <img src="images/bread-logoV2.webp" alt="Bascom Bread Logo" class="logo">
-        </div>
-        <nav>
-          <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="products.html">Shop</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="contact.html">Contact</a></li>
-            <li><a href="checkout.html">Cart (<span id="cart-count">0</span>)</a></li>
-          </ul>
-        </nav>
-      </header>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Pure, Nutrient-Rich Tallow Skincare</h1>
+      <p>Combining grass-fed tallow, beeswax, botanical oils, and non‑nano zinc for radiant, healthy skin.</p>
+      <a href="products.html" class="btn">Browse Our Collection</a>
+    </div>
+  </section>
 
-    <!-- Seasonal Specials Banner 
-<a id="specials-banner" href="products.html#specials" class="hidden">
-    🌼 Check out our May Babka Specials 🌼 
-  </a> -->
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-text">
-            <h1> Freshly-milled sourdough baked and milled locally in Irving, TX</h1>
-            <p>Man Does not Live on Bread Alone- Mt. 4:4</p>
-            <a href="products.html" class="btn">Shop Now</a>
-        </div>
-    </section>
-
-    <!-- Image Grid -->
-    <section class="image-grid">
-        <div class="grid-item">
-            <img src="images/bread1.webp" alt="Chocolate Chunk Sourdough">
-            <span class="caption">Chocolate Chunk Sourdough</span>
-        </div>
-    
-        <div class="grid-item">
-            <img src="images/bread2.webp" alt="Classic Loaf">
-            <span class="caption">Classic Loaf</span>
-        </div>
-        
-        <div class="grid-item">
-            <img src="images/bread3.webp" alt="Sourdough Variety">
-            <span class="caption">Sourdough Variety</span>
-        </div>
-        
-        <div class="grid-item">
-            <img src="images/bread4.webp" alt="Honey Wheat Sandwich Loaf">
-            <span class="caption">Honey Wheat Sandwich Loaf</span>
-        </div>
-        
-        <div class="grid-item">
-            <img src="images/bread5.webp" alt="Classic Loaf">
-            <span class="caption">Classic Loaf</span>
-        </div>
-        
-        <div class="grid-item">
-            <img src="images/bread6.webp" alt="Sourdough Boule">
-            <span class="caption">Sourdough Boule</span>
-        </div>
-
-        <div class="grid-item">
-            <img src="images/bread7.webp" alt="Honey Wheat Sandwich Loaf">
-            <span class="caption">Honey Wheat Sandwich Loaf </span>
-        </div>
-
-        <div class="grid-item">
-            <img src="images/bread8.webp" alt="Honey Wheat Sandwich Loaf">
-            <span class="caption">Honey Wheat Sandwich Loaf</span>
-        </div>
-
-        <div class="grid-item">
-            <img src="images/bread9.webp" alt="Mardi Gras Babka">
-            <span class="caption">Babka special for Mardi Gras</span>
-        </div>
-    </section>
-    
-    
-<script defer src="cart.js"></script>
-<script defer src="script.js"></script>
-
-    
-</body>
-<!-- Customer Reviews Footer -->
-<footer class="reviews-footer">
-    <div class="reviews-container">
-      <h3>❤️ What Our Customers Are Saying</h3>
-      <div class="review-card">
-        <p class="review-text">
-          “As a mom of two, I’m always reading labels. I hated seeing sugar and weird ingredients I couldn’t even pronounce in store-bought bread.
-          But ever since I tried Margaret’s loaves, I’m addicted. I’ve had every one and I love that she only uses the highest quality of ingredients! My husband is obsessed with the Everything Bagel Special,
-          and I can’t get enough of the Chocolate Chunk Loaf. Would recommend 1000%!”
-        </p>
-        <p class="review-author">— Micaela H., Irving, TX</p>
+  <!-- Featured Product: Mineral Tallow Sunscreen -->
+  <section class="featured">
+    <h2>🌞 Featured: Mineral Tallow Sunscreen</h2>
+    <div class="featured-card">
+      <img src="images/tallow-sunscreen.webp" alt="Mineral Tallow Sunscreen" />
+      <div class="info">
+        <p>Inspired by a beloved DIY recipe, our sunscreen blends:</p>
+        <ul>
+          <li>Grass‑fed tallow rich in antioxidants & vitamins</li>
+          <li>Beeswax + coconut and olive/carrot seed oils</li>
+          <li>Non‑nano zinc oxide for broad-spectrum protection</li>
+        </ul>
+        <a href="products.html#sunscreen" class="btn">Learn More</a>
       </div>
     </div>
+    <!-- Highlight inspiration -->
+    <p class="inspiration">Inspired by <em>Bumblebee Apothecary’s tallow sunscreen recipe</em> featuring equal parts beeswax, tallow, coconut oil, liquid oil, and non‑nano zinc :contentReference[oaicite:2]{index=2}.</p>
+  </section>
+
+  <!-- Product Highlights -->
+  <section class="grid product-grid">
+    <h2>Our Signature Products</h2>
+    <div class="grid-container">
+      <!-- Example card: Tallow Face Balm -->
+      <div class="product-card">
+        <img src="images/tallow-balm.webp" alt="Revitalizing Tallow Balm" />
+        <h3>Revitalizing Tallow Balm</h3>
+        <p>Deeply nourishing and ideal for dry or aging skin.</p>
+        <p class="price">$24.00</p>
+        <button onclick="addToCart('Revitalizing Tallow Balm', 24.00, 'images/tallow-balm.webp')">Add to Cart 🛒</button>
+      </div>
+      <!-- Example card: Mineral Tallow Sunscreen -->
+      <div class="product-card" id="sunscreen">
+        <img src="images/tallow-sunscreen.webp" alt="Mineral Tallow Sunscreen" />
+        <h3>Mineral Tallow Sunscreen (SPF 30+)</h3>
+        <p>Natural protection with grass‑fed tallow, zinc, and botanicals.</p>
+        <p class="price">$28.00</p>
+        <button onclick="addToCart('Mineral Tallow Sunscreen', 28.00, 'images/tallow-sunscreen.webp')">Add to Cart 🛒</button>
+      </div>
+      <!-- Add more products here -->
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="reviews-footer">
+      <h3>❤️ What Our Customers Say</h3>
+      <p>“Absolutely love the sunscreen—no greasy feel, smooth on the skin!” — A. from Texas</p>
+    </div>
+    <p>&copy; 2025 Matris Apothecary</p>
   </footer>
+
+  <script defer src="cart.js"></script>
+  <script defer src="script.js"></script>
+</body>
 </html>

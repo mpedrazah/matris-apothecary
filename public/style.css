@@ -1,80 +1,117 @@
-/* General Styles */
-* {
-  font-weight: inherit;
+/*
+Matris Apothecary – Polished Brand Stylesheet
+Inspired by logo colors and classic typography
+*/
+
+/* Font Imports */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@400;600&display=swap');
+
+/* Brand Variables */
+:root {
+  --primary-font: 'Playfair Display', serif;
+  --secondary-font: 'Open Sans', sans-serif;
+  --primary-color: #ac6c6f; /* soft pink from flowers */
+  --secondary-color: #6a8667; /* muted green from leaves */
+  --accent-color: #ffffff;
+  --dark-bg: #4c4c4c; /* dark background to contrast */
+  --button-color: var(--primary-color);
+  --button-hover: #cc8c91; 
+  --text-dark: #2e2e2e;
+  --text-light: #fff;
 }
 
-
-body {
-  font-family: 'Open Sans', sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #fff;
-  color: #333;
-  padding-top: 90px; /* Adjust this padding to account for the fixed nav bar */
-  height: 100vh;
+/* Base Resets */
+* {
+  font-weight: inherit;
   box-sizing: border-box;
 }
 
+body {
+  font-family: var(--secondary-font);
+  margin: 0;
+  padding: 0;
+  background-color: var(--dark-bg);
+  color: var(--text-dark);
+  padding-top: 90px;
+  height: 100vh;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Header and Navigation */
+header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: var(--dark-bg);  /* <-- Match logo background */
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  text-align: center;
+  padding: 10px 0;
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+nav ul li a {
+  font-family: var(--secondary-font);
+  font-size: 18px;
+  padding: 5px 10px;
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+  color: var(--primary-color); /* e.g., pink or green for hover */
+}
+
+
+
+.logo {
+  max-width: 200px;   /* was 120px */
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 0px;  /* optional, remove if using transparent logo later */
+}
+
+.logo-container {
+  text-align: center;
+}
+
+.logo-container {
+  background-color:var(--dark-bg);  /* Ensures full-width match if needed */
+  padding: 10px 0;
+}
+
+.product-grid:first-of-type {
+  padding-top: 120px; /* Adjust based on your header height */
+}
 
 /* Hero Section */
 .hero {
-  background-image: url('images/hero-image.webp');
+  background-image: url('images/hero-tallow.webp');
   background-size: cover;
   background-position: center;
+  background-attachment: fixed;
+  height: 40vh;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  color: white;
+  color: var(--accent-color);
   position: relative;
-  z-index: 1;  /* Ensure it's above other elements */
-  background-repeat: no-repeat; /* Prevents image from repeating */
-  background-attachment: fixed; /* Keeps the image fixed while scrolling */
-  height: 70vh;
-}
-
-/* Ensure text inside hero is readable */
-.hero h1, .hero p {
-  color: white;
-  font-size: 2.2rem;
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
-  font-family: 'Playfair Display', serif;
-}
-
-/* Mobile Fix: Ensure hero is fully visible */
-@media screen and (max-width: 768px) {
-  .hero {
-    background-size: auto 120%;
-    background-attachment: scroll;
-    height: 75vh;
-    min-height: 75vh;
-    background-position: center;
-  }
-}
-/* Mobile Fix on iphone safari: Ensure hero is fully visible */
-@supports (-webkit-touch-callout: none) {
-  .hero {
-    background-size: auto 120%;
-    background-attachment: scroll;
-    height: 75vh;
-    min-height: 75vh;
-  }
-}
-
-
-#warning-message {
-  color: red;
-  font-weight: bold;
-  text-align: center;
-  padding: 10px;
-  border: 1px solid red;
-  background-color: #ffe6e6;
-  border-radius: 5px;
-  margin-bottom: 20px; /* Add space below */
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-  display: none;
+  z-index: 1;
 }
 
 .hero::before {
@@ -84,16 +121,16 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.3); /* Dark overlay */
-  z-index: -1;  /* Place the overlay behind the content */
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: -1;
 }
 
-.hero-text {
-  position: relative;
-  z-index: 1;
-  max-width: 600px;
+.hero h1, .hero p {
+  font-family: var(--primary-font);
+  font-size: 2.2rem;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+  color: var(--accent-color);
 }
-
 
 .hero p {
   font-size: 1.2rem;
@@ -102,70 +139,59 @@ body {
 
 .btn {
   display: inline-block;
-  padding: 10px 20px;
-  background-color: #b8860b;
-  color: white;
-  text-decoration: none;
-  font-size: 18px;
+  padding: 12px 20px;
+  background-color: var(--button-color);
+  color: var(--text-light);
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 5px;
   font-weight: bold;
   text-transform: uppercase;
-  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
   transition: background 0.3s;
 }
 
 .btn:hover {
-  background-color: #8b6508;
+  background-color: var(--button-hover);
 }
 
-/* Navigation Bar */
-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px 0;
-  z-index: 999;
+/* Media Screens & Mobile Fixes */
+@media screen and (max-width: 768px) {
+  .hero {
+    background-size: auto 120%;
+    background-attachment: scroll;
+    height: 75vh;
+  }
+
+  nav ul li a {
+    font-size: 14px;
+  }
 }
 
-nav ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
+@supports (-webkit-touch-callout: none) {
+  .hero {
+    background-size: auto 120%;
+    background-attachment: scroll;
+    height: 75vh;
+  }
 }
 
-
-
-header {
-  max-width: 100%;
-  overflow: hidden;
-}
-nav {
-  max-width: 100%;
-}
-
-
-
-
-nav ul li a:hover {
-  color: #b8860b;
-}
-
-.logo-container {
+/* Warning Message */
+#warning-message {
+  color: red;
+  background-color: #ffe6e6;
+  border: 1px solid red;
+  padding: 10px;
+  font-weight: bold;
   text-align: center;
+  border-radius: 5px;
+  margin: 0 auto 20px auto;
+  max-width: 600px;
+  display: none;
 }
 
-.logo {
-  width: 120px;
-  height: auto;
-}
-
-/* Contact Section Layout */
+/* Contact Section */
 .contact-section {
   display: flex;
   justify-content: center;
@@ -185,8 +211,7 @@ nav ul li a:hover {
   border-radius: 10px;
 }
 
-/* Contact Form Column */
-.contact-form-column {
+.contact-form-column, .contact-info-column {
   flex: 1 1 48%;
   text-align: left;
 }
@@ -198,7 +223,6 @@ nav ul li a:hover {
 
 .form-group {
   margin-bottom: 20px;
-  width: 100%;
 }
 
 .form-group label {
@@ -211,39 +235,14 @@ nav ul li a:hover {
   width: 100%;
   padding: 12px;
   font-size: 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  background-color: #f9f9f9;
-}
-
-.form-group textarea {
-  resize: vertical;
-}
-
-.btn {
-  padding: 12px 20px;
-  background-color: #b8860b;
-  color: white;
-  font-size: 1.1rem;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-top: 20px;
-}
-
-.btn:hover {
-  background-color: #8b6508;
-}
-
-/* Contact Info Column */
-.contact-info-column {
-  flex: 1 1 48%;
+  background-color: #fff;
 }
 
 .contact-info-column h3 {
   font-size: 1.5rem;
-  color: #333;
+  color: var(--text-dark);
 }
 
 .contact-info-column p {
@@ -252,22 +251,20 @@ nav ul li a:hover {
   color: #555;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .contact-container {
     flex-direction: column;
-    padding: 15px;
   }
-  
+
   .contact-form-column,
   .contact-info-column {
     flex: 1 1 100%;
   }
+}
   
   .contact-section {
     padding: 40px 10px;
   }
-}
 
 /* Product Grid Styling */
 .product-grid {
@@ -279,7 +276,7 @@ nav ul li a:hover {
 .product-grid h2 {
   font-size: 28px;
   margin-bottom: 30px;
-  color: #333;
+  color: var(--accent-color);
 }
 
 /* Grid Container */
@@ -575,14 +572,14 @@ button:hover {
 .email-container label {
   font-size: 16px;
   font-weight: bold;
-  color: #333;
+  color: var(--accent-color);
   display: block;
   margin-bottom: 10px;
 }
 
 /* About Us Section */
 .about-section {
-  padding: 60px 20px;
+  padding: 80px 20px;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -591,7 +588,7 @@ button:hover {
   font-family: 'Playfair Display', serif;
   font-size: 36px;
   margin-bottom: 10px;
-  color: #444;
+  color: var(--accent-color);
   text-align: center;
 }
 
@@ -609,13 +606,17 @@ button:hover {
 }
 
 .about-text {
-  flex: 1;
+  flex: 1 1 50%;
+  font-family: var(--dark-bg);
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color:  #4c4c4c; /* Softer than pure white */
 }
 
-
-
-
-
+.contact-form-column h2,
+.contact-form-column p {
+  color: var(--text-dark);
+}
 .about-image {
   flex: 1;
   max-width: 300px;
@@ -623,11 +624,7 @@ button:hover {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.about-text p {
-  font-size: 18px;
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
+
 
 /* Two-Column Layout for Social Media */
 .social-media-layout {
@@ -972,7 +969,7 @@ nav ul li a {
   letter-spacing: 0.5px;
   padding: 5px 10px;
   text-decoration: none;
-  color: #333;
+  color: #fff;
   font-weight: 600;  /* Ensure same weight everywhere */
   text-transform: uppercase;
   transition: color 0.3s ease;
@@ -982,6 +979,7 @@ nav ul li a {
   nav ul li a {
     font-size: 14px; /* Adjust size */
     font-weight: 600; /* Keep consistent with desktop */
+    color: var(--primary-color);
   }
 }
 
@@ -1035,4 +1033,36 @@ nav ul li a {
 
 html {
   scroll-behavior: smooth;
+}
+
+section,
+.featured,
+.product-grid,
+.contact-container {
+  background-color: rgba(255, 255, 255, 0.03); /* very subtle glassy card */
+  backdrop-filter: blur(4px); /* nice polish if supported */
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 1500px;
+  color: var(--text-light);
+}
+
+h2, h3 {
+  color: var(--accent-color);
+  font-family: var(--primary-font);
+}
+
+.product-card img {
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+.product-card h3,
+.product-card p,
+.product-card .price {
+  color: var(--text-dark); /* dark text for white card */
 }

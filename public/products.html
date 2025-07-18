@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Our Products - Bascom Bread</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
-  <script defer src="cart.js"></script>
-   
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bascom Bread</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <!-- Open Graph Meta Tags for Link Previews -->
-  <meta property="og:title" content="Bascom Bread - Fresh Milled Sourdough" />
-  <meta property="og:description" content="Organic, fresh-milled sourdough loaves baked with love in Irving, TX." />
-  <meta property="og:image" content="https://www.bascombreadco.com/images/bread-logoV2.webp" />
-  <meta property="og:url" content="https://www.bascombreadco.com/" />
-  <meta property="og:type" content="website" />
+    <meta property="og:title" content="Bascom Bread - Fresh Milled Sourdough" />
+    <meta property="og:description" content="Organic, fresh-milled sourdough loaves baked with love in Irving, TX." />
+    <meta property="og:image" content="https://www.bascombreadco.com/images/logo.webp" />
+    <meta property="og:url" content="https://www.bascombreadco.com/" />
+    <meta property="og:type" content="website" />
 
-  <!-- Twitter Card (optional but recommended) -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Bascom Bread - Fresh Milled Sourdough" />
-  <meta name="twitter:description" content="Organic, fresh-milled sourdough loaves baked with love in Irving, TX." />
-  <meta name="twitter:image" content="https://www.bascombreadco.com/images/bread-logoV2.webp" />
+    <!-- Twitter Card (optional but recommended) -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Bascom Bread - Fresh Milled Sourdough" />
+    <meta name="twitter:description" content="Organic, fresh-milled sourdough loaves baked with love in Irving, TX." />
+    <meta name="twitter:image" content="https://www.bascombreadco.com/images/logo.webp" />
 
 </head>
 <body>
-  <header>
-    <div class="logo-container">
-        <img src="images/bread-logoV2.webp" alt="Bascom Bread Logo" class="logo">
+
+    <!-- Navigation Bar -->
+    <header>
+        <div class="logo-container">
+            <img src="images/logo.webp" alt="Bascom Bread Logo" class="logo">
     </div>
     <nav>
       <ul>
@@ -44,175 +44,70 @@
   </a> -->
 
   <section class="product-grid">
-    <h2>Our Products</h2>
+    <h2>Our Tallow Products</h2>
     <div class="grid-container" id="regular-products">
-      <!-- Regular product listings -->
-      <!-- Product Catalog -->
-      <!-- Fresh Milled Sourdough Loaf 
+      <!-- Tallow Balm -->
       <div class="product-card">
-        <img src="images/Classic-Loaf.webp" alt="Classic Loaf" class="product-image">
+        <img src="images/tallow-balm.webp" alt="Tallow Balm" class="product-image">
         <div class="product-info">
-          <h3>Classic Loaf</h3>
+          <h3>Tallow Balm</h3>
           <p class="product-description">
-            Our original loaf, made with fresh-milled hard red wheat and organic all purpose flour. Hearty, soft and delicious!
+            A nourishing balm handcrafted with grass-fed tallow to soothe and hydrate your skin.
           </p>
-          <p>Fresh Milled Hard White Wheat Flour, Baja Gold Salt, Water
-          </p>
-          <p class="price">$12.00</p>
-          <button class="add-to-cart" onclick="addToCart('Classic Loaf', 12.00,'images/Classic-Loaf.webp')">Add to Cart 🛒</button>
-        </div>
-      </div>-->
-
-      <div class="product-card">
-        <img src="images/classic_rectangle.webp" alt="The BBC Classic" class="product-image">
-        <div class="product-info">
-          <h3>Classic Loaf</h3>
-          <p class="product-description">
-            Our original loaf, made with fresh-milled hard red wheat and organic all purpose flour. Hearty, soft and delicious!
-          </p>
-          <p>Fresh Milled Hard White Wheat Flour, Baja Gold Salt, Water
-          </p>
-            <select id="classic-option">
-              <option value="Sandwich"> Sandwich Loaf – $12</option>
-              <option value="Boule">Boule Loaf– $12</option>
-            </select>
-          </p>
-          <button class="add-to-cart" onclick="addClassicToCart()">Add to Cart 🛒</button>
+          <p>Ingredients: Grass-fed tallow, extra virgin olive oil, organic beeswax, essential oils</p>
+          <p class="price">$16.00</p>
+          <button class="add-to-cart" onclick="addToCart('Tallow Balm', 16.00, 'images/tallow-balm.webp')">Add to Cart 🛒</button>
         </div>
       </div>
 
-      <!-- Chocolate Chunk Loaf -->
+      <!-- Tallow Sunscreen -->
       <div class="product-card">
-        <img src="images/Chocolate_Chunk.webp" alt="Chocolate Chunk Loaf" class="product-image">
+        <img src="images/tallow-sunscreen.webp" alt="Tallow Sunscreen" class="product-image">
         <div class="product-info">
-          <h3>Chocolate Chunk Loaf</h3>
+          <h3>Tallow Sunscreen</h3>
           <p class="product-description">
-            This decadent chocolate loaf is bursting with flavor and chocolate chunks. It’ll be hard to resist going back for a second slice!
+            Mineral-based sunscreen with non-nano zinc and nourishing tallow to protect and heal your skin.
           </p>
-          <p>Fresh Milled Hard White Wheat Flour, Organic Honey, Organic Cocoa Powder, Salt, Water
-          </p>
-          <p class="price">$14.00</p>
-          <button class="add-to-cart" onclick="addToCart('Chocolate Chunk Loaf', 14.00,'images/Chocolate_Chunk.webp')">Add to Cart 🛒</button>
+          <p>Ingredients: Grass-fed tallow, non-nano zinc oxide, coconut oil, beeswax</p>
+          <p class="price">$18.00</p>
+          <button class="add-to-cart" onclick="addToCart('Tallow Sunscreen', 18.00, 'images/tallow-sunscreen.webp')">Add to Cart 🛒</button>
         </div>
       </div>
 
-
-      
-    <!-- Einkorn Loaf 
-    <div class="product-card">
-      <img src="images/Einkorn.webp" alt="Einkorn Loaf" class="product-image">
-      <div class="product-info">
-        <h3>Einkorn Loaf</h3>
-        <p class="product-description">
-          This loaf is made with 100 percent Einkorn Flour, giving it a hearty and nutty flavor. 
-        </p>
-        <p>Fresh milled Einkorn Wheat, Honey, Salt, Water
-        </p>
-        <p> </p>
-        <p class="price">$14.00</p>
-        <button class="add-to-cart" onclick="addToCart('Einkorn Loaf', 14.00,'images/Einkorn.webp')">Add to Cart 🛒</button>
       </div>
-    </div>-->
-
-    <!-- Bacon Loaf 
-    <div class="product-card">
-      <img src="images/Bacon Loaf.webp" alt="Bacon Loaf" class="product-image">
-      <div class="product-info">
-        <h3>Bacon Loaf</h3>
-        <p class="product-description">
-          A savory sourdough packed with crispy bacon in every slice.
-        </p>
-        <p>Fresh Milled Hard White Wheat Flour, Bacon, Salt, Water</p>
-        <p class="price">$14.00</p>
-        <button class="add-to-cart" onclick="addToCart('Bacon Loaf', 14.00,'images/Bacon Loaf.webp')">Add to Cart 🛒</button>
-      </div>
-    </div> --> 
-
-    <!-- Everything Bagel Croissant Loaf 
-    <div class="product-card">
-      <img src="images/everything-bagel.webp" alt="Everything Bagel Croissant Loaf" class="product-image">
-      <div class="product-info">
-        <h3>Everything Bagel Croissant Loaf</h3>
-        <p class="product-description">
-          A croissant-style loaf, topped with everything bagel seasoning. Buttery, crispy, and flaky.
-        </p>
-        <p>Fresh Milled Hard White Wheat Flour, Butter, Salt, Everything Bagel Seasoning, Water</p>
-        <p class="price">$14.00</p>
-        <button class="add-to-cart" onclick="addToCart('Everything Bagel Croissant Loaf', 14.00,'images/everything-bagel.webp')">Add to Cart 🛒</button>
-      </div>
-    </div> -->
-<!-- The BBC Classic -->
-<div class="product-card">
-  <img src="images/cookies.webp" alt="The BBC Classic" class="product-image">
-  <div class="product-info">
-    <h3>The BBC Classic</h3>
-    <p class="product-description">
-      This is not your average cookie. Made with freshly milled soft white wheat, toasted oats, rich browned butter, sweetened naturally with organic coconut sugar, and just the right amount of chocolate chips, each one is deeply flavorful, soft and chewy.
-    </p>
-    <p>
-      <select id="bbc-option">
-        <option value="two">2 Cookies – $4</option>
-        <option value="dozen">Dozen – $18</option>
-      </select>
-    </p>
-    <button class="add-to-cart" onclick="addBBCToCart()">Add to Cart 🛒</button>
-  </div>
-</div>
-
-</div>
-</section>
+      </section>
       
 <section class="product-grid">
-  <h2>Our Fresh Milled Flours</h2>
+  <h2>Our Homeopathic Medicine</h2>
   <div class="grid-container">
 
     <!-- Hard Red Wheat -->
     <div class="product-card">
-      <img src="images/hard-red-flour.jpeg" alt="Hard Red Wheat Flour" class="product-image">
-      <div class="product-info">
-        <h3>Hard Red Wheat Flour</h3>
-        <p class="product-description">
-          Bold, full-flavored whole grain flour. Ideal for hearty breads and sourdough.
-        </p>
-        <select id="red-wheat-option">
-          <option value="2.5">2.5 lb – $7.50</option>
-          <option value="5">5 lb – $15.00</option>
-        </select>
-        <button class="add-to-cart" onclick="addFlourToCart('Hard Red Wheat Flour')">Add to Cart 🛒</button>
+        <img src="images/tallow-balm.webp" alt="Tallow Balm" class="product-image">
+        <div class="product-info">
+          <h3>Tallow Balm</h3>
+          <p class="product-description">
+            A nourishing balm handcrafted with grass-fed tallow to soothe and hydrate your skin.
+          </p>
+          <p>Ingredients: Grass-fed tallow, extra virgin olive oil, organic beeswax, essential oils</p>
+          <p class="price">$16.00</p>
+          <button class="add-to-cart" onclick="addToCart('Tallow Balm', 16.00, 'images/tallow-balm.webp')">Add to Cart 🛒</button>
+        </div>
       </div>
-    </div>
 
-    <!-- Hard White Wheat -->
-    <div class="product-card">
-      <img src="images/hard-white-flour.jpeg" alt="Hard White Wheat Flour" class="product-image">
-      <div class="product-info">
-        <h3>Hard White Wheat Flour</h3>
-        <p class="product-description">
-          Mild and sweet whole grain flour. Great for soft, wholesome breads.
-        </p>
-        <select id="white-wheat-option">
-          <option value="2.5">2.5 lb – $7.50</option>
-          <option value="5">5 lb – $15.00</option>
-        </select>
-        <button class="add-to-cart" onclick="addFlourToCart('Hard White Wheat Flour')">Add to Cart 🛒</button>
+      <!-- Tallow Sunscreen -->
+      <div class="product-card">
+        <img src="images/tallow-sunscreen.webp" alt="Tallow Sunscreen" class="product-image">
+        <div class="product-info">
+          <h3>Tallow Sunscreen</h3>
+          <p class="product-description">
+            Mineral-based sunscreen with non-nano zinc and nourishing tallow to protect and heal your skin.
+          </p>
+          <p>Ingredients: Grass-fed tallow, non-nano zinc oxide, coconut oil, beeswax</p>
+          <p class="price">$18.00</p>
+          <button class="add-to-cart" onclick="addToCart('Tallow Sunscreen', 18.00, 'images/tallow-sunscreen.webp')">Add to Cart 🛒</button>
+        </div>
       </div>
-    </div>
-
-    <!-- Soft White Wheat -->
-    <div class="product-card">
-      <img src="images/soft-white-flour.jpeg" alt="Soft White Wheat Flour" class="product-image">
-      <div class="product-info">
-        <h3>Soft White Wheat Flour</h3>
-        <p class="product-description">
-          Delicate, low-protein flour ideal for cookies, muffins, and pancakes.
-        </p>
-        <select id="soft-wheat-option">
-          <option value="2.5">2.5 lb – $5.00</option>
-          <option value="5">5 lb – $10.00</option>
-        </select>
-        <button class="add-to-cart" onclick="addFlourToCart('Soft White Wheat Flour')">Add to Cart 🛒</button>
-      </div>
-    </div>
 
   </div>
 </section>
