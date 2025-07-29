@@ -26,7 +26,7 @@ body {
   background-color: var(--accent-color);
   color: var(--text-dark);
   line-height: 1.6;
-  padding-top: 80px; /* Space for fixed navbar */
+  padding-top: 80px;
 }
 
 img {
@@ -35,23 +35,27 @@ img {
   border-radius: 8px;
 }
 
-/* Navigation */
+/* Navbar */
 header {
   position: fixed;
   top: 0;
   width: 100%;
   background-color: white;
-  z-index: 999;
+  z-index: 1000;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 nav ul {
   list-style: none;
   display: flex;
-  justify-content: center;
-  gap: 1rem;
-  padding: 0.5rem 0;
+  gap: 1.5rem;
 }
 
 nav a {
@@ -72,15 +76,20 @@ nav a:hover {
 
 /* Hero Section */
 .hero {
-  text-align: center;
-  padding: 4rem 1rem;
   background-color: var(--accent-color);
+  text-align: center;
+  padding: 4rem 1rem 2rem;
 }
 
 .hero h1 {
   font-family: var(--primary-font);
   font-size: 2.5rem;
   margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
 }
 
 .btn {
@@ -97,24 +106,12 @@ nav a:hover {
   background-color: var(--button-hover);
 }
 
-/* Product Sections */
-section {
-  padding: 2rem 1rem;
-}
-
-h2 {
-  font-family: var(--primary-font);
-  font-size: 2rem;
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
 /* Grid Layout */
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 2rem;
-  padding: 1rem 0;
+  padding: 2rem 0;
 }
 
 /* Product Card */
@@ -145,7 +142,6 @@ h2 {
   border: 1px solid #ccc;
 }
 
-/* Add to Cart Button */
 .product-card button {
   background-color: var(--primary-color);
   color: white;
@@ -158,6 +154,67 @@ h2 {
 
 .product-card button:hover {
   background-color: var(--button-hover);
+}
+
+/* Cart Page */
+.cart {
+  max-width: 800px;
+  margin: 2rem auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.cart h2 {
+  font-family: var(--primary-font);
+  margin-bottom: 1rem;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.cart-item p {
+  margin: 0;
+}
+
+.cart-summary {
+  text-align: right;
+  font-weight: bold;
+  margin-top: 2rem;
+}
+
+/* Admin / Blog / Orders Page */
+.admin-panel,
+.blog,
+.order-history {
+  max-width: 900px;
+  margin: 2rem auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.admin-panel h2,
+.blog h2,
+.order-history h2 {
+  font-family: var(--primary-font);
+  margin-bottom: 1.5rem;
+}
+
+/* Form Elements */
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
 }
 
 /* Footer */
@@ -173,4 +230,17 @@ footer {
   margin-bottom: 1rem;
   font-style: italic;
   color: var(--text-dark);
+}
+
+/* Responsive Fixes */
+@media (max-width: 768px) {
+  nav ul {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cart-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
