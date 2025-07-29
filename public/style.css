@@ -100,11 +100,12 @@ nav ul li a:hover {
 
 /* Hero Section */
 .hero {
+  margin-top: 90px; /* Matches fixed navbar height */
   background-image: url('images/hero-tallow.webp');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  height: 40vh;
+  height: 60vh; /* was 40vh, gives it more visual space */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -113,6 +114,7 @@ nav ul li a:hover {
   position: relative;
   z-index: 1;
 }
+
 
 .hero::before {
   content: "";
