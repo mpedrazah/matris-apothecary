@@ -44,73 +44,111 @@
   </a> -->
 
   <section class="product-grid">
-    <h2>Our Tallow Products</h2>
-    <div class="grid-container" id="regular-products">
-      <!-- Tallow Balm -->
-      <div class="product-card">
-        <img src="images/tallow-balm.webp" alt="Tallow Balm" class="product-image">
-        <div class="product-info">
-          <h3>Tallow Balm</h3>
-          <p class="product-description">
-            A nourishing balm handcrafted with grass-fed tallow to soothe and hydrate your skin.
-          </p>
-          <p>Ingredients: Grass-fed tallow, extra virgin olive oil, organic beeswax, essential oils</p>
-          <p class="price">$16.00</p>
-          <button class="add-to-cart" onclick="addToCart('Tallow Balm', 16.00, 'images/tallow-balm.webp')">Add to Cart 🛒</button>
-        </div>
-      </div>
+  <h2>Our Products</h2>
+  <div class="grid-container" id="regular-products">
 
-      <!-- Tallow Sunscreen -->
-      <div class="product-card">
-        <img src="images/tallow-sunscreen.webp" alt="Tallow Sunscreen" class="product-image">
-        <div class="product-info">
-          <h3>Tallow Sunscreen</h3>
-          <p class="product-description">
-            Mineral-based sunscreen with non-nano zinc and nourishing tallow to protect and heal your skin.
-          </p>
-          <p>Ingredients: Grass-fed tallow, non-nano zinc oxide, coconut oil, beeswax</p>
-          <p class="price">$18.00</p>
-          <button class="add-to-cart" onclick="addToCart('Tallow Sunscreen', 18.00, 'images/tallow-sunscreen.webp')">Add to Cart 🛒</button>
-        </div>
-      </div>
-
-      </div>
-      </section>
-      
-<section class="product-grid">
-  <h2>Our Homeopathic Medicine</h2>
-  <div class="grid-container">
-
-    <!-- Hard Red Wheat -->
+    <!-- Tallow Shampoo & Body Soap Bar -->
     <div class="product-card">
-        <img src="images/tallow-balm.webp" alt="Tallow Balm" class="product-image">
-        <div class="product-info">
-          <h3>Tallow Balm</h3>
-          <p class="product-description">
-            A nourishing balm handcrafted with grass-fed tallow to soothe and hydrate your skin.
-          </p>
-          <p>Ingredients: Grass-fed tallow, extra virgin olive oil, organic beeswax, essential oils</p>
-          <p class="price">$16.00</p>
-          <button class="add-to-cart" onclick="addToCart('Tallow Balm', 16.00, 'images/tallow-balm.webp')">Add to Cart 🛒</button>
-        </div>
+      <img src="images/tallow-balm.webp" alt="Tallow Soap Bar" class="product-image">
+      <div class="product-info">
+        <h3>Tallow Shampoo & Body Soap Bar</h3>
+        <p>3.5–4 oz — $10.00</p>
+        <label for="soap-fragrance">Fragrance:</label>
+        <select id="soap-fragrance">
+          <option>Tea Tree Oil</option>
+          <option>Bergamot & Lemon</option>
+          <option>Grapefruit & Sage</option>
+        </select>
       </div>
+    </div>
 
-      <!-- Tallow Sunscreen -->
-      <div class="product-card">
-        <img src="images/tallow-sunscreen.webp" alt="Tallow Sunscreen" class="product-image">
-        <div class="product-info">
-          <h3>Tallow Sunscreen</h3>
-          <p class="product-description">
-            Mineral-based sunscreen with non-nano zinc and nourishing tallow to protect and heal your skin.
-          </p>
-          <p>Ingredients: Grass-fed tallow, non-nano zinc oxide, coconut oil, beeswax</p>
-          <p class="price">$18.00</p>
-          <button class="add-to-cart" onclick="addToCart('Tallow Sunscreen', 18.00, 'images/tallow-sunscreen.webp')">Add to Cart 🛒</button>
-        </div>
+    <!-- Tallow Moisturizing Cream -->
+    <div class="product-card">
+      <img src="images/tallow-balm.webp" alt="Tallow Cream" class="product-image">
+      <div class="product-info">
+        <h3>Tallow Moisturizing Cream</h3>
+        <p>2 oz — $15.00 | 4 oz — $25.00</p>
+        <label for="cream-fragrance">Fragrance:</label>
+        <select id="cream-fragrance">
+          <option>Unscented</option>
+          <option>Rose</option>
+          <option>Frankincense</option>
+        </select>
       </div>
+    </div>
+
+    <!-- Tallow Sunscreen -->
+    <div class="product-card">
+      <img src="images/tallow-sunscreen.webp" alt="Tallow Sunscreen" class="product-image">
+      <div class="product-info">
+        <h3>Tallow Sunscreen (SPF 30)</h3>
+        <p>2 oz — $15.00 | 4 oz — $25.00</p>
+        <label for="sunscreen-fragrance">Fragrance:</label>
+        <select id="sunscreen-fragrance">
+          <option>Unscented</option>
+          <option>Blood Orange</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Tallow Lip Balm -->
+    <div class="product-card">
+      <img src="images/tallow-balm.webp" alt="Tallow Lip Balm" class="product-image">
+      <div class="product-info">
+        <h3>Tallow Lip Balm</h3>
+        <p>$7.00</p>
+        <label for="lip-tint">Tint:</label>
+        <select id="lip-tint">
+          <option>Untinted</option>
+          <option>Tinted</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Healing Salve -->
+    <div class="product-card">
+      <img src="images/tallow-balm.webp" alt="Healing Salve" class="product-image">
+      <div class="product-info">
+        <h3>Healing Salve</h3>
+        <p>2 oz — $15.00 | 4 oz — $25.00</p>
+        <p>For chapped lips, burns, bites, & bruises.</p>
+      </div>
+    </div>
+
+    <!-- Springtime Salve -->
+    <div class="product-card">
+      <img src="images/tallow-balm.webp" alt="Springtime Salve" class="product-image">
+      <div class="product-info">
+        <h3>Springtime Salve</h3>
+        <p>2 oz — $15.00</p>
+        <p>For eczema, dry skin, & rashes. Safe for all ages.</p>
+      </div>
+    </div>
+
+    <!-- Bug Balm -->
+    <div class="product-card">
+      <img src="images/tallow-balm.webp" alt="Bug Balm" class="product-image">
+      <div class="product-info">
+        <h3>Bug Balm</h3>
+        <p>2 oz — $15.00</p>
+        <p>Helps repel mosquitoes, flies, and ticks. Safe for age 2+.</p>
+      </div>
+    </div>
+
+    <!-- After Sun Balm -->
+    <div class="product-card">
+      <img src="images/tallow-balm.webp" alt="After Sun Balm" class="product-image">
+      <div class="product-info">
+        <h3>After Sun Balm</h3>
+        <p>2 oz — $15.00</p>
+        <p>Soothes skin after sun exposure. Safe for all ages.</p>
+      </div>
+    </div>
 
   </div>
 </section>
+
+
 
   <!-- Seasonal Specials Section 
   <div class="seasonal" id="specials">

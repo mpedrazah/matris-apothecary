@@ -2,7 +2,7 @@ require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
 const nodemailer = require("nodemailer");
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+//const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
 const { Pool } = require("pg");
@@ -10,10 +10,11 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 app.use(cors({
-  origin: ["https://www.bascombreadco.com", "https://bascombreadco.up.railway.app"],
+  origin: ["https://matris-apothecary.up.railway.app","http://localhost:3000"],
   methods: ["GET", "POST"],
   credentials: true
 }));
+
 app.use(express.static(path.join(__dirname, "public")));
 
 
@@ -23,7 +24,7 @@ const csvFilePath = "email_subscribers.csv"; // Store opted-in emails
 
 // ✅ Stripe Webhook for Payment Confirmation
 // Webhook endpoint for Stripe
-console.log("🚀 Starting Bascom Bread server...")
+console.log("🚀 Starting Matris Apothecary server...")
 console.log("🧪 ENV: ", {
   PORT: process.env.PORT,
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ? "✅ set" : "❌ missing",
@@ -32,6 +33,7 @@ console.log("🧪 ENV: ", {
   EMAIL_USER: process.env.EMAIL_USER ? "✅ set" : "❌ missing",
 });
 
+/*
 app.post("/webhook", express.raw({ type: "application/json" }), async (req, res) => {
   console.log("⚡ Incoming webhook request received.");
   const sig = req.headers["stripe-signature"];
@@ -80,7 +82,7 @@ app.post("/webhook", express.raw({ type: "application/json" }), async (req, res)
 
   res.json({ received: true });
 });
-
+*/
 
 app.use(express.json());
 
@@ -381,7 +383,7 @@ async function sendOrderConfirmationEmail(email, items, pickupDay, totalAmount, 
   
 }
 
-
+ /*
 // ✅ Stripe Checkout API
 app.post("/create-checkout-session", async (req, res) => {
   try {
@@ -447,6 +449,8 @@ app.post("/create-checkout-session", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+*/
 
 app.get("/pickup-slot-status", async (req, res) => {
   const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLeiHAcr4m4Q_4yFuZXtxlj_kqc6V8ZKaPOgsZS0HHCZReMr-vTX2KEXOB8qqgduHPZLsbIF281YoA/pub?output=csv";
