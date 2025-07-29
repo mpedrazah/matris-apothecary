@@ -1,140 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Products | Matris Apothecary</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matris Apothecary</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Open Graph Meta Tags for Link Previews -->
+    <meta property="og:title" content="Matris Apothecary" />
+    <meta property="og:description" content="Pure, Nutrient Rich Skincare in Irving, TX." />
+    <meta property="og:image" content="https://matris-apothecary.up.railway.app/images/logo_whitebg.png" />
+    <meta property="og:url" content="https://matris-apothecary.up.railway.app" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Card (optional but recommended) -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Matris Apothecary" />
+    <meta name="twitter:description" content="Pure, Nutrient Rich Skincare in Irving, TX." />
+    <meta name="twitter:image" content="https://matris-apothecary.up.railway.app" />
+
 </head>
 <body>
 
-  <!-- Header / Nav -->
-  <header>
-    <div class="logo-container">
-      <a href="index.html"><img src="logo.png" alt="Matris Apothecary Logo" class="logo" /></a>
+    <!-- Navigation Bar -->
+    <header>
+        <div class="logo-container">
+            <img src="images/logo_whitebg.png" alt="Bascom Bread Logo" class="logo">
     </div>
     <nav>
       <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="products.html">Shop</a></li>
-        <li><a href="about.html">About</a></li>
+        <li><a href="about.html">Our Story</a></li>
         <li><a href="contact.html">Contact</a></li>
+        <li><a href="checkout.html">Cart (<span id="cart-count">0</span>)</a></li>
       </ul>
     </nav>
   </header>
 
-  <!-- Products Grid -->
-  <section class="product-grid">
-    <h2>Our Tallow Products</h2>
+<!-- Seasonal Specials Banner 
+<a id="specials-banner" href="#specials" class="hidden">
+  🌼 Check out our May Babka Specials 🌼 
+  </a> -->
+
+<section class="product-grid">
+  <div class="grid-container">
+
+    <!-- Shampoo & Body Soap Bar -->
+    <div class="product-card">
+      <img class="product-image" src="images/soap-bar.jpg" alt="Tallow Shampoo & Body Soap Bar">
+      <div class="product-info">
+        <h3>Tallow Shampoo & Body Soap</h3>
+        <p class="product-description">3.5–4 oz handcut bars — $10.00</p>
+        <label>Fragrance:</label>
+        <select>
+          <option>Tea Tree</option>
+          <option>Bergamot & Lemon</option>
+          <option>Grapefruit & Sage</option>
+        </select>
+        <button class="add-to-cart">Add to Cart</button>
+      </div>
+    </div>
+
+    <!-- Moisturizing Cream -->
+    <div class="product-card">
+      <img class="product-image" src="images/tallow-cream.jpg" alt="Tallow Moisturizing Cream">
+      <div class="product-info">
+        <h3>Tallow Moisturizing Cream</h3>
+        <p class="product-description">2 oz — $15.00 | 4 oz — $25.00</p>
+        <label>Fragrance:</label>
+        <select>
+          <option>Unscented</option>
+          <option>Rose</option>
+          <option>Frankincense</option>
+        </select>
+        <button class="add-to-cart">Add to Cart</button>
+      </div>
+    </div>
+
+    <!-- Tallow Sunscreen -->
+    <div class="product-card">
+      <img class="product-image" src="images/tallow-sunscreen.webp" alt="Tallow Sunscreen">
+      <div class="product-info">
+        <h3>Tallow Sunscreen (SPF 30)</h3>
+        <p class="product-description">2 oz — $15.00 | 4 oz — $25.00</p>
+        <label>Fragrance:</label>
+        <select>
+          <option>Unscented</option>
+          <option>Blood Orange</option>
+        </select>
+        <button class="add-to-cart">Add to Cart</button>
+      </div>
+    </div>
+
+    <!-- Tallow Lip Balm -->
+    <div class="product-card">
+      <img class="product-image" src="images/lip-balm.jpg" alt="Tallow Lip Balm">
+      <div class="product-info">
+        <h3>Tallow Lip Balm</h3>
+        <p class="product-description">$7.00</p>
+        <label>Options:</label>
+        <select>
+          <option>Untinted</option>
+          <option>Tinted</option>
+        </select>
+        <button class="add-to-cart">Add to Cart</button>
+      </div>
+    </div>
+
+    <!-- Add more product cards here following same format -->
+
+  </div>
+</section>
+
+
+
+  <!-- Seasonal Specials Section 
+  <div class="seasonal" id="specials">
+    <h3>🌼 May Babka Specials 🌼 </h3>
     <div class="grid-container">
-      <!-- Tallow Shampoo & Body Soap Bar -->
       <div class="product-card">
-        <img src="images/tallow-soap.webp" alt="Tallow Soap" class="product-image" />
+        <img src="images/chocolate-babka.webp" alt="Double Chocolate Hazelnut Babka" class="product-image">
         <div class="product-info">
-          <h1>Soap Bar</h1>
-          <p>3.5–4 oz — $10.00</p>
-          <p class="product-description">Tallow-based cleansing bar with essential oils and flower petals.</p>
-          <select>
-            <option>Tea Tree</option>
-            <option>Bergamot & Lemon</option>
-            <option>Grapefruit & Sage</option>
-          </select>
-          <button class="add-to-cart">Add to Cart</button>
+          <h3>Double Chocolate Hazelnut Babka </h3>
+          <p class="product-description">
+            A soft, braided sweet bread filled with rich semi-sweet chocolate and creamy hazelnut butter. Made with 100 percent freshly milled flour. 
+          </p>
+          <p class="price">$16.00</p>
+          <button class="add-to-cart" onclick="addToCart('Double Chocolate Hazelnut Babka', 16.00,'images/chocolate-babka.webp')">Add to Cart 🛒</button>
         </div>
       </div>
-
-      <!-- Tallow Moisturizing Cream -->
       <div class="product-card">
-        <img src="images/tallow-balm.webp" alt="Moisturizing Cream" class="product-image" />
+        <img src="images/strawberry-babka.webp" alt="Strawberry Cream Cheese Babka" class="product-image">
         <div class="product-info">
-          <h1>Moisturizing Cream</h1>
-          <p>2 oz — $15 | 4 oz — $25</p>
-          <p class="product-description">Nourishing cream with grass-fed tallow and jojoba oil.</p>
-          <select>
-            <option>Unscented</option>
-            <option>Rose</option>
-            <option>Frankincense</option>
-          </select>
-          <button class="add-to-cart">Add to Cart</button>
-        </div>
-      </div>
-
-      <!-- Tallow Sunscreen -->
-      <div class="product-card">
-        <img src="images/tallow-sunscreen.webp" alt="Tallow Sunscreen" class="product-image" />
-        <div class="product-info">
-          <h1>Sunscreen (SPF 30)</h1>
-          <p>2 oz — $15 | 4 oz — $25</p>
-          <p class="product-description">Water-resistant natural SPF made with zinc oxide and tallow.</p>
-          <select>
-            <option>Unscented</option>
-            <option>Blood Orange</option>
-          </select>
-          <button class="add-to-cart">Add to Cart</button>
-        </div>
-      </div>
-
-      <!-- Tallow Lip Balm -->
-      <div class="product-card">
-        <img src="images/lip-balm.webp" alt="Lip Balm" class="product-image" />
-        <div class="product-info">
-          <h1>Lip Balm</h1>
-          <p>$7.00</p>
-          <p class="product-description">Tinted or untinted lip balm with tallow, beeswax, and shea butter.</p>
-          <select>
-            <option>Untinted</option>
-            <option>Tinted</option>
-          </select>
-          <button class="add-to-cart">Add to Cart</button>
-        </div>
-      </div>
-
-      <!-- Healing Salve -->
-      <div class="product-card">
-        <img src="images/healing-salve.webp" alt="Healing Salve" class="product-image" />
-        <div class="product-info">
-          <h1>Healing Salve</h1>
-          <p>2 oz — $15 | 4 oz — $25</p>
-          <p class="product-description">For chapped lips, burns, bites, & bruises. Not for baby ingestion.</p>
-          <button class="add-to-cart">Add to Cart</button>
-        </div>
-      </div>
-
-      <!-- Springtime Salve -->
-      <div class="product-card">
-        <img src="images/springtime-salve.webp" alt="Springtime Salve" class="product-image" />
-        <div class="product-info">
-          <h1>Springtime Salve</h1>
-          <p>2 oz — $15.00</p>
-          <p class="product-description">Helps with eczema, rashes, dry skin. Safe for all ages.</p>
-          <button class="add-to-cart">Add to Cart</button>
-        </div>
-      </div>
-
-      <!-- Bug Balm -->
-      <div class="product-card">
-        <img src="images/tallow-balm.webp" alt="Bug Balm" class="product-image" />
-        <div class="product-info">
-          <h1>Bug Balm</h1>
-          <p>2 oz — $15.00</p>
-          <p class="product-description">Repels mosquitoes, flies, and ticks. Safe for kids 2+.</p>
-          <button class="add-to-cart">Add to Cart</button>
-        </div>
-      </div>
-
-      <!-- After Sun Balm -->
-      <div class="product-card">
-        <img src="images/tallow-sunscreen.webp" alt="After Sun Balm" class="product-image" />
-        <div class="product-info">
-          <h1>After Sun Balm</h1>
-          <p>2 oz — $15.00</p>
-          <p class="product-description">Soothes and rehydrates skin after sun exposure. Safe for all.</p>
-          <button class="add-to-cart">Add to Cart</button>
+          <h3>Strawberry Cream Cheese Babka </h3>
+          <p class="product-description">
+            A soft, braided sweet bread filled with smooth strawberry cream cheese for a rich, fruity twist. Baked until golden and finished with a light glaze for added shine and moisture.
+          </p>
+          <p class="price">$16.00</p>
+          <button class="add-to-cart" onclick="addToCart('Strawberry Cream Cheese Babka', 16.00,'images/strawberry-babka.webp')">Add to Cart 🛒</button>
         </div>
       </div>
     </div>
-  </section>
+  </div> -->
 
-  <script defer src="cart.js"></script>
+     <!-- Easter 
+  <div class="seasonal" id="easter-specials" class="hidden">
+    <h3>🌼 Easter & Divine Mercy Sunday Specials</h3>
+    <div class="grid-container">
+      <div class="product-card">
+        <img src="images/cinnamon-rolls.webp" alt="Cinnamon Rolls (dozen)" class="product-image">
+        <div class="product-info">
+          <h3>Cinnamon Rolls (dozen) </h3>
+          <p class="product-description">
+            Classic gooey cinnamon rolls with a soft fluffy texture, baked fresh for your Easter table.
+          </p>
+          <p class="price">$24.00</p>
+          <button class="add-to-cart" onclick="addToCart('Cinnamon Rolls (dozen)', 24.00)">Add to Cart 🛒</button>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+      <!-- Mardi Gras Specials 
+      <div class="seasonal" id="mardigras-specials" class="hidden">
+        <h3>Mardi Gras Specials</h3>
+         <div class="product-card">
+          <img src="images/cinammon-babka.webp" alt="Cinnamon Babka" class="product-image">
+          <div class="product-info">
+            <h3>Cinammon Babka</h3>
+            <p class="price">$14.00</p>
+            <button onclick="addToCart('Cinammon Babka', 14.00)">Add to Cart 🛒</button>
+          </div>
+        </div>
+        <div class="product-card">
+          <img src="images/almond-babka.webp" alt="Almond Babka" class="product-image">
+          <div class="product-info">
+            <h3>Almond Babka</h3>
+            <p class="price">$14.00</p>
+            <button onclick="addToCart('Almond Babka', 14.00)">Add to Cart 🛒</button>
+          </div>
+        </div>
+      </div>-->
+
+      <!-- St. Patrick's Specials 
+      <div class="seasonal" id="stpatricks-specials" class="hidden">
+        <h3>☘️ St. Patrick's Specials ☘️</h3>
+        <div class="product-card">
+          <img src="images/beer-bread.webp" alt="Guinness Sourdough" class="product-image">
+          <div class="product-info">
+            <h3>Guinness Sourdough</h3>
+            <p>Fresh milled Hard Red Wheat, Organic AP Flour, Guinness, Salt
+            </p>
+            <p class="price">$14.00</p>
+            <button onclick="addToCart('Guinness Sourdough', 14.00)">Add to Cart 🛒</button>
+          </div>
+        </div>
+      </div>-->
+
+    </div>
+  </section>
 </body>
 </html>
+
