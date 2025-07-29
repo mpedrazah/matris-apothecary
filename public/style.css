@@ -34,7 +34,6 @@ body {
   color: var(--text-dark);
   padding-top: 90px;
   height: 100vh;
-  padding-top: 80px;
 }
 
 html {
@@ -296,12 +295,12 @@ button:hover,
 
 /* Product Grid Styling */
 .product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 2rem;
   padding: 2rem;
 }
-
 
 .product-grid h2 {
   font-size: 28px;
@@ -323,8 +322,9 @@ button:hover,
   border-radius: 12px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
-  max-width: 400px;
+  max-width: 300px;
   transition: transform 0.2s ease-in-out;
+  flex: 1 1 250px;
 }
 
 
