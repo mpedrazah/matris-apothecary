@@ -34,6 +34,7 @@ body {
   color: var(--text-dark);
   padding-top: 90px;
   height: 100vh;
+  padding-top: 80px;
 }
 
 html {
@@ -295,10 +296,12 @@ button:hover,
 
 /* Product Grid Styling */
 .product-grid {
-  padding: 40px 20px;
-  text-align: center;
-  background-color: #fff;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
 }
+
 
 .product-grid h2 {
   font-size: 28px;
@@ -323,6 +326,7 @@ button:hover,
   max-width: 400px;
   transition: transform 0.2s ease-in-out;
 }
+
 
 .product-card:hover {
   transform: scale(1.03);
