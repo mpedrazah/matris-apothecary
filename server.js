@@ -5,7 +5,18 @@ const nodemailer = require("nodemailer");
 //const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
+
 const { Pool } = require("pg");
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
+
+
+
 const express = require("express");
 const cors = require("cors");
 const app = express();
