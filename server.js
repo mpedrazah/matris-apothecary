@@ -107,11 +107,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// ✅ Connect to Railway PostgreSQL
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }, // Required for Railway
-});
+
 
 // ✅ Retry connecting to PostgreSQL before failing
 async function setupDatabase(retries = 5, delay = 5000) {
