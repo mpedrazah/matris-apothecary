@@ -224,6 +224,8 @@ function applyDiscount() {
 
 let venmoPaymentAttempted = false; // ✅ Prevent duplicate submissions
 
+let venmoPaymentAttempted = false;
+
 async function payWithVenmo() {
   if (venmoPaymentAttempted) return;
   venmoPaymentAttempted = true;
@@ -235,39 +237,58 @@ async function payWithVenmo() {
   }
 
   const email = document.getElementById("email")?.value.trim();
+  const deliveryMethod = document.getElementById("delivery-method")?.value;
   const pickup_day = document.getElementById("pickup-day")?.value;
   const emailOptIn = document.getElementById("email-opt-in")?.checked || false;
   const discountCode = document.getElementById("discount-code")?.value.trim().toUpperCase();
 
-  if (!email || !pickup_day) {
+  if (!email || (deliveryMethod === "pickup" && !pickup_day)) {
     alert("Please enter your email and select a pickup date.");
     venmoPaymentAttempted = false;
     return;
   }
 
-  // Apply discount
+  // 📦 Get shipping info if selected
+  const shippingInfo = deliveryMethod === "shipping" ? {
+    name: document.getElementById("shipping-name").value,
+    address: document.getElementById("shipping-address-line").value,
+    city: document.getElementById("shipping-city").value,
+    state: document.getElementById("shipping-state").value,
+    zip: document.getElementById("shipping-zip").value
+  } : null;
+
+  if (deliveryMethod === "shipping" && Object.values(shippingInfo).some(v => !v)) {
+    alert("Please fill out all shipping fields.");
+    venmoPaymentAttempted = false;
+    return;
+  }
+
+  // 💵 Apply discount to cart
   let subtotal = 0;
-  let updatedCart = cart.map(item => {
+  const updatedCart = cart.map(item => {
     let price = item.price;
     if (discountCodes[discountCode]) {
       price -= price * discountCodes[discountCode];
     }
     subtotal += price * item.quantity;
-    return {
-      name: item.name,
-      price,
-      quantity: item.quantity
-    };
+    return { name: item.name, price, quantity: item.quantity };
   });
 
-  // Remove convenience fee for Venmo
-  let venmoAmount = subtotal;
+  // 🧾 Calculate final price
+  const shippingFee = deliveryMethod === "shipping" ? 5.00 : 0;
+  let venmoAmount = subtotal + shippingFee;
   venmoAmount = Math.max(venmoAmount, 0).toFixed(2);
 
-  // Build order summary for backend and Venmo note
+  // 📝 Summary for email and Venmo note
   const orderSummary = updatedCart.map(item => `${item.name} (x${item.quantity})`).join(", ");
-  const note = encodeURIComponent(`Bascom Bread Order\n${pickup_day}\n${orderSummary}`);
+  const noteLines = [
+    "Bascom Bread Order",
+    deliveryMethod === "shipping" ? "Shipping Order" : `Pickup: ${pickup_day}`,
+    orderSummary
+  ];
+  const note = encodeURIComponent(noteLines.join("\n"));
 
+  // 📨 Order object
   const orderData = {
     name: email.split("@")[0],
     email,
@@ -276,7 +297,9 @@ async function payWithVenmo() {
     total_price: venmoAmount,
     payment_method: "Venmo",
     email_opt_in: emailOptIn,
-    cart: updatedCart
+    cart: updatedCart,
+    delivery_method: deliveryMethod,
+    shipping_info: shippingInfo
   };
 
   try {
@@ -289,7 +312,7 @@ async function payWithVenmo() {
     const result = await response.json();
     if (!result.success) throw new Error("Failed to save order.");
 
-    // Redirect to Venmo
+    // 🧭 Redirect to Venmo
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     const venmoLink = isMobile
       ? `venmo://paycharge?txn=pay&recipients=Margaret-Smillie&amount=${venmoAmount}&note=${note}`
@@ -302,9 +325,7 @@ async function payWithVenmo() {
       }, 3000);
     } else {
       const venmoWindow = window.open(venmoLink, "_blank");
-      if (!venmoWindow) {
-        alert("Venmo did not open. Please complete payment manually.");
-      }
+      if (!venmoWindow) alert("Venmo did not open. Please complete payment manually.");
       setTimeout(() => {
         window.location.href = "success.html";
       }, 5000);
@@ -323,6 +344,9 @@ async function payWithVenmo() {
   }, 30000);
 }
 
+// ✅ Make it globally available
+window.payWithVenmo = payWithVenmo;
+
 
 
 
@@ -330,67 +354,83 @@ async function payWithVenmo() {
 // ✅ Make function globally accessible
 window.payWithVenmo = payWithVenmo;
 async function checkout() {
-  if (cart.length === 0) {
-    alert("Your cart is empty!");
-    return;
-  }
-
-  const email = document.getElementById("email")?.value.trim();
-  const pickup_day = document.getElementById("pickup-day")?.value;
+  const email = document.getElementById("email").value;
   const emailOptIn = document.getElementById("email-opt-in")?.checked || false;
-  const discountCode = document.getElementById("discount-code")?.value.trim().toUpperCase() || null;
+  const deliveryMethod = document.getElementById("delivery-method").value;
+  const pickupDay = document.getElementById("pickup-day")?.value || null;
 
-  if (!email || !pickup_day) {
-    alert("Please enter your email and select a pickup date.");
+  if (!email) {
+    alert("Please enter your email.");
     return;
   }
 
-  // ✅ Apply discount if any
-  if (discountCodes[discountCode]) {
-    discountAmount = discountCodes[discountCode];
-  } else {
-    discountAmount = 0;
+  if (deliveryMethod === "pickup" && !pickupDay) {
+    alert("Please select a pickup day.");
+    return;
   }
 
-  let subtotal = 0;
-  const updatedCart = cart.map(item => {
-    let price = item.price;
-    if (discountAmount > 0) {
-      price = price - price * discountAmount;
-    }
-    subtotal += price * item.quantity;
-    return { name: item.name, price, quantity: item.quantity };
+  // 🛒 Get cart from localStorage
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+  if (cart.length === 0) {
+    alert("Your cart is empty.");
+    return;
+  }
+
+  // 💵 Calculate total
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const shippingFee = deliveryMethod === "shipping" ? 5.00 : 0.00;
+  const convenienceFee = deliveryMethod === "pickup" ? parseFloat((subtotal * 0.03).toFixed(2)) : 0.00;
+  const total = subtotal + shippingFee + convenienceFee;
+
+    // Update UI
+  document.getElementById("shipping-fee").innerText = `Shipping Fee: $${shippingFee.toFixed(2)}`;
+  document.getElementById("convenience-fee").innerText = `Online Convenience Fee: $${convenienceFee.toFixed(2)}`;
+  document.getElementById("cart-total").innerText = `Total: $${total.toFixed(2)}`;
+
+  // 📦 Get shipping info (only if shipping selected)
+  const shippingInfo = deliveryMethod === "shipping" ? {
+    name: document.getElementById("shipping-name").value,
+    address: document.getElementById("shipping-address-line").value,
+    city: document.getElementById("shipping-city").value,
+    state: document.getElementById("shipping-state").value,
+    zip: document.getElementById("shipping-zip").value
+  } : null;
+
+  if (deliveryMethod === "shipping" && Object.values(shippingInfo).some(v => !v)) {
+    alert("Please fill out all shipping fields.");
+    return;
+  }
+
+  // 👇 Venmo or Stripe?
+  const paymentMethod = window.event?.target?.id === "venmo-button" ? "Venmo" : "Card";
+
+  // 🎯 Send to backend (adjust URL if needed)
+  const response = await fetch("/create-checkout-session", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      cart,
+      email,
+      pickup_day: pickupDay,
+      payment_method: paymentMethod,
+      emailOptIn: emailOptIn,
+      delivery_method: deliveryMethod,
+      shipping_info: shippingInfo
+    })
   });
 
-  // ✅ Add 3% Stripe fee to subtotal
-  const totalAmountWithFee = (subtotal * 1.03).toFixed(2);
-
-  try {
-    const response = await fetch(`${API_BASE}/create-checkout-session`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        cart: updatedCart,
-        email,
-        pickup_day,
-        emailOptIn,
-        discountCode,
-        totalAmount: totalAmountWithFee,
-        payment_method: "Stripe",
-      })
-    });
-
-    const stripeData = await response.json();
-    if (stripeData.url) {
-      window.location.href = stripeData.url;
-    } else {
-      alert("Error processing payment: " + stripeData.error);
-    }
-  } catch (error) {
-    console.error("❌ Checkout failed:", error);
-    alert("There was an error processing your payment.");
+  const data = await response.json();
+  if (data.url) {
+    window.location.href = data.url; // Stripe redirect
+  } else if (paymentMethod === "Venmo") {
+    alert("Please complete payment via Venmo manually.");
+  } else {
+    alert("Checkout error.");
+    console.error(data.error);
   }
 }
+
 
 
 

@@ -1,19 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cart - Bascom Bread</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
-
 </head>
 <body>
   <!-- Navigation -->
   <header>
     <div class="logo-container">
-        <img src="images/logo_trans.png" alt="Bascom Bread Logo" class="logo">
+        <img src="images/logo_whitebg.png" alt="Bascom Bread Logo" class="logo">
     </div>
     <nav>
       <ul>
@@ -28,75 +26,100 @@
 
   <!-- Two-Column Layout for Checkout -->
   <div class="checkout-wrapper">
-    
-    <!-- Email & Pickup Day in One Container -->
+    <!-- User Info -->
     <div class="checkout-info">
-      <!-- Left: Email Input -->
+      <!-- Email -->
       <div class="email-container">
         <label for="email">Email for Order Confirmation:</label>
         <input type="email" id="email" placeholder="you@example.com" required />
-
-        <!-- ✅ Checkbox for Email Notifications -->
         <div class="email-notifications">
           <input type="checkbox" id="email-opt-in" checked />
           <label for="email-opt-in">Yes, I want to receive email notifications about my order and special offers.</label>
         </div>
       </div>
-      <!-- Right: Pickup Day Selection -->
-      <div class="pickup-container">
-        <label for="pickup-day">Schedule Pickup:</label>
-        <select id="pickup-day" name="pickup-day">
-          <!-- Options will be inserted by JavaScript -->
+
+      <!-- Delivery Method -->
+      <div class="shipping-method">
+        <label for="delivery-method">Delivery Method:</label>
+        <select id="delivery-method">
+          <option value="pickup">Local Pickup</option>
+          <option value="shipping">Ship to Address</option>
         </select>
       </div>
-      <p style="color: #b00020; font-size: 0.9rem; margin-top: 8px;">
-        Please note: Pickup date must be at least 48 hours from the time of order. 
-        Pickup is from South Irving (75061).
-      </p>
+
+      <!-- Pickup Day -->
+      <div class="pickup-container" id="pickup-section">
+        <label for="pickup-day">Schedule Pickup:</label>
+        <select id="pickup-day" name="pickup-day">
+          <!-- JS will fill this -->
+        </select>
+        <p style="color: #b00020; font-size: 0.9rem; margin-top: 8px;">
+          Please note: Pickup date must be at least 48 hours from the time of order.
+        </p>
+      </div>
+
+      <!-- Shipping Address -->
+      <div id="shipping-address" style="display: none;">
+        <label for="shipping-name">Full Name:</label>
+        <input type="text" id="shipping-name" placeholder="Your Full Name">
+        <label for="shipping-address-line">Address:</label>
+        <input type="text" id="shipping-address-line" placeholder="123 Main St">
+        <label for="shipping-city">City:</label>
+        <input type="text" id="shipping-city" placeholder="City">
+        <label for="shipping-state">State:</label>
+        <input type="text" id="shipping-state" placeholder="State">
+        <label for="shipping-zip">ZIP Code:</label>
+        <input type="text" id="shipping-zip" placeholder="ZIP Code">
+      </div>
     </div>
-    
+
+    <p id="shipping-fee" style="margin-top: 8px;"></p>
     <div id="warning-message" style="color: red; font-weight: bold; display: none;"></div>
 
-    <!-- Order Review & Payment -->
+    <!-- Review + Payment -->
     <section class="checkout-container">
       <h2>Review Your Order</h2>
       <div id="cart-items"></div>
       <p id="convenience-fee">Online Convenience Fee: $0.00</p>
       <h3 id="cart-total">Total: $0.00</h3>
-      <p id="payment-fee" style="color: red;"></p> <!-- Will show Venmo discount if applicable -->
+      <p id="payment-fee" style="color: red;"></p>
 
-      <!-- Venmo Discount Notification -->
-    <div class="discount-notification">
-      <p>💰 Pay with <strong>Venmo</strong> and skip online convenience fees.</span> </p>
-    </div>
+      <!-- Venmo Option -->
+      <div class="discount-notification">
+        <p>💰 Pay with <strong>Venmo</strong> and skip online convenience fees.</p>
+      </div>
+      <button id="venmo-button" onclick="payWithVenmo()">
+        <img src="images/venmo.webp" alt="Venmo Logo" class="venmo-logo"> Pay with Venmo
+      </button>
 
-      <!-- Pay with Venmo Button -->
-<button id="venmo-button" onclick="payWithVenmo()">
-  <img src="images/venmo.webp" alt="Venmo Logo" class="venmo-logo">
-  Pay with Venmo
-</button>
+      <!-- Stripe Checkout -->
+      <button id="stripe-button" onclick="checkout()">
+        <img src="images/stripe.webp" alt="Stripe Logo" class="stripe-logo"> Proceed to Payment
+      </button>
 
-<!-- Proceed to Payment (Stripe) Button -->
-<button id="stripe-button" onclick="checkout()">
-  <img src="images/stripe.webp" alt="Stripe Logo" class="stripe-logo">
-  Proceed to Payment
-</button>
+      <!-- Discount Code -->
+      <div class="discount-section">
+        <label for="discount-code">Enter Discount Code:</label>
+        <input type="text" id="discount-code" placeholder="Enter code">
+        <button onclick="applyDiscount()">Apply Discount</button>
+        <p id="discount-message"></p>
+      </div>
 
-<!-- Discount Code Section -->
-<div class="discount-section">
-  <label for="discount-code">Enter Discount Code:</label>
-  <input type="text" id="discount-code" placeholder="Enter code">
-  <button onclick="applyDiscount()">Apply Discount</button>
-  <p id="discount-message"></p>
-</div>
-
-<p>If paying by venmo, and it didn't open, <a href="#" id="venmo-fallback">click here</a> to pay.</p>
-<script>
-  document.getElementById("venmo-fallback").href = "venmo://paycharge?txn=pay&recipients=Margaret-Smillie&amount=12.00";
-</script>
-
+      <p>If paying by Venmo and it didn't open, <a href="#" id="venmo-fallback">click here</a> to pay.</p>
+      <script>
+        document.getElementById("venmo-fallback").href = "venmo://paycharge?txn=pay&recipients=Margaret-Smillie&amount=12.00";
+      </script>
     </section>
   </div>
+
+  <script>
+    document.getElementById("delivery-method").addEventListener("change", function () {
+      const method = this.value;
+      document.getElementById("pickup-section").style.display = method === "pickup" ? "block" : "none";
+      document.getElementById("shipping-address").style.display = method === "shipping" ? "block" : "none";
+    });
+  </script>
+
   <script src="cart.js"></script>
 </body>
 </html>
