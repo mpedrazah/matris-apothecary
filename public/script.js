@@ -13,3 +13,12 @@ document.getElementById("checkout-button").addEventListener("click", function() 
     .catch(error => console.error("Error:", error));
 });
 
+
+document.addEventListener("DOMContentLoaded", function () {
+  const toggle = document.getElementById("menu-toggle");
+  const menu = document.getElementById("mobile-menu");
+
+  toggle.addEventListener("click", () => {
+    menu.classList.toggle("mobile-hidden");
+  });
+});
