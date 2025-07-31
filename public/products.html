@@ -27,8 +27,9 @@
         <div class="logo-container">
             <img src="images/logo_whitebg.png" alt="Bascom Bread Logo" class="logo">
     </div>
-    <nav>
-      <ul>
+     <nav>
+      <button id="menu-toggle" class="hamburger">☰</button>
+      <ul id="mobile-menu" class="mobile-hidden">
         <li><a href="index.html">Home</a></li>
         <li><a href="products.html">Shop</a></li>
         <li><a href="about.html">Our Story</a></li>
@@ -58,40 +59,58 @@
           <option>Bergamot & Lemon</option>
           <option>Grapefruit & Sage</option>
         </select>
-        <button class="add-to-cart">Add to Cart</button>
+        <button class="add-to-cart" onclick="addToCart('Tallow Shampoo & Body Soap', 10.00, 'images/tallow-balm.webp')">Add to Cart</button>
+
       </div>
     </div>
 
-    <!-- Moisturizing Cream -->
-    <div class="product-card">
-      <img class="product-image" src="images/tallow-balm.webp" alt="Tallow Moisturizing Cream">
-      <div class="product-info">
-        <h3>Tallow Moisturizing Cream</h3>
-        <p class="product-description">2 oz — $15.00 | 4 oz — $25.00</p>
-        <label>Fragrance:</label>
-        <select>
-          <option>Unscented</option>
-          <option>Rose</option>
-          <option>Frankincense</option>
-        </select>
-        <button class="add-to-cart">Add to Cart</button>
-      </div>
-    </div>
+   <!-- Moisturizing Cream -->
+<div class="product-card">
+  <img class="product-image" src="images/tallow-balm.webp" alt="Tallow Moisturizing Cream">
+  <div class="product-info">
+    <h3>Tallow Moisturizing Cream</h3>
+    <p class="product-description">2 oz — $15.00 | 4 oz — $25.00</p>
+
+    <label for="moisturizing-fragrance">Fragrance:</label>
+    <select id="moisturizing-fragrance">
+      <option>Unscented</option>
+      <option>Rose</option>
+      <option>Frankincense</option>
+    </select>
+
+    <label for="moisturizing-size">Size:</label>
+    <select id="moisturizing-size">
+      <option value="2" data-price="15">2 oz</option>
+      <option value="4" data-price="25">4 oz</option>
+    </select>
+
+    <button class="add-to-cart" onclick="addMoisturizingCreamToCart()">Add to Cart</button>
+  </div>
+</div>
+
 
     <!-- Tallow Sunscreen -->
     <div class="product-card">
-      <img class="product-image" src="images/tallow-balm.webp" alt="Tallow Sunscreen">
-      <div class="product-info">
-        <h3>Tallow Sunscreen (SPF 30)</h3>
-        <p class="product-description">2 oz — $15.00 | 4 oz — $25.00</p>
-        <label>Fragrance:</label>
-        <select>
-          <option>Unscented</option>
-          <option>Blood Orange</option>
-        </select>
-        <button class="add-to-cart">Add to Cart</button>
-      </div>
-    </div>
+  <img class="product-image" src="images/tallow-balm.webp" alt="Tallow Sunscreen">
+  <div class="product-info">
+    <h3>Tallow Sunscreen (SPF 30)</h3>
+    <p class="product-description">2 oz — $15.00 | 4 oz — $25.00</p>
+
+    <label for="sunscreen-fragrance">Fragrance:</label>
+    <select id="sunscreen-fragrance">
+      <option>Unscented</option>
+      <option>Blood Orange</option>
+    </select>
+
+    <label for="sunscreen-size">Size:</label>
+    <select id="sunscreen-size">
+      <option value="2" data-price="15">2 oz</option>
+      <option value="4" data-price="25">4 oz</option>
+    </select>
+
+    <button class="add-to-cart" onclick="addSunscreenToCart()">Add to Cart</button>
+  </div>
+</div>
 
     <!-- Tallow Lip Balm -->
     <div class="product-card">
@@ -104,20 +123,30 @@
           <option>Untinted</option>
           <option>Tinted</option>
         </select>
-        <button class="add-to-cart">Add to Cart</button>
+        <button class="add-to-cart" onclick="addToCart('Tallow Lip Balm', 7.00, 'images/tallow-balm.webp')">Add to Cart</button>
       </div>
     </div>
 
     <!-- Happy Lips & Skin Balm -->
-      <div class="product-card">
-        <img src="images/tallow-balm.webp" alt="Healing Salve">
-        <h3>Happy Lips & Skin Balm</h3>
-        <p>Soothes chapped lips, burns, bites, blisters, & bruises.</p>
-        <p><strong>Not safe for babies to ingest.</strong></p>
-        <p>2 oz — $15.00<br>4 oz — $25.00</p>
-        <p class="text-sm">Ingredients: 100% grass-fed tallow, olive oil infused with calendula, chamomile, comfrey, shea butter, beeswax</p>
-        <button>Add to Cart</button>
-      </div>
+      <!-- Happy Lips & Skin Balm -->
+<div class="product-card">
+  <img src="images/tallow-balm.webp" alt="Healing Salve">
+  <h3>Happy Lips & Skin Balm</h3>
+  <p>Soothes chapped lips, burns, bites, blisters, & bruises.</p>
+  <p><strong>Not safe for babies to ingest.</strong></p>
+  <p>2 oz — $15.00<br>4 oz — $25.00</p>
+
+  <label for="happy-size">Size:</label>
+  <select id="happy-size">
+    <option value="2" data-price="15">2 oz</option>
+    <option value="4" data-price="25">4 oz</option>
+  </select>
+
+  <p class="text-sm">Ingredients: 100% grass-fed tallow, olive oil infused with calendula, chamomile, comfrey, shea butter, beeswax</p>
+
+  <button class="add-to-cart" onclick="addHappyBalmToCart()">Add to Cart</button>
+</div>
+
 
       <!-- Springtime Salve -->
       <div class="product-card">
@@ -126,7 +155,7 @@
         <p>Great for eczema, dry skin, rashes, cysts, & more. Safe for all ages.</p>
         <p>2 oz — $15.00</p>
         <p class="text-sm">Ingredients: Tallow, olive oil infused with wild violet & dandelion, shea butter, beeswax, lavender essential oil</p>
-        <button>Add to Cart</button>
+        <button class="add-to-cart" onclick="addToCart('Springtime Salve', 15.00, 'images/tallow-balm.webp')">Add to Cart</button>
       </div>
 
       <!-- Bug Balm -->
@@ -136,7 +165,7 @@
         <p>Helps repel mosquitoes, flies, and ticks. Safe for ages 2+.</p>
         <p>2 oz — $15.00</p>
         <p class="text-sm">Ingredients: Tallow, olive oil with lemon balm & lavender, castor oil, shea butter, beeswax, lemongrass, citronella, cedarwood oils</p>
-        <button>Add to Cart</button>
+        <button class="add-to-cart" onclick="addToCart('Bug Balm', 15.00, 'images/tallow-balm.webp')">Add to Cart</button>
       </div>
 
       <!-- After Sun Balm -->
@@ -146,7 +175,7 @@
         <p>Rehydrates & soothes skin after sun. Safe for all ages.</p>
         <p>2 oz — $15.00</p>
         <p class="text-sm">Ingredients: Tallow with chamomile & borage, aloe vera, shea butter, beeswax, lavender essential oil</p>
-        <button>Add to Cart</button>
+        <button class="add-to-cart" onclick="addToCart('After Sun Balm', 15.00, 'images/tallow-balm.webp')">Add to Cart</button>
       </div>
 
     <!-- Add more product cards here following same format -->

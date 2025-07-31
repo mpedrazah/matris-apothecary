@@ -51,7 +51,7 @@
         <p class="text-sm text-gray-600 mb-2">Repels mosquitoes, flies, and ticks. Safe for ages 2+.</p>
         <p class="mb-1">2 oz — $15.00</p>
         <p class="text-sm mb-2">Ingredients: Local grass-fed tallow, lemon balm, lavender, castor oil, shea butter, beeswax, and essential oils.</p>
-        <button class="bg-[#ac6c6f] text-white px-4 py-2 rounded">Add to Cart</button>
+        <button class="add-to-cart" onclick="addToCart('Bug Balm', 15.00, 'images/tallow-balm.webp')">Add to Cart</button>
       </div>
       <!-- After Sun Balm -->
       <div class="bg-white p-6 rounded-2xl shadow text-center">
@@ -60,49 +60,11 @@
         <p class="text-sm text-gray-600 mb-2">Soothes and hydrates after sun exposure. Safe for all ages.</p>
         <p class="mb-1">2 oz — $15.00</p>
         <p class="text-sm mb-2">Ingredients: Tallow infused with chamomile & borage, aloe vera, shea butter, beeswax, lavender oil.</p>
-        <button class="bg-[#ac6c6f] text-white px-4 py-2 rounded">Add to Cart</button>
+        <button class="add-to-cart" onclick="addToCart('After Sun Balm', 15.00, 'images/tallow-balm.webp')">Add to Cart</button>
       </div>
     </div>
   </div>
 </section>
-
-<!-- Signature Section -->
-<section id="signature-products" class="py-12">
-  <div class="max-w-7xl mx-auto px-4">
-    <h2 class="text-3xl font-bold text-center mb-8">Signature Products</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-      <!-- Tallow Moisturizing Cream -->
-      <div class="bg-white p-6 rounded-2xl shadow text-center">
-        <img src="images/tallow-balm.webp" alt="Tallow Moisturizing Cream" class="w-full h-48 object-cover rounded mb-4">
-        <h3 class="text-xl font-semibold mb-2">Tallow Moisturizing Cream</h3>
-        <p class="mb-1">2 oz — $15.00 | 4 oz — $25.00</p>
-        <p class="text-sm mb-2">Ingredients: Grass-fed tallow, organic jojoba oil, essential oils.</p>
-        <label for="moisturizer-scent" class="text-sm block mb-1">Fragrance:</label>
-        <select id="moisturizer-scent" class="w-full mb-3 border rounded p-2">
-          <option>Unscented</option>
-          <option>Rose</option>
-          <option>Frankincense</option>
-        </select>
-        <button class="bg-[#ac6c6f] text-white px-4 py-2 rounded">Add to Cart</button>
-      </div>
-
-      <!-- Tallow Sunscreen -->
-      <div class="bg-white p-6 rounded-2xl shadow text-center">
-        <img src="images/tallow-sunscreen.webp" alt="Tallow Sunscreen" class="w-full h-48 object-cover rounded mb-4">
-        <h3 class="text-xl font-semibold mb-2">Tallow Sunscreen (SPF 30)</h3>
-        <p class="mb-1">2 oz — $15.00 | 4 oz — $25.00</p>
-        <p class="text-sm mb-2">Ingredients: Tallow, beeswax, olive & coconut oils, non-nano zinc oxide, essential oils.</p>
-        <label for="sunscreen-scent" class="text-sm block mb-1">Fragrance:</label>
-        <select id="sunscreen-scent" class="w-full mb-3 border rounded p-2">
-          <option>Unscented</option>
-          <option>Blood Orange</option>
-        </select>
-        <button class="bg-[#ac6c6f] text-white px-4 py-2 rounded">Add to Cart</button>
-      </div>
-    </div>
-  </div>
-</section>
-
 
 
   <!-- Footer -->

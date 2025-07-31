@@ -282,7 +282,7 @@ async function payWithVenmo() {
   // 📝 Summary for email and Venmo note
   const orderSummary = updatedCart.map(item => `${item.name} (x${item.quantity})`).join(", ");
   const noteLines = [
-    "Bascom Bread Order",
+    "Matris Apothecary Order",
     deliveryMethod === "shipping" ? "Shipping Order" : `Pickup: ${pickup_day}`,
     orderSummary
   ];
@@ -709,73 +709,47 @@ function updateCartCount() {
   }
 }
 
-function updateBBCPrice() {
-  const select = document.getElementById("bbc-variant");
-  const selectedOption = select.options[select.selectedIndex];
-  const price = parseFloat(selectedOption.dataset.price).toFixed(2);
-  document.getElementById("bbc-price").textContent = `$${price}`;
+
+
+function addMoisturizingCreamToCart() {
+  const sizeSelect = document.getElementById("moisturizing-size");
+  const fragranceSelect = document.getElementById("moisturizing-fragrance");
+
+  const size = sizeSelect.options[sizeSelect.selectedIndex].value;
+  const price = parseFloat(sizeSelect.options[sizeSelect.selectedIndex].dataset.price);
+  const fragrance = fragranceSelect.value;
+
+  const name = `Tallow Moisturizing Cream (${size} oz - ${fragrance})`;
+  const image = "images/tallow-balm.webp";
+
+  addToCart(name, price, image);
 }
+function addSunscreenToCart() {
+  const sizeSelect = document.getElementById("sunscreen-size");
+  const fragranceSelect = document.getElementById("sunscreen-fragrance");
 
-function addBBCToCart() {
-  const select = document.getElementById("bbc-option");
-  const value = select.value;
+  const size = sizeSelect.options[sizeSelect.selectedIndex].value;
+  const price = parseFloat(sizeSelect.options[sizeSelect.selectedIndex].dataset.price);
+  const fragrance = fragranceSelect.value;
 
-  let name, price;
+  const name = `Tallow Sunscreen (${size} oz - ${fragrance})`;
+  const image = "images/tallow-balm.webp";
 
-  if (value === "two") {
-    name = "The BBC Classic";
-    price = 4.00;
-  } else {
-    name = "The BBC Classic (dozen)";
-    price = 18.00;
-  }
-
-  const image = "images/cookies.webp";
   addToCart(name, price, image);
 }
 
-function addClassicToCart() {
-  const select = document.getElementById("classic-option");
-  const value = select.value;
+function addHappyBalmToCart() {
+  const sizeSelect = document.getElementById("happy-size");
+  const size = sizeSelect.options[sizeSelect.selectedIndex].value;
+  const price = parseFloat(sizeSelect.options[sizeSelect.selectedIndex].dataset.price);
+  const name = `Happy Lips & Skin Balm (${size} oz)`;
+  const image = "images/tallow-balm.webp";
 
-  let name, price;
-
-  if (value === "Sandwich") {
-    name = "Sandwich";
-    price = 12.00;
-    img_src= "images/classic_rectangle.webp";
-  } else {
-    name = "Boule";
-    price = 12.00;
-    img_src= "images/classic_round.webp";
-  }
-  const image = img_src
   addToCart(name, price, image);
 }
 
 
-function addFlourToCart(type) {
-  let selectId = "";
-  let image = "";
-  let pricePerLb = 0;
 
-  switch (type) {
-    case "Hard Red Wheat Flour":
-      selectId = "red-wheat-option";
-      image = "images/hard-red-flour.jpeg";
-      pricePerLb = 3;
-      break;
-    case "Hard White Wheat Flour":
-      selectId = "white-wheat-option";
-      image = "images/hard-white-flour.jpeg";
-      pricePerLb = 3;
-      break;
-    case "Soft White Wheat Flour":
-      selectId = "soft-wheat-option";
-      image = "images/soft-white-flour.jpeg";
-      pricePerLb = 2;
-      break;
-  }
 
   const selected = document.getElementById(selectId).value;
   const weight = parseFloat(selected);
