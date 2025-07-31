@@ -54,13 +54,15 @@
         <h3>Tallow Shampoo & Body Soap</h3>
         <p class="product-description">3.5–4 oz handcut bars — $10.00</p>
         <label>Fragrance:</label>
-        <select>
+        <select id="soap-fragrance">
           <option>Tea Tree</option>
           <option>Bergamot & Lemon</option>
           <option>Grapefruit & Sage</option>
         </select>
-        <button class="add-to-cart" onclick="addToCart('Tallow Shampoo & Body Soap', 10.00, 'images/tallow-balm.webp')">Add to Cart</button>
-
+        <button class="add-to-cart" onclick="
+              const fragrance = document.getElementById('soap-fragrance').value;
+              addToCart(`Tallow Shampoo & Body Soap (${fragrance})`, 10.00, 'images/tallow-balm.webp');
+            ">Add to Cart</button>
       </div>
     </div>
 
@@ -119,11 +121,14 @@
         <h3>Tallow Lip Balm</h3>
         <p class="product-description">$7.00</p>
         <label>Options:</label>
-        <select>
+        <select id="tint">
           <option>Untinted</option>
           <option>Tinted</option>
         </select>
-        <button class="add-to-cart" onclick="addToCart('Tallow Lip Balm', 7.00, 'images/tallow-balm.webp')">Add to Cart</button>
+        <button class="add-to-cart" onclick="
+              const tint = document.getElementById('tint').value;
+              addToCart(`Tallow Lip Balm (${tint})`, 7.00, 'images/tallow-balm.webp');
+            ">Add to Cart</button>
       </div>
     </div>
 
