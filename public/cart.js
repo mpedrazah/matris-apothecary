@@ -224,8 +224,6 @@ function applyDiscount() {
 
 let venmoPaymentAttempted = false; // ✅ Prevent duplicate submissions
 
-let venmoPaymentAttempted = false;
-
 async function payWithVenmo() {
   if (venmoPaymentAttempted) return;
   venmoPaymentAttempted = true;
