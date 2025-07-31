@@ -747,20 +747,3 @@ function addHappyBalmToCart() {
 
   addToCart(name, price, image);
 }
-
-
-
-
-  const selected = document.getElementById(selectId).value;
-  const weight = parseFloat(selected);
-  const price = (weight * pricePerLb).toFixed(2);
-  const itemName = `${type} (${weight} lb)`;
-
-  // Tag item so it doesn't count toward slot limit
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  cart.push({ name: itemName, price: parseFloat(price), quantity: 1, image, isFlour: true });
-  localStorage.setItem("cart", JSON.stringify(cart));
-
-  updateCartCount();
-  showToast(`${itemName} added to cart.`);
-}
