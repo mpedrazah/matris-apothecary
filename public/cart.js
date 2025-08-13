@@ -718,10 +718,18 @@ function addMoisturizingCreamToCart() {
   const fragrance = fragranceSelect.value;
 
   const name = `Tallow Moisturizing Cream (${size} oz - ${fragrance})`;
-  const image = "images/tallow-balm.webp";
+
+  // Choose different images based on size
+  const image = size === "2"
+    ? "images/moisturizingcream4oz.jpg"
+    : "images/moisturizingcream4oz.jpg";
 
   addToCart(name, price, image);
 }
+
+
+
+
 function addSunscreenToCart() {
   const sizeSelect = document.getElementById("sunscreen-size");
   const fragranceSelect = document.getElementById("sunscreen-fragrance");
@@ -731,7 +739,11 @@ function addSunscreenToCart() {
   const fragrance = fragranceSelect.value;
 
   const name = `Tallow Sunscreen (${size} oz - ${fragrance})`;
-  const image = "images/tallow-balm.webp";
+  
+  const image = size === "2"
+  ? "images/sunscreen2oz.jpg"
+  : "images/sunscreen4oz.jpg";
+
 
   addToCart(name, price, image);
 }
@@ -744,4 +756,11 @@ function addHappyBalmToCart() {
   const image = "images/tallow-balm.webp";
 
   addToCart(name, price, image);
+}
+
+function addMagnesiumCreamToCart() {
+  const sel = document.getElementById('mag-cream-size');
+  const size = sel.value;
+  const price = parseFloat(sel.options[sel.selectedIndex].dataset.price);
+  addToCart(`Tallow Magnesium Cream (${size} oz)`, price, 'images/magnesiumcream.jpg');
 }
