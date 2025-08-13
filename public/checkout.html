@@ -114,15 +114,26 @@
     </section>
   </div>
 
-  <script>
-    document.getElementById("delivery-method").addEventListener("change", function () {
-      const method = this.value;
-      document.getElementById("pickup-section").style.display = method === "pickup" ? "block" : "none";
-      document.getElementById("shipping-address").style.display = method === "shipping" ? "block" : "none";
-    });
-  </script>
-
   <script src="cart.js"></script>
-  <script defer src="script.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const select = document.getElementById("delivery-method");
+    const pickup = document.getElementById("pickup-section");
+    const ship   = document.getElementById("shipping-address");
+
+    const apply = () => {
+      const method = select.value;
+      pickup.style.display = method === "pickup" ? "block" : "none";
+      ship.style.display   = method === "shipping" ? "block" : "none";
+      if (typeof recomputeTotals === "function") recomputeTotals();
+    };
+
+    select.addEventListener("change", apply);
+    apply();
+  });
+</script>
+
+<script defer src="script.js"></script>
+
 </body>
 </html>

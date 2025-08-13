@@ -9,9 +9,51 @@ let remainingSlotsForSelectedDay = null;
 let discountAmount = 0; // Stores the applied discount
 const discountCodes = {
   "ICON10": 0.10,  // 10% off
-  "TEST100": 1 // 50% off for test purposes
+  "TEST100": 1 // \0% off for test purposes
 };
 
+// --- Shipping + totals helpers ---
+const SHIPPING_RATES = { pickup: 0, shipping: 5.00 }; // change if needed
+
+function getDeliveryMethod() {
+  return document.getElementById("delivery-method")?.value || "pickup";
+}
+
+// Recompute and paint fees/total on the checkout page
+function recomputeTotals() {
+  const feeEl = document.getElementById("convenience-fee");
+  const shipEl = document.getElementById("shipping-fee");
+  const totalEl = document.getElementById("cart-total");
+  const payFeeEl = document.getElementById("payment-fee");
+  if (!feeEl || !shipEl || !totalEl) return; // not on checkout page
+
+  // subtotal with any discount applied
+  const subtotal = cart.reduce((sum, item) => {
+    const base = item.price;
+    const discounted = discountAmount > 0 ? base * (1 - discountAmount) : base;
+    return sum + discounted * item.quantity;
+  }, 0);
+
+  const deliveryMethod = getDeliveryMethod();
+  const shippingFee = deliveryMethod === "shipping" ? SHIPPING_RATES.shipping : 0;
+
+  // your UI rule: Stripe adds 3%, Venmo waives it
+  let convenienceFee = parseFloat((subtotal * 0.03).toFixed(2));
+  let venmoDiscount = 0;
+  if (paymentMethod === "Venmo") {
+    venmoDiscount = convenienceFee;
+    convenienceFee = 0;
+  }
+
+  const total = subtotal + shippingFee + convenienceFee - venmoDiscount;
+
+  shipEl.textContent = `Shipping Fee: $${shippingFee.toFixed(2)}`;
+  feeEl.textContent = `Online Convenience Fee: $${convenienceFee.toFixed(2)}`;
+  payFeeEl.textContent = paymentMethod === "Venmo"
+    ? `Venmo Discount: -$${venmoDiscount.toFixed(2)}`
+    : "";
+  totalEl.textContent = `Total: $${total.toFixed(2)}`;
+}
 
 
 // ✅ Fetch Pickup Slots from Google Sheets
@@ -448,6 +490,7 @@ let paymentMethod = "Stripe"; // Default to Stripe
 function setPaymentMethod(method) {
     paymentMethod = method;
     renderCartItems();
+    recomputeTotals();
 }
 
 // ✅ Renders Cart Items with Image Support and Discount Application
@@ -455,20 +498,13 @@ function renderCartItems() {
   const cartContainer = document.getElementById("cart-items");
   const totalContainer = document.getElementById("cart-total");
   const feeContainer = document.getElementById("convenience-fee");
-  const paymentFeeContainer = document.getElementById("payment-fee");
-  const warningMessage = document.getElementById("warning-message");
-
   if (!cartContainer || !totalContainer) return;
 
   cartContainer.innerHTML = "";
-  let subtotal = 0;
-
   cart.forEach((item, index) => {
     const imageUrl = item.image || "images/freshmillloaf.jpg";
     const originalPrice = item.price;
     const discountedPrice = discountAmount > 0 ? originalPrice * (1 - discountAmount) : originalPrice;
-
-    subtotal += discountedPrice * item.quantity;
 
     cartContainer.innerHTML += `
       <div class="cart-item">
@@ -493,22 +529,11 @@ function renderCartItems() {
     `;
   });
 
-  let convenienceFee = subtotal * 0.03;
-  convenienceFee = parseFloat(convenienceFee.toFixed(2));
-
-  let venmoDiscount = 0;
-  if (paymentMethod === "Venmo") {
-    venmoDiscount = convenienceFee;
-  }
-
-  const total = subtotal + convenienceFee - venmoDiscount;
-
-  feeContainer.innerText = `Online Convenience Fee: $${convenienceFee.toFixed(2)}`;
-  paymentFeeContainer.innerText = paymentMethod === "Venmo" ? `Venmo Discount: -$${venmoDiscount.toFixed(2)}` : "";
-  totalContainer.innerText = `Total: $${total.toFixed(2)}`;
-
+  // 👉 central totals (handles shipping + fees)
+  recomputeTotals();
   checkCartAvailability();
 }
+
 
 
 // ✅ Ensures Global Accessibility
@@ -643,6 +668,7 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchPickupSlotStatus();  // 🔁 new function replaces fetchPickupSlotsFromGoogleSheets
   renderCartItems();
   updateCartCount();
+  recomputeTotals(); // shipping
 });
 
 
