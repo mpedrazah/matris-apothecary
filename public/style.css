@@ -523,8 +523,8 @@ footer {
 
 button {
   padding: 12px 20px;
-  background-color: #b8860b;
-  color: white;
+  background-color: #a5295d;
+  color: rgb(224, 150, 194);
   border: none;
   border-radius: 5px;
   font-size: 16px;
@@ -533,7 +533,7 @@ button {
 }
 
 button:hover {
-  background-color: #8b6508;
+  background-color: #e766ad;
 }
 
 /* Style for Pickup Day Form */
@@ -567,7 +567,7 @@ button:hover {
 }
 
 #pickup-day:focus {
-  border-color: #b8860b;
+  border-color: #e66496;
   outline: none;
 }
 
