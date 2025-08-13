@@ -415,7 +415,7 @@ async function sendOrderConfirmationEmail(
       <p><strong>Fulfillment:</strong> Local Pickup</p>
       <p><strong>Pickup Date:</strong> ${pickupDay}*</p>
       <p>*Please pickup your order within your pickup window.</p>
-      <p>You can pickup your order from the porch at 1508 Cooper Dr., Irving, Texas 75061.</p>
+      <p>You can pickup your order from the porch at Address</p>
     `;
   })();
 
@@ -425,10 +425,10 @@ async function sendOrderConfirmationEmail(
     <p>${orderDetails}</p>
     ${fulfillmentLines}
     <p><strong>Total:</strong> $${Number(totalAmount).toFixed(2)}</p>
-    <br>
-    <p>Thank you,</p>
-    <p>Margaret</p>
-    <br>
+ 
+    <br>Thank you for your business! </br> <p>
+    Feel free to email me with any questions or concerns by replying to this email.
+    </p>
   `;
 
   const venmoWarning = `<p style="color: red; font-weight: bold;">⚠️ Your order will not be fulfilled until payment is received via Venmo.</p>`;
@@ -440,8 +440,8 @@ async function sendOrderConfirmationEmail(
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
-    cc: "bascombreadco@gmail.com",
-    subject: "Your Bascom Bread Order Confirmation",
+    cc: "matrisapothecary@gmail.com",
+    subject: "Your Matris Apothecary Order Confirmation",
     html: emailBody,
   };
 
