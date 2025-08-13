@@ -47,21 +47,31 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
       <!-- Bug Balm -->
       <div class="bg-white p-6 rounded-2xl shadow text-center">
-        <img src="images/tallow-balm.webp" alt="Bug Balm" class="w-full h-48 object-cover rounded mb-4">
+        <img src="images/tallowbugbalm.jpg" alt="Bug Balm" class="w-full h-48 object-cover rounded mb-4">
         <h3 class="text-xl font-semibold mb-2">Bug Balm</h3>
         <p class="text-sm text-gray-600 mb-2">Repels mosquitoes, flies, and ticks. Safe for ages 2+.</p>
         <p class="mb-1">2 oz — $15.00</p>
         <p class="text-sm mb-2">Ingredients: Local grass-fed tallow, lemon balm, lavender, castor oil, shea butter, beeswax, and essential oils.</p>
-        <button class="add-to-cart" onclick="addToCart('Bug Balm', 15.00, 'images/tallow-balm.webp')">Add to Cart</button>
+        <button class="add-to-cart" onclick="addToCart('Bug Balm', 15.00, 'images/tallowbugbalm.jpg')">Add to Cart</button>
       </div>
-      <!-- After Sun Balm -->
       <div class="bg-white p-6 rounded-2xl shadow text-center">
-        <img src="images/tallow-sunscreen.webp" alt="After Sun Balm" class="w-full h-48 object-cover rounded mb-4">
-        <h3 class="text-xl font-semibold mb-2">After Sun Balm</h3>
-        <p class="text-sm text-gray-600 mb-2">Soothes and hydrates after sun exposure. Safe for all ages.</p>
-        <p class="mb-1">2 oz — $15.00</p>
-        <p class="text-sm mb-2">Ingredients: Tallow infused with chamomile & borage, aloe vera, shea butter, beeswax, lavender oil.</p>
-        <button class="add-to-cart" onclick="addToCart('After Sun Balm', 15.00, 'images/tallow-balm.webp')">Add to Cart</button>
+        <img src="images/sunscreen2oz.jpg" alt="Tallow Sunscreen" class="w-full h-48 object-cover rounded mb-4">
+        <h3 class="text-xl font-semibold mb-2">Tallow Sunscreen (SPF 30)</h3>
+        <p class="text-sm text-gray-600 mb-2">2 oz — $15.00 | 4 oz — $25.00</p>
+
+        <label for="sunscreen-fragrance" class="block text-sm font-medium mb-1">Fragrance:</label>
+        <select id="sunscreen-fragrance" class="mb-2 border rounded px-2 py-1 w-full">
+          <option>Unscented</option>
+          <option>Blood Orange</option>
+        </select>
+
+        <label for="sunscreen-size" class="block text-sm font-medium mb-1">Size:</label>
+        <select id="sunscreen-size" class="mb-4 border rounded px-2 py-1 w-full">
+          <option value="2" data-price="15">2 oz</option>
+          <option value="4" data-price="25">4 oz</option>
+        </select>
+
+        <button class="add-to-cart" onclick="addSunscreenToCart()">Add to Cart</button>
       </div>
     </div>
   </div>
