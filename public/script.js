@@ -22,3 +22,34 @@ document.addEventListener("DOMContentLoaded", function () {
     menu.classList.toggle("mobile-hidden");
   });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const toggle = document.getElementById("menu-toggle");
+  const menu = document.getElementById("mobile-menu");
+  if (!toggle || !menu) return;
+
+  // Toggle menu on click
+  toggle.addEventListener("click", () => {
+    menu.classList.toggle("mobile-hidden");
+    toggle.setAttribute(
+      "aria-expanded",
+      menu.classList.contains("mobile-hidden") ? "false" : "true"
+    );
+  });
+
+  // Close menu when a link is clicked (mobile UX)
+  menu.querySelectorAll("a").forEach(a =>
+    a.addEventListener("click", () => menu.classList.add("mobile-hidden"))
+  );
+
+  // Keep menu visible on desktop, hidden on mobile
+  const enforceState = () => {
+    if (window.innerWidth >= 641) {
+      menu.classList.remove("mobile-hidden");
+    } else {
+      menu.classList.add("mobile-hidden");
+    }
+  };
+  enforceState();
+  window.addEventListener("resize", enforceState);
+});

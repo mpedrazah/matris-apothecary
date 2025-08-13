@@ -21,6 +21,7 @@
   box-sizing: border-box;
 }
 
+
 body {
   font-family: var(--secondary-font);
   background-color: var(--accent-color);
@@ -708,4 +709,9 @@ button:hover {
   width: 24px;
   height: auto;
   margin-right: 8px;
+}
+
+/* Keep menu visible on desktop no matter what */
+@media (min-width: 641px) {
+  #mobile-menu { display: flex !important; }
 }
