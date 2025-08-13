@@ -32,6 +32,14 @@ app.use(express.static(path.join(__dirname, "public")));
 const ordersFilePath = "orders.csv"; // Store orders here
 const csvFilePath = "email_subscribers.csv"; // Store opted-in emails
 
+// ---- Shipping config (edit amounts as you like) ----
+const SHIPPING_FEES = {
+  pickup: 0.00,
+  flat: 5.00,              // default if shipping with no specific method
+  usps_first_class: 5.00,
+  usps_priority: 9.00
+};
+
 
 // ✅ Stripe Webhook for Payment Confirmation
 // Webhook endpoint for Stripe
@@ -131,11 +139,19 @@ async function setupDatabase(retries = 5, delay = 5000) {
         )
       `);
 
+      // Ensure new columns exist (safe to run repeatedly)
+      await client.query(`
+        ALTER TABLE orders
+          ADD COLUMN IF NOT EXISTS delivery_method TEXT,
+          ADD COLUMN IF NOT EXISTS shipping_method TEXT,
+          ADD COLUMN IF NOT EXISTS shipping_fee NUMERIC(10,2) DEFAULT 0;
+      `);
+
       client.release();
-      return; // ✅ Exit if successful
+      return;
     } catch (err) {
       console.error(`❌ Database connection attempt ${i + 1} failed. Retrying in ${delay / 1000} seconds...`);
-      await new Promise((resolve) => setTimeout(resolve, delay)); // Wait before retrying
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
   console.error("🚨 Database connection failed after multiple attempts. Exiting.");
@@ -224,64 +240,113 @@ FROM (
 // ✅ API Endpoint to Save Orders
 app.post("/save-order", async (req, res) => {
   try {
-    const { email, pickup_day, items, total_price, payment_method, email_opt_in, cart } = req.body;
-    if (!email || !pickup_day || !items || !total_price || !payment_method || !cart) {
-      return res.status(400).json({ success: false, error: "All fields are required!" });
+    const {
+      name,
+      email,
+      pickup_day,
+      items,
+      total_price,        // expected to be SUBTOTAL from client
+      payment_method,
+      email_opt_in,
+      cart,
+      delivery_method,    // "pickup" | "shipping"
+      shipping_method,    // optional: "flat" | "usps_first_class" | "usps_priority"
+      shipping_info       // optional: { name, address, city, state, zip }
+    } = req.body;
+
+    // Basic validation
+    if (!email || !items || !total_price || !payment_method || !cart || !delivery_method) {
+      return res.status(400).json({ success: false, error: "Missing required fields." });
     }
 
-    // ✅ Fetch limit from Google Sheets
-    const pickupLimit = await getPickupLimitFromGoogleSheets(pickup_day);
-    if (!pickupLimit) {
-      return res.status(400).json({ success: false, error: `Pickup day '${pickup_day}' not found in availability.` });
-    }
+    // If pickup, we require pickup_day and enforce slot checks
+    if (delivery_method === "pickup") {
+      if (!pickup_day) {
+        return res.status(400).json({ success: false, error: "pickup_day is required for local pickup." });
+      }
 
-    // ✅ Get total items already ordered for that day
-    const itemCountResult = await pool.query(
-      `
-      SELECT COALESCE(SUM(quantity), 0) AS total_items
-      FROM (
-        SELECT
-          CAST(
-            regexp_replace(subitem, '.*\\(x(\\d+)\\).*', '\\1')
-            AS INTEGER
-          ) AS quantity
+      // Fetch availability for the pickup day
+      const pickupLimit = await getPickupLimitFromGoogleSheets(pickup_day);
+      if (!pickupLimit) {
+        return res.status(400).json({ success: false, error: `Pickup day '${pickup_day}' not found in availability.` });
+      }
+
+      // Count items already ordered (non-flour)
+      const itemCountResult = await pool.query(
+        `
+        SELECT COALESCE(SUM(quantity), 0) AS total_items
         FROM (
-          SELECT unnest(string_to_array(items, ',')) AS subitem
-          FROM orders
-          WHERE pickup_day = $1
-        ) AS unwrapped
-        WHERE subitem ~ '\\(x\\d+\\)'
-      ) AS counted;
-      `,
-      [pickup_day]
-    );
+          SELECT CAST(regexp_replace(subitem, '.*\\(x(\\d+)\\).*', '\\1') AS INTEGER) AS quantity
+          FROM (
+            SELECT unnest(string_to_array(items, ',')) AS subitem
+            FROM orders
+            WHERE pickup_day = $1
+          ) AS unwrapped
+          WHERE subitem ~ '\\(x\\d+\\)'
+            AND subitem NOT ILIKE '%Flour%'
+        ) AS counted;
+        `,
+        [pickup_day]
+      );
 
-    const itemsAlreadyOrdered = parseInt(itemCountResult.rows[0].total_items || 0);
-    const cartItemTotal = cart.reduce((sum, item) => {
-      return item.isFlour ? sum : sum + item.quantity;
-    }, 0);
+      const itemsAlreadyOrdered = parseInt(itemCountResult.rows[0].total_items || 0, 10);
 
+      // How many items in the new cart (excluding flour)
+      const cartItemTotal = cart.reduce((sum, item) => (item.isFlour ? sum : sum + (item.quantity || 1)), 0);
 
-
-    const remainingSlots = pickupLimit - itemsAlreadyOrdered;
-
-    if (cartItemTotal > remainingSlots) {
-      return res.status(400).json({
-        success: false,
-        error: `Only ${remainingSlots} pickup slots remain for ${pickup_day}. You have ${cartItemTotal} items in your cart.`
-      });
+      const remainingSlots = pickupLimit - itemsAlreadyOrdered;
+      if (cartItemTotal > remainingSlots) {
+        return res.status(400).json({
+          success: false,
+          error: `Only ${remainingSlots} pickup slots remain for ${pickup_day}. You have ${cartItemTotal} items in your cart.`
+        });
+      }
     }
+
+    // ---- Server-side shipping fee calculation ----
+    const methodKey = (shipping_method || (delivery_method === "shipping" ? "flat" : "pickup")).toLowerCase();
+    const shipping_fee = Number.isFinite(SHIPPING_FEES[methodKey]) ? SHIPPING_FEES[methodKey] : 0;
+
+    // Subtotal comes from client; you can re-compute from cart here if desired
+    const subtotal = parseFloat(total_price) || 0;
+    const final_total = parseFloat((subtotal + shipping_fee).toFixed(2));
 
     const emailOptInValue = email_opt_in === true;
 
+    // Save order with shipping columns
     const result = await pool.query(
-      `INSERT INTO orders (email, pickup_day, items, total_price, payment_method, email_opt_in, order_date)
-       VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING *;`,
-      [email, pickup_day, items, total_price, payment_method, emailOptInValue]
+      `INSERT INTO orders
+        (name, email, pickup_day, items, total_price, payment_method, email_opt_in, order_date, delivery_method, shipping_method, shipping_fee)
+       VALUES
+        ($1,   $2,    $3,         $4,    $5,          $6,            $7,          NOW(),     $8,              $9,              $10)
+       RETURNING *;`,
+      [
+        name || null,
+        email,
+        pickup_day || null,     // can be null for shipping
+        items,
+        final_total,
+        payment_method,
+        emailOptInValue,
+        delivery_method,
+        methodKey,
+        shipping_fee
+      ]
     );
 
+    // Optional: email confirmation (only if opted in)
     if (emailOptInValue) {
-      await sendOrderConfirmationEmail(email, items, pickup_day, total_price, payment_method);
+      await sendOrderConfirmationEmail(
+        email,
+        items,
+        pickup_day || "N/A",
+        final_total,
+        payment_method,
+        delivery_method,
+        methodKey,
+        shipping_fee,
+        shipping_info || null
+      );
     }
 
     res.json({ success: true, order: result.rows[0] });
@@ -311,71 +376,71 @@ app.get("/get-orders", async (req, res) => {
 
 
 // ✅ Send Order Confirmation Email
-async function sendOrderConfirmationEmail(email, items, pickupDay, totalAmount, paymentMethod) {
+async function sendOrderConfirmationEmail(
+  email,
+  items,
+  pickupDay,
+  totalAmount,
+  paymentMethod,
+  deliveryMethod = "pickup",
+  shippingMethod = "pickup",
+  shippingFee = 0,
+  shippingInfo = null
+) {
   if (!email) {
     console.error("❌ Email is missing. Cannot send confirmation.");
     return;
   }
 
   const orderDetails = items.split(", ").map(item => `• ${item}`).join("<br>");
-  let emailBody;
 
-  if (paymentMethod === "Venmo") {
-    emailBody = `
-      <p>Thank you for your order!</p>
-      <p><strong>You have purchased:</strong></p>
-      <p>${orderDetails}</p>
+  const fulfillmentLines = (() => {
+    if (deliveryMethod === "shipping") {
+      const prettyMethod = shippingMethod.replace(/_/g, " ");
+      const addressHtml = shippingInfo
+        ? `<p><strong>Ship To:</strong><br>
+            ${shippingInfo.name || ""}<br>
+            ${shippingInfo.address || ""}<br>
+            ${shippingInfo.city || ""}, ${shippingInfo.state || ""} ${shippingInfo.zip || ""}
+           </p>`
+        : "";
+      return `
+        <p><strong>Fulfillment:</strong> Shipping</p>
+        <p><strong>Shipping Method:</strong> ${prettyMethod} — $${Number(shippingFee).toFixed(2)}</p>
+        ${addressHtml}
+      `;
+    }
+    // Pickup
+    return `
+      <p><strong>Fulfillment:</strong> Local Pickup</p>
       <p><strong>Pickup Date:</strong> ${pickupDay}*</p>
-      <p>*Please pickup your bread within your pickup window. All unclaimed bread will be donated at the end of the day. 
-</p>
-      <p> You can pickup your order from the porch at 1508 Cooper Dr., Irving, Texas 75061. 
-      <p></p>
-      <p><strong>Total after Venmo discount:</strong> $${parseFloat(totalAmount).toFixed(2)}</p>
-      <p style="color: red; font-weight: bold;">⚠️ Your order will not be fulfilled until payment is received via Venmo. Please complete your payment as soon as possible.</p>
-      <br>
-      <p>Thank you,</p>
-      <p>Margaret</p>
-      <br></br>
-      
-      <strong>Notes about bread storage: </strong> This bread is extremely fresh and free from all preservatives, which means it has a shorter shelf life than grocery store bread. 
-<ul>
-<li>Bread is best when consumed within 3-5 days.</li>
-<li>Store bread in an airtight bag or beeswax bag.</li>
-<li>Bread will keep well in the freezer for up to 1 month. </li>
-<li>Slice the bread prior to freezing and use a toaster oven to reheat individual slices.</li>
-<li>To reheat a whole frozen loaf, spritz with water and place in the oven at 400 for 20 minutes.</li> </ul>
-
+      <p>*Please pickup your order within your pickup window.</p>
+      <p>You can pickup your order from the porch at 1508 Cooper Dr., Irving, Texas 75061.</p>
     `;
-  } else {
-    emailBody = `
-      <p>Thank you for your order!</p>
-      <p><strong>You have purchased:</strong></p>
-      <p>${orderDetails}</p>
-      <p><strong>Pickup Date:</strong> ${pickupDay}*</p>
-      <p>*Please pickup your bread within your pickup window. All unclaimed bread will be donated at the end of the day. 
-</p>
-      <p> You can pickup your order from the porch at 1508 Cooper Dr., Irving, Texas 75061. 
-      <p></p>
-      <br>
-      <p>Thank you,</p>
-      <p>Margaret</p>
-      <br></br>
-      
-      <strong>Notes about bread storage: </strong> This bread is extremely fresh and free from all preservatives, which means it has a shorter shelf life than grocery store bread. 
-<ul>
-<li>Bread is best when consumed within 3-5 days.</li>
-<li>Store bread in an airtight bag or beeswax bag.</li>
-<li>Bread will keep well in the freezer for up to 1 month. </li>
-<li>Slice the bread prior to freezing and use a toaster oven to reheat individual slices.</li>
-<li>To reheat a whole frozen loaf, spritz with water and place in the oven at 400 for 20 minutes.</li> </ul>
+  })();
 
-    `;
-  }
+  const header = `<p>Thank you for your order!</p>`;
+  const bodyCore = `
+    <p><strong>You have purchased:</strong></p>
+    <p>${orderDetails}</p>
+    ${fulfillmentLines}
+    <p><strong>Total:</strong> $${Number(totalAmount).toFixed(2)}</p>
+    <br>
+    <p>Thank you,</p>
+    <p>Margaret</p>
+    <br>
+  `;
+
+  const venmoWarning = `<p style="color: red; font-weight: bold;">⚠️ Your order will not be fulfilled until payment is received via Venmo.</p>`;
+
+  const emailBody = paymentMethod === "Venmo"
+    ? `${header}${bodyCore}${venmoWarning}`
+    : `${header}${bodyCore}`;
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
-    to: email, // ✅ Ensure `email` is valid before sending
-    cc: "bascombreadco@gmail.com", 
+    to: email,
+    cc: "bascombreadco@gmail.com",
     subject: "Your Bascom Bread Order Confirmation",
     html: emailBody,
   };
@@ -387,7 +452,6 @@ async function sendOrderConfirmationEmail(email, items, pickupDay, totalAmount, 
     console.error("❌ Error sending email:", error);
     console.error("❌ Mail Options:", mailOptions);
   }
-  
 }
 
  /*
@@ -505,10 +569,22 @@ app.get("/pickup-slot-status", async (req, res) => {
 });
 
 // ✅ Export Orders as CSV for Admin Download
+// ✅ Export Orders as CSV for Admin Download (includes shipping columns)
 app.get("/export-orders", async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT id, email, pickup_day, items, total_price, payment_method, order_date
+      SELECT
+        id,
+        name,
+        email,
+        pickup_day,
+        delivery_method,
+        shipping_method,
+        shipping_fee,
+        items,
+        total_price,
+        payment_method,
+        order_date
       FROM orders
       ORDER BY id DESC
     `);
@@ -520,21 +596,32 @@ app.get("/export-orders", async (req, res) => {
     const csvWriter = createCsvWriter({
       path: "orders.csv",
       header: [
-        { id: "id", title: "Order ID" },
-        { id: "email", title: "Email" },
-        { id: "pickup_day", title: "Pickup Day" },
-        { id: "items", title: "Items" },
-        { id: "total_price", title: "Total Price" },
-        { id: "payment_method", title: "Payment Method" },
-        { id: "order_date", title: "Order Date" },
+        { id: "id",               title: "Order ID" },
+        { id: "name",             title: "Name" },
+        { id: "email",            title: "Email" },
+        { id: "pickup_day",       title: "Pickup Day" },
+        { id: "delivery_method",  title: "Delivery Method" },   // pickup | shipping
+        { id: "shipping_method",  title: "Shipping Method" },   // flat | usps_first_class | ...
+        { id: "shipping_fee",     title: "Shipping Fee" },
+        { id: "items",            title: "Items" },
+        { id: "total_price",      title: "Total Price" },       // final total (includes shipping)
+        { id: "payment_method",   title: "Payment Method" },
+        { id: "order_date",       title: "Order Date" },
       ],
     });
 
-    // Format fields if needed
     const formattedRows = result.rows.map(row => ({
-      ...row,
-      total_price: parseFloat(row.total_price).toFixed(2),
-      order_date: row.order_date?.toISOString() || ""
+      id: row.id,
+      name: row.name || "",
+      email: row.email || "",
+      pickup_day: row.pickup_day || "",
+      delivery_method: row.delivery_method || "",
+      shipping_method: row.shipping_method || "",
+      shipping_fee: Number(row.shipping_fee || 0).toFixed(2),
+      items: row.items || "",
+      total_price: Number(row.total_price || 0).toFixed(2),
+      payment_method: row.payment_method || "",
+      order_date: row.order_date ? row.order_date.toISOString() : ""
     }));
 
     await csvWriter.writeRecords(formattedRows);
