@@ -1,5 +1,5 @@
 // ✅ Modify `payWithVenmo` to Use Firestore
-const API_BASE = "https://bascombreadco.up.railway.app"; // Update with Render URL
+const API_BASE = "https://matris-apothecary.up.railway.app"; // Update with Render URL
 
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 let pickupSlots = {};
@@ -58,7 +58,7 @@ function recomputeTotals() {
 
 // ✅ Fetch Pickup Slots from Google Sheets
 async function fetchPickupSlotsFromGoogleSheets() {
-  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLeiHAcr4m4Q_4yFuZXtxlj_kqc6V8ZKaPOgsZS0HHCZReMr-vTX2KEXOB8qqgduHPZLsbIF281YoA/pub?output=csv";
+  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLeiHAcr4m4Q_4yFuZXtxlj_kqc6V8ZKaPOgsZS0HHCZReMr-vTX2KEXOB8qqgduHPZLsbIF281YoA/pub?gid=0&single=true&output=csv";
 
   try {
     const response = await fetch(sheetURL);
