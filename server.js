@@ -21,7 +21,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 app.use(cors({
-  origin: ["https://matris-apothecary.up.railway.app","http://localhost:3000"],
+  origin: ["https://matris-apothecary.up.railway.app","http://localhost:3000","https://www.matrisapothecary.com/"],
   methods: ["GET", "POST"],
   credentials: true
 }));
