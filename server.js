@@ -2,31 +2,50 @@ require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
 const nodemailer = require("nodemailer");
-//const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
-
 const { Pool } = require("pg");
+const express = require("express");
+const cors = require("cors");
+
+// If your Node runtime < 18, uncomment next two lines:
+// const fetch = (...args) => import("node-fetch").then(({default: f}) => f(...args));
+// global.fetch = fetch;
+
+const app = express();
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  ssl: { rejectUnauthorized: false },
 });
 
+// --- CORS (must be AFTER app is created, BEFORE routes) ---
+const allowedOrigins = [
+  "https://www.matrisapothecary.com",
+  "https://matrisapothecary.com",                // optional bare domain
+  "https://matris-apothecary.up.railway.app",
+  "http://localhost:3000"
+];
 
-
-const express = require("express");
-const cors = require("cors");
-const app = express();
 app.use(cors({
-  origin: ["https://matris-apothecary.up.railway.app","http://localhost:3000","https://www.matrisapothecary.com/"],
-  methods: ["GET", "POST"],
-  credentials: true
+  origin: function (origin, callback) {
+    // allow server-to-server/no-origin, and known browser origins
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
+// Preflight
+app.options("*", cors());
+
+app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
+
 
 
 const ordersFilePath = "orders.csv"; // Store orders here
