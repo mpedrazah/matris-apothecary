@@ -52,7 +52,7 @@ console.log("🧪 ENV: ", {
   EMAIL_USER: process.env.EMAIL_USER ? "✅ set" : "❌ missing",
 });
 
-/*
+
 app.post("/webhook", express.raw({ type: "application/json" }), async (req, res) => {
   console.log("⚡ Incoming webhook request received.");
   const sig = req.headers["stripe-signature"];
@@ -101,7 +101,7 @@ app.post("/webhook", express.raw({ type: "application/json" }), async (req, res)
 
   res.json({ received: true });
 });
-*/
+
 
 app.use(express.json());
 
@@ -454,7 +454,7 @@ async function sendOrderConfirmationEmail(
   }
 }
 
- /*
+
 // ✅ Stripe Checkout API
 app.post("/create-checkout-session", async (req, res) => {
   try {
@@ -521,7 +521,6 @@ app.post("/create-checkout-session", async (req, res) => {
   }
 });
 
-*/
 
 app.get("/pickup-slot-status", async (req, res) => {
   const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR9RorEdXv2I0em9QqqrYdnijngwT2XpB7mh8jUQOVfSLpkHrte2P3eb3oXVkMzAzJFtfn-S9jUwhTs/pub?output=csv";
