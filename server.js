@@ -40,6 +40,19 @@ const SHIPPING_FEES = {
   usps_priority: 9.00
 };
 
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
+// ---- Google Sheet (Publish-to-Web CSV) ----
+const SHEET_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLeiHAcr4m4Q_4yFuZXtxlj_kqc6V8ZKaPOgsZS0HHCZReMr-vTX2KEXOB8qqgduHPZLsbIF281YoA/pub?gid=0&single=true&output=csv";
+const sheetUrlNoCache = () => `${SHEET_CSV}&cb=${Date.now()}`; // avoid stale caches
+
+const normalize = (s) => String(s || "").trim().replace(/\s+/g, " ");
+function parseCsv(text) {
+  return text.trim().split(/\r?\n/).map(line =>
+    (line.match(/("([^"]|"")*"|[^,]+)/g) || [])
+      .map(c => c.replace(/^"|"$/g, "").replace(/""/g, '"'))
+  );
+}
 
 // ✅ Stripe Webhook for Payment Confirmation
 // Webhook endpoint for Stripe
@@ -89,7 +102,7 @@ app.post("/webhook", express.raw({ type: "application/json" }), async (req, res)
     };
 
     try {
-      await saveOrderToDatabase(orderData);
+      await saveOrderToDatabaseFromWebhook(orderData);
       console.log("✅ Order saved successfully to database!");
       await sendOrderConfirmationEmail(orderData.email, orderData.items, orderData.pickup_day, orderData.total_price, orderData.payment_method);
       console.log("✅ Confirmation email sent successfully!");
@@ -185,19 +198,17 @@ async function saveOrderToDatabase(order) {
 }
 
 async function getPickupLimitFromGoogleSheets(pickupDay) {
-  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLeiHAcr4m4Q_4yFuZXtxlj_kqc6V8ZKaPOgsZS0HHCZReMr-vTX2KEXOB8qqgduHPZLsbIF281YoA/pub?gid=0&single=true&output=csv";
-
   try {
-    const response = await fetch(sheetURL);
+    const response = await fetch(sheetUrlNoCache());
     if (!response.ok) throw new Error("Failed to fetch Google Sheets");
 
     const csvText = await response.text();
-    const rows = csvText.trim().split("\n").slice(1);
+    const rows = parseCsv(csvText).slice(1); // skip header
 
-    for (const row of rows) {
-      const [date, limit] = row.split(",");
-      if (date.trim() === pickupDay.trim()) {
-        return parseInt(limit.trim());
+    for (const cols of rows) {
+      const [date, limit] = cols;
+      if (normalize(date) === normalize(pickupDay)) {
+        return parseInt(limit, 10);
       }
     }
     return null; // Not found
@@ -206,6 +217,9 @@ async function getPickupLimitFromGoogleSheets(pickupDay) {
     return null;
   }
 }
+
+
+
 app.get("/remaining-slots", async (req, res) => {
   const pickup_day = req.query.pickup_day;
   if (!pickup_day) return res.status(400).json({ error: "pickup_day required" });
@@ -213,27 +227,25 @@ app.get("/remaining-slots", async (req, res) => {
   const pickupLimit = await getPickupLimitFromGoogleSheets(pickup_day);
   if (!pickupLimit) return res.status(404).json({ error: "Date not found" });
 
-  const itemCountResult = await pool.query(`
-    SELECT COALESCE(SUM(quantity), 0) AS total_items
-FROM (
-  SELECT
-    CAST(
-      regexp_replace(subitem, '.*\\(x(\\d+)\\).*', '\\1')
-      AS INTEGER
-    ) AS quantity
-  FROM (
-    SELECT unnest(string_to_array(items, ',')) AS subitem
-    FROM orders
-    WHERE pickup_day = $1
-  ) AS unwrapped
-  WHERE subitem ~ '\\(x\\d+\\)'
-    AND subitem NOT ILIKE '%Flour%'
-) AS counted;
+  try {
+    const itemCountResult = await pool.query(`
+      SELECT COALESCE(
+        SUM( (elem->>'quantity')::int ) FILTER (WHERE (elem->>'name') !~* 'Flour' ),
+        0
+      ) AS total_items
+      FROM (
+        SELECT jsonb_array_elements(cart::jsonb) AS elem
+        FROM orders
+        WHERE shipping_date = $1
+      ) t;
+    `, [pickup_day]);
 
-  `, [pickup_day]);
-
-  const itemsAlreadyOrdered = parseInt(itemCountResult.rows[0].total_items || 0);
-  res.json({ pickupLimit, itemsAlreadyOrdered });
+    const itemsAlreadyOrdered = parseInt(itemCountResult.rows[0].total_items || 0, 10);
+    res.json({ pickupLimit, itemsAlreadyOrdered });
+  } catch (err) {
+    console.error("❌ Error computing remaining slots:", err);
+    res.status(500).json({ error: "Failed to compute remaining slots" });
+  }
 });
 
 
@@ -244,57 +256,44 @@ app.post("/save-order", async (req, res) => {
     const {
       name,
       email,
-      pickup_day,
-      items,
-      total_price,        // expected to be SUBTOTAL from client
+      pickup_day,          // for pickup; stored in shipping_date
+      total_price,         // subtotal from client (we'll add shipping_fee)
       payment_method,
       email_opt_in,
-      cart,
-      delivery_method,    // "pickup" | "shipping"
-      shipping_method,    // optional: "flat" | "usps_first_class" | "usps_priority"
-      shipping_info       // optional: { name, address, city, state, zip }
+      cart,                // JSON array
+      delivery_method,     // "pickup" | "shipping"
+      shipping_method,     // e.g., "flat" | "usps_first_class" | "usps_priority"
+      shipping_info        // { name, address, city, state, zip }
     } = req.body;
 
     // Basic validation
-    if (!email || !items || !total_price || !payment_method || !cart || !delivery_method) {
+    if (!email || !total_price || !payment_method || !cart || !delivery_method) {
       return res.status(400).json({ success: false, error: "Missing required fields." });
     }
+    if (delivery_method === "pickup" && !pickup_day) {
+      return res.status(400).json({ success: false, error: "pickup_day is required for local pickup." });
+    }
 
-    // If pickup, we require pickup_day and enforce slot checks
+    // ---- Pickup availability check ----
     if (delivery_method === "pickup") {
-      if (!pickup_day) {
-        return res.status(400).json({ success: false, error: "pickup_day is required for local pickup." });
-      }
-
-      // Fetch availability for the pickup day
       const pickupLimit = await getPickupLimitFromGoogleSheets(pickup_day);
       if (!pickupLimit) {
         return res.status(400).json({ success: false, error: `Pickup day '${pickup_day}' not found in availability.` });
       }
 
-      // Count items already ordered (non-flour)
-      const itemCountResult = await pool.query(
-        `
-        SELECT COALESCE(SUM(quantity), 0) AS total_items
+      const itemCountResult = await pool.query(`
+        SELECT COALESCE(
+          SUM( (elem->>'quantity')::int ) FILTER (WHERE (elem->>'name') !~* 'Flour' ), 0
+        ) AS total_items
         FROM (
-          SELECT CAST(regexp_replace(subitem, '.*\\(x(\\d+)\\).*', '\\1') AS INTEGER) AS quantity
-          FROM (
-            SELECT unnest(string_to_array(items, ',')) AS subitem
-            FROM orders
-            WHERE pickup_day = $1
-          ) AS unwrapped
-          WHERE subitem ~ '\\(x\\d+\\)'
-            AND subitem NOT ILIKE '%Flour%'
-        ) AS counted;
-        `,
-        [pickup_day]
-      );
+          SELECT jsonb_array_elements(cart::jsonb) AS elem
+          FROM orders
+          WHERE shipping_date = $1
+        ) t;
+      `, [pickup_day]);
 
       const itemsAlreadyOrdered = parseInt(itemCountResult.rows[0].total_items || 0, 10);
-
-      // How many items in the new cart (excluding flour)
       const cartItemTotal = cart.reduce((sum, item) => (item.isFlour ? sum : sum + (item.quantity || 1)), 0);
-
       const remainingSlots = pickupLimit - itemsAlreadyOrdered;
       if (cartItemTotal > remainingSlots) {
         return res.status(400).json({
@@ -304,43 +303,51 @@ app.post("/save-order", async (req, res) => {
       }
     }
 
-    // ---- Server-side shipping fee calculation ----
+    // ---- Server-side shipping fee + final total ----
     const methodKey = (shipping_method || (delivery_method === "shipping" ? "flat" : "pickup")).toLowerCase();
     const shipping_fee = Number.isFinite(SHIPPING_FEES[methodKey]) ? SHIPPING_FEES[methodKey] : 0;
-
-    // Subtotal comes from client; you can re-compute from cart here if desired
     const subtotal = parseFloat(total_price) || 0;
     const final_total = parseFloat((subtotal + shipping_fee).toFixed(2));
-
     const emailOptInValue = email_opt_in === true;
 
-    // Save order with shipping columns
+    // ---- Insert into your existing columns ----
+    const addr = shipping_info || {};
+    const shippingDateValue = delivery_method === "pickup" ? pickup_day : null;
+
     const result = await pool.query(
       `INSERT INTO orders
-        (name, email, pickup_day, items, total_price, payment_method, email_opt_in, order_date, delivery_method, shipping_method, shipping_fee)
+        (name, email, phone, delivery_method, address, city, state, zip,
+         shipping_date, cart, payment_method, total, created_at, shipping_method, shipping_fee, email_opt_in)
        VALUES
-        ($1,   $2,    $3,         $4,    $5,          $6,            $7,          NOW(),     $8,              $9,              $10)
+        ($1,   $2,    $3,    $4,              $5,     $6,   $7,    $8,
+         $9,            $10, $11,            $12,   NOW(),   $13,            $14,          $15)
        RETURNING *;`,
       [
         name || null,
         email,
-        pickup_day || null,     // can be null for shipping
-        items,
-        final_total,
-        payment_method,
-        emailOptInValue,
+        null, // phone (add later if you collect it)
         delivery_method,
+        addr.address || null,
+        addr.city || null,
+        addr.state || null,
+        addr.zip || null,
+        shippingDateValue,
+        JSON.stringify(cart),
+        payment_method,
+        final_total,
         methodKey,
-        shipping_fee
+        shipping_fee,
+        emailOptInValue
       ]
     );
 
-    // Optional: email confirmation (only if opted in)
+    // Optional: confirmation email (build readable items from cart)
     if (emailOptInValue) {
+      const itemsText = cart.map(i => `${i.name} (x${i.quantity || 1})`).join(", ");
       await sendOrderConfirmationEmail(
         email,
-        items,
-        pickup_day || "N/A",
+        itemsText,
+        shippingDateValue || "N/A",
         final_total,
         payment_method,
         delivery_method,
@@ -356,6 +363,25 @@ app.post("/save-order", async (req, res) => {
     res.status(500).json({ success: false, error: error.message || "Failed to save order." });
   }
 });
+
+async function saveOrderToDatabaseFromWebhook(session) {
+  const md = session.metadata || {};
+  const email = session.customer_email || md.email;
+  const cart = JSON.parse(md.cart || "[]");
+  const shipping_date = md.pickup_day || null;
+  const delivery_method = shipping_date ? "pickup" : "shipping";
+  const total = parseFloat(md.totalAmount || "0") || 0;
+
+  const result = await pool.query(
+    `INSERT INTO orders
+      (email, delivery_method, shipping_date, cart, payment_method, total, created_at, email_opt_in)
+     VALUES
+      ($1,    $2,              $3,            $4,   $5,             $6,   NOW(),     $7)
+     RETURNING *;`,
+    [email, delivery_method, shipping_date, JSON.stringify(cart), "card", total, (md.emailOptIn === "true")]
+  );
+  return result.rows[0];
+}
 
 
 
@@ -501,8 +527,8 @@ app.post("/create-checkout-session", async (req, res) => {
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
-      success_url: "https://www.bascombreadco.com/success.html",
-      cancel_url: "https://www.bascombreadco.com/cancel.html",
+      success_url: "https://www.matrisapothecary.com/success.html",
+      cancel_url: "https://www.matrisapothecary.com/cancel.html",
       customer_email: email,
       metadata: {
         cart: JSON.stringify(cart),
@@ -524,34 +550,37 @@ app.post("/create-checkout-session", async (req, res) => {
 
 
 app.get("/pickup-slot-status", async (req, res) => {
-  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLeiHAcr4m4Q_4yFuZXtxlj_kqc6V8ZKaPOgsZS0HHCZReMr-vTX2KEXOB8qqgduHPZLsbIF281YoA/pub?gid=0&single=true&output=csv";
-  
   try {
-    const response = await fetch(sheetURL);
+    // 1) Read published CSV
+    const response = await fetch(sheetUrlNoCache());
+    if (!response.ok) throw new Error("Failed to fetch Google Sheets");
     const csvText = await response.text();
-    const rows = csvText.trim().split("\n").slice(1); // Skip header
-
-    const allDays = rows.map(row => {
-      const [date, available] = row.split(",");
-      return { date: date.trim(), available: parseInt(available.trim()) };
+    const rows = parseCsv(csvText).slice(1); // Skip header
+    const allDays = rows.map(cols => {
+      const [date, available] = cols;
+      return { date: normalize(date), available: parseInt(available, 10) || 0 };
     });
 
+    // 2) Sum non-Flour quantities grouped by shipping_date from JSON cart
     const query = await pool.query(`
-      SELECT pickup_day,
-        SUM(CAST(regexp_replace(subitem, '.*\\(x(\\d+)\\).*', '\\1') AS INTEGER)) AS items_ordered
+      SELECT shipping_date,
+             SUM( (elem->>'quantity')::int ) FILTER (WHERE (elem->>'name') !~* 'Flour' ) AS items_ordered
       FROM (
-        SELECT pickup_day, unnest(string_to_array(items, ',')) AS subitem
+        SELECT shipping_date, jsonb_array_elements(cart::jsonb) AS elem
         FROM orders
-      ) AS flattened
-      WHERE subitem ~ '\\(x\\d+\\)' AND subitem NOT ILIKE '%Flour%'
-      GROUP BY pickup_day;
+        WHERE shipping_date IS NOT NULL
+      ) t
+      GROUP BY shipping_date;
     `);
 
     const orderedMap = {};
     query.rows.forEach(row => {
-      orderedMap[row.pickup_day.trim()] = parseInt(row.items_ordered);
+      if (row.shipping_date) {
+        orderedMap[normalize(row.shipping_date)] = parseInt(row.items_ordered, 10) || 0;
+      }
     });
 
+    // 3) Merge
     const result = allDays.map(day => {
       const ordered = orderedMap[day.date] || 0;
       return {
@@ -568,6 +597,7 @@ app.get("/pickup-slot-status", async (req, res) => {
     res.status(500).json({ error: "Failed to get pickup slot status" });
   }
 });
+
 
 // ✅ Export Orders as CSV for Admin Download
 // ✅ Export Orders as CSV for Admin Download (includes shipping columns)
