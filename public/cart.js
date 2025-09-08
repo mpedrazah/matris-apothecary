@@ -317,7 +317,7 @@ async function payWithVenmo() {
   });
 
   // 🧾 Calculate final price
-  const shippingFee = deliveryMethod === "shipping" ? 5.00 : 0;
+  const shippingFee = deliveryMethod === "shipping" ? 7.00 : 0;
   let venmoAmount = subtotal + shippingFee;
   venmoAmount = Math.max(venmoAmount, 0).toFixed(2);
 
