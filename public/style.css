@@ -118,10 +118,19 @@ nav a:hover {
 /* Product Card */
 .product-card {
   background-color: white;
-  padding: 1.5rem;
-  border-radius: 1.5rem;
+  padding: 1rem; /* reduce from 1.5rem */
+  border-radius: 1rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   text-align: center;
+  transform: scale(1); /* Optional: reset if previously set */
+  max-width: 300px;  /* was 400px or unset */
+  font-size: 0.9rem; /* reduce text size slightly */
+}
+.product-card img {
+  width: 70%;
+  max-width: 160px;
+  height: auto;
+  margin: 0 auto 0.75rem;
 }
 
 .product-card h3 {
@@ -157,13 +166,6 @@ nav a:hover {
   background-color: var(--button-hover);
 }
 
-.product-image {
-  width: 80%;
-  max-width: 200px;
-  height: auto;
-  margin: 0 auto 1rem; /* center and add spacing */
-  display: block;
-}
 
 /* Cart Page */
 .cart {
