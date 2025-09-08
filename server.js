@@ -43,7 +43,6 @@ app.use(cors({
 // Preflight
 app.options("*", cors());
 
-app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 
@@ -121,7 +120,7 @@ app.post("/webhook", express.raw({ type: "application/json" }), async (req, res)
     };
 
     try {
-      await saveOrderToDatabaseFromWebhook(orderData);
+      await saveOrderToDatabaseFromWebhook(session);
       console.log("✅ Order saved successfully to database!");
       await sendOrderConfirmationEmail(orderData.email, orderData.items, orderData.pickup_day, orderData.total_price, orderData.payment_method);
       console.log("✅ Confirmation email sent successfully!");

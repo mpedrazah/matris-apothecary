@@ -12,6 +12,7 @@ const discountCodes = {
   "TEST100": 1 // \0% off for test purposes
 };
 
+
 // --- Shipping + totals helpers ---
 const SHIPPING_RATES = { pickup: 0, shipping: 5.00 }; // change if needed
 
