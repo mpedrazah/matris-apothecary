@@ -54,13 +54,14 @@
       <div class="product-info">
         <h3>Tallow Shampoo & Body Soap</h3>
         <p class="product-description">3.5–4 oz handcut bars — $10.00</p>
-        <p class="text-sm">Ingredients: Local 100% grass-fed beef tallow, organic extra virgin olive oil, organic coconut oil, organic castor oil, essential oils (for fragrance), locally grown flower petals, purified water, lye. </p>
         <label>Fragrance:</label>
         <select id="soap-fragrance">
           <option>Tea Tree</option>
           <option>Bergamot & Lemon</option>
           <option>Grapefruit & Sage</option>
         </select>
+        <p class="text-sm">Ingredients: Local 100% grass-fed beef tallow, organic extra virgin olive oil, organic coconut oil, organic castor oil, essential oils (for fragrance), locally grown flower petals, purified water, lye. </p>
+        
         <button class="add-to-cart" onclick="
               const fragrance = document.getElementById('soap-fragrance').value;
               addToCart(`Tallow Shampoo & Body Soap (${fragrance})`, 10.00, 'images/soapbars.jpg');
@@ -81,14 +82,14 @@
       <option>Rose</option>
       <option>Frankincense</option>
     </select>
-    <p class="text-sm">Ingredients: Local 100% grass-fed beef tallow, organic jojoba oil, essential oils (for fragrance). </p>
+    
         
     <label for="moisturizing-size">Size:</label>
     <select id="moisturizing-size">
       <option value="2" data-price="15">2 oz</option>
       <option value="4" data-price="25">4 oz</option>
     </select>
-
+<p class="text-sm">Ingredients: Local 100% grass-fed beef tallow, organic jojoba oil, essential oils (for fragrance). </p>
     <button class="add-to-cart" onclick="addMoisturizingCreamToCart()">Add to Cart</button>
   </div>
 </div>
