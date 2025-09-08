@@ -898,3 +898,16 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   color: var(--text-dark);
 }
+
+/* Mobile product layout */
+@media (max-width: 640px) {
+  .grid-container {
+    flex-direction: column;
+    align-items: center;   /* keeps cards centered */
+  }
+
+  .product-card {
+    max-width: 90%;        /* take most of the screen width */
+    width: 100%;           /* full row */
+  }
+}
