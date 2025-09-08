@@ -14,7 +14,7 @@ const discountCodes = {
 
 
 // --- Shipping + totals helpers ---
-const SHIPPING_RATES = { pickup: 0, shipping: 5.00 }; // change if needed<
+const SHIPPING_RATES = { pickup: 0, shipping: 7.00 }; // change if needed<
 
 function getDeliveryMethod() {
   return document.getElementById("delivery-method")?.value || "pickup";
@@ -421,7 +421,7 @@ async function checkout() {
 
   // 💵 Calculate total
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shippingFee = deliveryMethod === "shipping" ? 5.00 : 0.00;
+  const shippingFee = deliveryMethod === "shipping" ? 7.00 : 0.00;
   const convenienceFee = deliveryMethod === "pickup" ? parseFloat((subtotal * 0.03).toFixed(2)) : 0.00;
   const total = subtotal + shippingFee + convenienceFee;
 
