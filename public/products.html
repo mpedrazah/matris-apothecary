@@ -54,6 +54,7 @@
       <div class="product-info">
         <h3>Tallow Shampoo & Body Soap</h3>
         <p class="product-description">3.5–4 oz handcut bars — $10.00</p>
+        <p class="text-sm">Ingredients: Local 100% grass-fed beef tallow, organic extra virgin olive oil, organic coconut oil, organic castor oil, essential oils (for fragrance), locally grown flower petals, purified water, lye. </p>
         <label>Fragrance:</label>
         <select id="soap-fragrance">
           <option>Tea Tree</option>
@@ -80,7 +81,8 @@
       <option>Rose</option>
       <option>Frankincense</option>
     </select>
-
+    <p class="text-sm">Ingredients: Local 100% grass-fed beef tallow, organic jojoba oil, essential oils (for fragrance). </p>
+        
     <label for="moisturizing-size">Size:</label>
     <select id="moisturizing-size">
       <option value="2" data-price="15">2 oz</option>
@@ -110,7 +112,9 @@
       <option value="2" data-price="15">2 oz</option>
       <option value="4" data-price="25">4 oz</option>
     </select>
-
+    <p class="text-sm">Ingredients: Local 100% grass-fed beef tallow, organic beeswax, organic extra virgin olive oil, organic unrefined coconut oil, non-nano zinc oxide, essential oils (for fragrance).
+ </p>
+    
     <button class="add-to-cart" onclick="addSunscreenToCart()">Add to Cart</button>
   </div>
 </div>
@@ -126,6 +130,8 @@
           <option>Untinted</option>
           <option>Tinted</option>
         </select>
+        <p class="text-sm">Ingredients: Local 100% grass-fed beef tallow, organic shea butter, pure beeswax, mica powder (for tint).
+ </p>
         <button class="add-to-cart" onclick="
               const tint = document.getElementById('tint').value;
               addToCart(`Tallow Lip Balm (${tint})`, 7.00, 'images/lipbalms.jpg');
@@ -148,7 +154,8 @@
     <option value="4" data-price="25">4 oz</option>
   </select>
 
-  <p class="text-sm">Ingredients: 100% grass-fed tallow, olive oil infused with calendula, chamomile, comfrey, shea butter, beeswax</p>
+  <p class="text-sm">Local 100% grass-fed beef tallow & organic extra virgin olive oil infused with calendula (Calendula officinalis), organic chamomile (Matricaria recutita), organic comfrey (Symphytum officinale), organic shea butter, & organic beeswax.
+</p>
 
   <button class="add-to-cart" onclick="addHappyBalmToCart()">Add to Cart</button>
 </div>
@@ -158,9 +165,9 @@
       <div class="product-card">
         <img src="images/springtimesalve.jpg" alt="Springtime Salve">
         <h3>Springtime Salve</h3>
-        <p>Great for eczema, dry skin, rashes, cysts, & more. Safe for all ages.</p>
+        <p>For eczema, dry skin, rashes, swollen lymph nodes, cysts, & swollen breasts.<strong> Safe for all ages.</strong></p>
         <p>2 oz — $15.00</p>
-        <p class="text-sm">Ingredients: Tallow, olive oil infused with wild violet & dandelion, shea butter, beeswax, lavender essential oil</p>
+        <p class="text-sm">Ingredients: Local 100% grass-fed beef tallow & organic extra virgin olive oil infused with wild violet (Viola odorata) & dandelion (Taraxacum officinale), organic shea butter, organic beeswax, lavender essential oil.</p>
         <button class="add-to-cart" onclick="addToCart('Springtime Salve', 15.00, 'images/springtimesalve.jpg')">Add to Cart</button>
       </div>
 
@@ -168,9 +175,9 @@
       <div class="product-card">
         <img src="images/tallowbugbalm.jpg" alt="Bug Balm">
         <h3>Bug Balm</h3>
-        <p>Helps repel mosquitoes, flies, and ticks. Safe for ages 2+.</p>
+        <p>Helps repel mosquitoes, flies, and ticks. <strong>Safe for ages 2+.</strong></p>
         <p>2 oz — $15.00</p>
-        <p class="text-sm">Ingredients: Tallow, olive oil with lemon balm & lavender, castor oil, shea butter, beeswax, lemongrass, citronella, cedarwood oils</p>
+        <p class="text-sm">Ingredients: Local 100% grass-fed beef tallow & organic extra virgin olive oil infused with lemon balm (Melissa officinalis) and lavender Lavandula angustifolia), organic castor oil, organic shea butter, organic beeswax, lemongrass essential oil, citronella essential oil, Cedarwood essential oil.</p>
         <button class="add-to-cart" onclick="addToCart('Bug Balm', 15.00, 'images/tallowbugbalm.jpg')">Add to Cart</button>
       </div>
 
@@ -193,7 +200,7 @@
 
         <p class="text-sm">
           Ingredients: Local 100% grass-fed beef tallow, organic jojoba oil, organic beeswax,
-          magnesium chloride, purified water, lavender essential oil
+          magnesium chloride, purified water, lavender essential oil.
         </p>
 
         <button class="add-to-cart" onclick="addMagnesiumCreamToCart()">Add to Cart</button>
