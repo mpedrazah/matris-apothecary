@@ -109,12 +109,11 @@ nav a:hover {
 
 /* Grid Layout */
 .grid-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center; /* keeps it centered */
-  grid-template-columns: repeat(3, 1fr); /* ← Force 3 columns */
-  gap: 1.25rem; /* reduce gap between product cards */
-  padding: 0 2rem; /* increase side margins */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 per row */
+  gap: 1.5rem;
+  padding: 0 2rem;
+  justify-items: center; /* center cards in their columns */
 }
 
 /* Product Card */
