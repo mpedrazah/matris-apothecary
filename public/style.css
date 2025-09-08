@@ -884,3 +884,17 @@ button:hover {
     height: auto;
   }
 }
+
+/* Global font reset */
+body, p, li, input, textarea, select, button {
+  font-family: var(--secondary-font); /* Open Sans */
+  font-weight: 400;
+  color: var(--text-dark);
+}
+
+/* Headings use brand serif font */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--primary-font); /* Playfair Display */
+  font-weight: 700;
+  color: var(--text-dark);
+}
