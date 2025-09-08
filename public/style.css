@@ -157,6 +157,14 @@ nav a:hover {
   background-color: var(--button-hover);
 }
 
+.product-image {
+  width: 80%;
+  max-width: 200px;
+  height: auto;
+  margin: 0 auto 1rem; /* center and add spacing */
+  display: block;
+}
+
 /* Cart Page */
 .cart {
   max-width: 800px;
