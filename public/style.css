@@ -800,7 +800,7 @@ button:hover {
 }
 
 .blog-image img {
-  width: 120%;
+  width: 100%;
   max-width: 400px;
   border-radius: 1rem;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
