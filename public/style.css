@@ -768,7 +768,7 @@ button:hover {
 }
 
 .blog-image img {
-  width: 100%;
+  width: 80%;
   max-width: 500px;
   border-radius: 1rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
