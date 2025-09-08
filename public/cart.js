@@ -14,7 +14,7 @@ const discountCodes = {
 
 
 // --- Shipping + totals helpers ---
-const SHIPPING_RATES = { pickup: 0, shipping: 5.00 }; // change if needed
+const SHIPPING_RATES = { pickup: 0, shipping: 5.00 }; // change if needed<
 
 function getDeliveryMethod() {
   return document.getElementById("delivery-method")?.value || "pickup";
@@ -164,11 +164,12 @@ function populatePickupDayDropdown() {
     const option = document.createElement("option");
     option.value = date;
 
-    if (remaining <= 0) {
+        if (remaining <= 0) {
       option.disabled = true;
-      option.textContent = `${date} - SOLD OUT`;
+      option.textContent = `${date} (Unavailable)`;
     } else {
-      option.textContent = `${date} - ${remaining} slots left`;
+      option.textContent = date; // ← Clean display
+
 
       if (!firstAvailable) {
         firstAvailable = date;
