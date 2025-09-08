@@ -785,75 +785,56 @@ button:hover {
   font-style: italic;
   line-height: 1.6;
 }
-.blog-page {
-  max-width: 800px;
-  margin: 100px auto 40px auto;
-  padding: 0 20px;
-  font-family: var(--secondary-font);
-  color: var(--text-dark);
-  line-height: 1.7;
-}
 
-.blog-title {
-  font-family: var(--primary-font);
-  font-size: 2.4rem;
-  margin-bottom: 10px;
-  color: var(--primary-color);
-  text-align: center;
-}
 
-.blog-meta {
-  text-align: center;
-  font-size: 0.95rem;
-  color: #777;
-  margin-bottom: 2rem;
+/* Blog Layout */
+.blog-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  margin-top: 2rem;
 }
 
 .blog-image {
+  flex: 1;
   text-align: center;
-  margin: 30px 0;
 }
 
 .blog-image img {
-  width: 80%;
-  max-width: 500px;
+  width: 100%;
+  max-width: 400px;
   border-radius: 1rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  height: auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 .blog-image figcaption {
+  margin-top: 0.5rem;
   font-size: 0.9rem;
-  color: #555;
-  margin-top: 8px;
+  color: #666;
+}
+
+.blog-section {
+  flex: 2;
+  line-height: 1.7;
 }
 
 .blog-section h2 {
-  font-size: 1.5rem;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
+  margin-top: 1rem;
   color: var(--primary-color);
   font-family: var(--primary-font);
 }
 
-.blog-section ul {
-  padding-left: 1.5rem;
-  margin-bottom: 1.5rem;
+/* Stack image above text on mobile */
+@media (max-width: 768px) {
+  .blog-layout {
+    flex-direction: column;
+  }
+
+  .blog-image img {
+    max-width: 100%;
+  }
 }
 
-.blog-section li {
-  margin-bottom: 0.75rem;
-}
-
-.blog-section blockquote {
-  margin: 2rem 0;
-  padding: 1rem 1.5rem;
-  background-color: #fdf7f7;
-  border-left: 4px solid var(--primary-color);
-  border-radius: 6px;
-  font-style: italic;
-  color: #555;
-}
 
 /* About Page Image Collage */
 .about-images {
