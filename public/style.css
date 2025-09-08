@@ -112,6 +112,7 @@ nav a:hover {
   display: flex;
   flex-wrap: wrap;
   justify-content: center; /* keeps it centered */
+  grid-template-columns: repeat(3, 1fr); /* ← Force 3 columns */
   gap: 1.25rem; /* reduce gap between product cards */
   padding: 0 2rem; /* increase side margins */
 }
