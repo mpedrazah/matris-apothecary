@@ -62,17 +62,27 @@
 
       <!-- Shipping Address -->
       <div id="shipping-address" style="display: none;">
-        <label for="shipping-name">Full Name:</label>
-        <input type="text" id="shipping-name" placeholder="Your Full Name">
-        <label for="shipping-address-line">Address:</label>
-        <input type="text" id="shipping-address-line" placeholder="123 Main St">
-        <label for="shipping-city">City:</label>
-        <input type="text" id="shipping-city" placeholder="City">
-        <label for="shipping-state">State:</label>
-        <input type="text" id="shipping-state" placeholder="State">
-        <label for="shipping-zip">ZIP Code:</label>
-        <input type="text" id="shipping-zip" placeholder="ZIP Code">
-      </div>
+  <label for="shipping-name">Full Name:</label>
+  <input type="text" id="shipping-name" placeholder="Your Full Name">
+
+  <label for="shipping-address-line">Address:</label>
+  <input type="text" id="shipping-address-line" placeholder="123 Main St">
+
+  <div class="address-row">
+    <div>
+      <label for="shipping-city">City:</label>
+      <input type="text" id="shipping-city" placeholder="City">
+    </div>
+    <div>
+      <label for="shipping-state">State:</label>
+      <input type="text" id="shipping-state" placeholder="State">
+    </div>
+    <div>
+      <label for="shipping-zip">ZIP Code:</label>
+      <input type="text" id="shipping-zip" placeholder="ZIP Code">
+    </div>
+  </div>
+
     </div>
 
     <div id="warning-message" style="color: red; font-weight: bold; display: none;"></div>
