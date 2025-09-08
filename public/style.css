@@ -168,6 +168,52 @@ nav a:hover {
   background-color: var(--button-hover);
 }
 
+/* Checkout Shipping Address */
+#shipping-address {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-top: 1.5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#shipping-address label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+#shipping-address input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#shipping-address input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 6px rgba(172, 108, 111, 0.2);
+  outline: none;
+}
+
+/* Two-column layout for city, state, zip */
+.address-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.address-row > div {
+  flex: 1;
+}
+
 
 /* Cart Page */
 .cart {
