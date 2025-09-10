@@ -893,8 +893,8 @@ body, p, li, input, textarea, select, button {
 }
 
 /* Headings use brand serif font */
-h1{
-  font-family: var(--secondary-font); /* Playfair Display */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--secondary-font); 
   font-weight: 700;
   color: var(--text-dark);
 }
