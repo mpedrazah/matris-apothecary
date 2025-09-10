@@ -911,3 +911,66 @@ h1{
     width: 100%;           /* full row */
   }
 }
+
+
+/* === Bigger product cards === */
+.product-grid { max-width: 1200px; margin: 0 auto; }
+
+.grid-container {
+  /* Wider columns so each card can breathe */
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 2rem;             /* a bit more space between cards */
+  justify-items: center; /* keep cards centered */
+}
+
+/* Card sizing & typography */
+.product-card {
+  max-width: 540px;  /* allow a wider card */
+  width: 100%;
+  padding: 1.25rem 1.5rem;
+  font-size: 1rem;   /* bump base text slightly */
+}
+
+.product-card h3 {
+  font-size: 1.4rem;  /* larger title */
+  margin-top: 0.5rem;
+}
+
+.product-card p,
+.product-card .product-description {
+  font-size: 1.05rem;
+}
+
+/* Bigger images */
+.product-card img,
+.product-card .product-image {
+  max-width: 260px;   /* was 160px */
+  width: 100%;
+  height: auto;
+  margin: 0 auto 1rem;
+}
+
+/* Bigger button */
+.product-card button {
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 10px;
+}
+
+/* Desktop: favor two large columns */
+@media (min-width: 1024px) {
+  .grid-container {
+    grid-template-columns: repeat(2, minmax(420px, 1fr));
+  }
+}
+
+/* Mobile: single column full-width look */
+@media (max-width: 640px) {
+  .grid-container {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem;
+  }
+  .product-card {
+    max-width: 92%;
+  }
+}
