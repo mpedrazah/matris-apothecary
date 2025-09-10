@@ -59,7 +59,7 @@ function recomputeTotals() {
 
 // ✅ Fetch Pickup Slots from Google Sheets
 async function fetchPickupSlotsFromGoogleSheets() {
-  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLeiHAcr4m4Q_4yFuZXtxlj_kqc6V8ZKaPOgsZS0HHCZReMr-vTX2KEXOB8qqgduHPZLsbIF281YoA/pub?gid=0&single=true&output=csv";
+  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR9RorEdXv2I0em9QqqrYdnijngwT2XpB7mh8jUQOVfSLpkHrte2P3eb3oXVkMzAzJFtfn-S9jUwhTs/pub?gid=0&single=true&output=csv";
 
   try {
     const response = await fetch(sheetURL);
