@@ -974,3 +974,28 @@ h1{
     max-width: 92%;
   }
 }
+
+/* Click-to-zoom */
+.product-card img { cursor: zoom-in; }
+
+/* Lightbox modal */
+.lightbox {
+  position: fixed; inset: 0;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.85);
+  padding: 2rem; z-index: 10000;
+}
+.lightbox.open { display: flex; }
+.lightbox__img {
+  max-width: min(92vw, 1200px);
+  max-height: 90vh;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.5);
+}
+.lightbox__close {
+  position: absolute; top: 16px; right: 16px;
+  font-size: 2rem; line-height: 1;
+  background: rgba(0,0,0,.5);
+  color: #fff; border: 0; border-radius: 8px;
+  padding: .2rem .6rem; cursor: pointer;
+}

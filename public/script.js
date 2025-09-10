@@ -52,3 +52,38 @@ document.addEventListener("DOMContentLoaded", () => {
   // Re-enforce on resize
   window.addEventListener("resize", enforceState);
 });
+
+(() => {
+  const lb = document.getElementById('lightbox');
+  const lbImg = lb.querySelector('.lightbox__img');
+  const lbClose = lb.querySelector('.lightbox__close');
+
+  function openLightbox(src, alt='') {
+    lbImg.src = src;
+    lbImg.alt = alt;
+    lb.classList.add('open');
+    lb.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden'; // lock scroll
+  }
+  function closeLightbox() {
+    lb.classList.remove('open');
+    lb.setAttribute('aria-hidden', 'true');
+    lbImg.src = '';
+    document.body.style.overflow = '';
+  }
+
+  // Open when clicking any product image
+  document.addEventListener('click', (e) => {
+    const img = e.target.closest('.product-card img');
+    if (!img) return;
+    // Use data-full for higher-res if provided; fall back to current src
+    const src = img.getAttribute('data-full') || img.src;
+    openLightbox(src, img.alt || '');
+  });
+
+  // Close interactions
+  lbClose.addEventListener('click', closeLightbox);
+  lb.addEventListener('click', (e) => { if (e.target === lb) closeLightbox(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+})();
+
