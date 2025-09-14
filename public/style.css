@@ -1002,3 +1002,29 @@ h1, h2, h3, h4, h5, h6 {
   color: #fff; border: 0; border-radius: 8px;
   padding: .2rem .6rem; cursor: pointer;
 }
+
+/* Lead time callout */
+.lead-time {
+  background: #fff7e6;              /* soft warm highlight */
+  border: 1px solid #f3c27a;
+  color: #5a4630;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.lead-time .icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.lead-time strong {
+  color: var(--primary-color);
+  font-weight: 700;
+}

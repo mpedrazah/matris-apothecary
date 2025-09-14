@@ -503,31 +503,43 @@ async function sendOrderConfirmationEmail(
 // ✅ Stripe Checkout API
 app.post("/create-checkout-session", async (req, res) => {
   try {
-    console.log("🛠 Received Stripe checkout request:", req.body);
-
-    const { cart, email, pickup_day, payment_method, emailOptIn } = req.body;
+    const {
+      cart,
+      email,
+      pickup_day,
+      payment_method,
+      emailOptIn,
+      delivery_method,          // "pickup" | "shipping"
+      shipping_method           // e.g. "flat" | "usps_first_class" | ...
+    } = req.body;
 
     if (!cart || !email || !pickup_day || !payment_method) {
-      console.error("❌ Missing required fields:", { cart, email, pickup_day, payment_method });
       return res.status(400).json({ error: "Missing required fields for Stripe checkout." });
     }
 
-    // ✅ Calculate subtotal
+    // Subtotal from items (server is the source of truth)
     const subtotal = cart.reduce((sum, item) => {
-      const price = parseFloat(item.price);
-      return sum + price * item.quantity;
+      const unit = parseFloat(item.price);
+      return sum + unit * (item.quantity || 1);
     }, 0);
 
-    // ✅ Calculate 3% fee
+    // 3% Stripe convenience fee (you waive this on Venmo only)
     const convenienceFee = parseFloat((subtotal * 0.03).toFixed(2));
 
-    // ✅ Add fee as separate Stripe line item
+    // Shipping fee (server-side)
+    const methodKey = (shipping_method || (delivery_method === "shipping" ? "flat" : "pickup")).toLowerCase();
+    const shippingFee =
+      delivery_method === "shipping"
+        ? (Number.isFinite(SHIPPING_FEES[methodKey]) ? SHIPPING_FEES[methodKey] : 0)
+        : 0;
+
+    // Build Stripe line items
     const lineItems = [
       ...cart.map(item => ({
         price_data: {
           currency: "usd",
           product_data: { name: item.name },
-          unit_amount: Math.round(item.price * 100),
+          unit_amount: Math.round(parseFloat(item.price) * 100),
         },
         quantity: item.quantity || 1,
       })),
@@ -538,7 +550,15 @@ app.post("/create-checkout-session", async (req, res) => {
           unit_amount: Math.round(convenienceFee * 100),
         },
         quantity: 1,
-      }
+      },
+      ...(delivery_method === "shipping" ? [{
+        price_data: {
+          currency: "usd",
+          product_data: { name: `Shipping (${methodKey.replace(/_/g, " ")})` },
+          unit_amount: Math.round(shippingFee * 100),
+        },
+        quantity: 1,
+      }] : [])
     ];
 
     const session = await stripe.checkout.sessions.create({
@@ -552,19 +572,22 @@ app.post("/create-checkout-session", async (req, res) => {
         cart: JSON.stringify(cart),
         pickup_day,
         payment_method,
+        delivery_method,
+        shipping_method: methodKey,
+        shipping_fee: shippingFee.toFixed(2),
         emailOptIn: emailOptIn?.toString() || "false",
-        totalAmount: (subtotal + convenienceFee).toFixed(2)  // 👈 Add this line
+        // Include shipping in total metadata (Stripe is still the source of truth)
+        totalAmount: (subtotal + convenienceFee + shippingFee).toFixed(2)
       }
     });
 
-    console.log("✅ Stripe Session Created:", session.url);
-    res.json({ url: session.url });
-
+    return res.json({ url: session.url });
   } catch (error) {
     console.error("❌ Stripe Checkout Error:", error);
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
+
 
 
 app.get("/pickup-slot-status", async (req, res) => {

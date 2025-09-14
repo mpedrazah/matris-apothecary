@@ -405,32 +405,18 @@ async function checkout() {
     alert("Please enter your email.");
     return;
   }
-
   if (deliveryMethod === "pickup" && !pickupDay) {
     alert("Please select a pickup day.");
     return;
   }
 
-  // 🛒 Get cart from localStorage
   const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-
   if (cart.length === 0) {
     alert("Your cart is empty.");
     return;
   }
 
-  // 💵 Calculate total
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shippingFee = deliveryMethod === "shipping" ? 7.00 : 0.00;
-  const convenienceFee = deliveryMethod === "pickup" ? parseFloat((subtotal * 0.03).toFixed(2)) : 0.00;
-  const total = subtotal + shippingFee + convenienceFee;
-
-    // Update UI
-  document.getElementById("shipping-fee").innerText = `Shipping Fee: $${shippingFee.toFixed(2)}`;
-  document.getElementById("convenience-fee").innerText = `Online Convenience Fee: $${convenienceFee.toFixed(2)}`;
-  document.getElementById("cart-total").innerText = `Total: $${total.toFixed(2)}`;
-
-  // 📦 Get shipping info (only if shipping selected)
+  // Build shipping info if needed
   const shippingInfo = deliveryMethod === "shipping" ? {
     name: document.getElementById("shipping-name").value,
     address: document.getElementById("shipping-address-line").value,
@@ -444,10 +430,12 @@ async function checkout() {
     return;
   }
 
-  // 👇 Venmo or Stripe?
+  // Which button started checkout?
   const paymentMethod = window.event?.target?.id === "venmo-button" ? "Venmo" : "Card";
 
-  // 🎯 Send to backend (adjust URL if needed)
+  // Pick a shipping method key (matches server’s SHIPPING_FEES keys)
+  const shippingMethod = deliveryMethod === "shipping" ? "flat" : "pickup";
+
   const response = await fetch("/create-checkout-session", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -456,17 +444,16 @@ async function checkout() {
       email,
       pickup_day: pickupDay,
       payment_method: paymentMethod,
-      emailOptIn: emailOptIn,
+      emailOptIn,
       delivery_method: deliveryMethod,
+      shipping_method: shippingMethod,  // 👈 send this
       shipping_info: shippingInfo
     })
   });
 
   const data = await response.json();
   if (data.url) {
-    window.location.href = data.url; // Stripe redirect
-  } else if (paymentMethod === "Venmo") {
-    alert("Please complete payment via Venmo manually.");
+    window.location.href = data.url;
   } else {
     alert("Checkout error.");
     console.error(data.error);
