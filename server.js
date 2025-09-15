@@ -1,7 +1,6 @@
 require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
-const nodemailer = require("nodemailer");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
 const { Pool } = require("pg");
@@ -80,7 +79,8 @@ console.log("🧪 ENV: ", {
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ? "✅ set" : "❌ missing",
   STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET ? "✅ set" : "❌ missing",
   DATABASE_URL: process.env.DATABASE_URL ? "✅ set" : "❌ missing",
-  EMAIL_USER: process.env.EMAIL_USER ? "✅ set" : "❌ missing",
+  SENDGRID_API_KEY: process.env.SENDGRID_API_KEY ? "✅ set" : "❌ missing",
+  EMAIL_FROM: process.env.EMAIL_FROM ? "✅ set" : "❌ missing",
 });
 
 
@@ -162,14 +162,10 @@ app.post("/webhook", express.raw({ type: "application/json" }), async (req, res)
 app.use(express.json());
 
 
-// ✅ Setup Email Transporter (For Order Confirmation)
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const EMAIL_FROM = process.env.EMAIL_FROM || "no-reply@matrisapothecary.com";
+
 
 
 
@@ -417,7 +413,7 @@ async function sendOrderConfirmationEmail(
 
   const fulfillmentLines = (() => {
     if (deliveryMethod === "shipping") {
-      const prettyMethod = shippingMethod.replace(/_/g, " ");
+      const prettyMethod = String(shippingMethod || "").replace(/_/g, " ");
       const addressHtml = shippingInfo
         ? `<p><strong>Ship To:</strong><br>
             ${shippingInfo.name || ""}<br>
@@ -431,7 +427,6 @@ async function sendOrderConfirmationEmail(
         ${addressHtml}
       `;
     }
-    // Pickup
     return `
       <p><strong>Fulfillment:</strong> Local Pickup</p>
       <p>You can pickup your order from the porch at Address</p>
@@ -444,34 +439,38 @@ async function sendOrderConfirmationEmail(
     <p>${orderDetails}</p>
     ${fulfillmentLines}
     <p><strong>Total:</strong> $${Number(totalAmount).toFixed(2)}</p>
- 
-    <br>Thank you for your business! </br> <p>
-    Feel free to email me with any questions or concerns by replying to this email.
-    </p>
+    <br>Thank you for your business!</br>
+    <p>Feel free to email me with any questions or concerns by replying to this email.</p>
   `;
 
   const venmoWarning = `<p style="color: red; font-weight: bold;">⚠️ Your order will not be fulfilled until payment is received via Venmo.</p>`;
+  const html = (paymentMethod === "Venmo") ? `${header}${bodyCore}${venmoWarning}` : `${header}${bodyCore}`;
 
-  const emailBody = paymentMethod === "Venmo"
-    ? `${header}${bodyCore}${venmoWarning}`
-    : `${header}${bodyCore}`;
+  // Plain-text fallback (very simple stripping)
+  const text = html
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<[^>]+>/g, "")
+    .trim();
 
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
+  const msg = {
     to: email,
-    cc: "matrisapothecary@gmail.com",
+    from: { email: EMAIL_FROM, name: "Matris Apothecary" },
+    replyTo: EMAIL_FROM,
+    cc: "matrisapothecary@gmail.com", // optional – keep if you want
     subject: "Your Matris Apothecary Order Confirmation",
-    html: emailBody,
+    text,
+    html,
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sgMail.send(msg);
     console.log("✅ Order confirmation email sent to:", email);
   } catch (error) {
-    console.error("❌ Error sending email:", error);
-    console.error("❌ Mail Options:", mailOptions);
+    console.error("❌ Error sending email via SendGrid:", error?.response?.body || error);
   }
 }
+
 
 
 // ✅ Stripe Checkout API
