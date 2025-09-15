@@ -57,6 +57,12 @@ const SHIPPING_FEES = {
   usps_priority: 9.00
 };
 
+// Put near your SHIPPING_FEES:
+const DISCOUNT_CODES = {
+  ICON10: 0.10,   // 10% off items
+  TEST100: 1.00   // 100% off items (may make total $0 — see guard below)
+};
+
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // ---- Google Sheet (Publish-to-Web CSV) ----
@@ -448,7 +454,7 @@ async function sendOrderConfirmationEmail(
 
 
 // ✅ Stripe Checkout API
-// ✅ Stripe Checkout API
+// In /create-checkout-session:
 app.post("/create-checkout-session", async (req, res) => {
   try {
     const {
@@ -456,37 +462,51 @@ app.post("/create-checkout-session", async (req, res) => {
       email,
       payment_method,
       emailOptIn,
-      delivery_method,       // "pickup" | "shipping"
-      shipping_method        // e.g. "flat" | "usps_first_class" | ...
+      delivery_method,
+      shipping_method,
+      discount_code = ""
     } = req.body;
 
     if (!cart || !email || !payment_method) {
       return res.status(400).json({ error: "Missing required fields for Stripe checkout." });
     }
 
-    // Subtotal from items (server = source of truth)
-    const subtotal = cart.reduce((sum, item) => {
-      const unit = parseFloat(item.price);
-      return sum + unit * (item.quantity || 1);
-    }, 0);
-
-    // 3% convenience fee (waived for Venmo only; this is Stripe checkout)
-    const convenienceFee = parseFloat((subtotal * 0.03).toFixed(2));
-
-    // Shipping fee (server-side)
     const methodKey = (shipping_method || (delivery_method === "shipping" ? "flat" : "pickup")).toLowerCase();
     const shippingFee =
       delivery_method === "shipping"
         ? (Number.isFinite(SHIPPING_FEES[methodKey]) ? SHIPPING_FEES[methodKey] : 0)
         : 0;
 
-    // Build Stripe line items
+    // ✅ apply discount server-side (items only)
+    const rate = DISCOUNT_CODES[(discount_code || "").toUpperCase()] || 0;
+    const discountedItems = cart.map(item => {
+      const base = parseFloat(item.price);
+      const discounted = Math.max(base * (1 - rate), 0);
+      return { ...item, discountedPrice: discounted };
+    });
+
+    const discountedSubtotal = discountedItems.reduce(
+      (sum, i) => sum + i.discountedPrice * (i.quantity || 1),
+      0
+    );
+
+    // 3% fee for Stripe (on discounted subtotal)
+    const convenienceFee = parseFloat((discountedSubtotal * 0.03).toFixed(2));
+
+    // Optional guard: Stripe Checkout cannot process a $0 total
+    const grandTotal = discountedSubtotal + shippingFee + convenienceFee;
+    if (Math.round(grandTotal * 100) <= 0) {
+      return res.status(400).json({
+        error: "Order total is $0 after discount. Use Venmo or place a manual/free order."
+      });
+    }
+
     const lineItems = [
-      ...cart.map(item => ({
+      ...discountedItems.map(item => ({
         price_data: {
           currency: "usd",
           product_data: { name: item.name },
-          unit_amount: Math.round(parseFloat(item.price) * 100),
+          unit_amount: Math.round(item.discountedPrice * 100),
         },
         quantity: item.quantity || 1,
       })),
@@ -516,13 +536,16 @@ app.post("/create-checkout-session", async (req, res) => {
       cancel_url: "https://www.matrisapothecary.com/cancel.html",
       customer_email: email,
       metadata: {
-        cart: JSON.stringify(cart),
+        cart: JSON.stringify(discountedItems.map(i => ({
+          name: i.name, price: i.discountedPrice, quantity: i.quantity
+        }))),
         payment_method,
         delivery_method,
         shipping_method: methodKey,
         shipping_fee: shippingFee.toFixed(2),
         emailOptIn: emailOptIn?.toString() || "false",
-        totalAmount: (subtotal + convenienceFee + shippingFee).toFixed(2)
+        discount_code: (discount_code || "").toUpperCase(),
+        totalAmount: (discountedSubtotal + convenienceFee + shippingFee).toFixed(2)
       }
     });
 
@@ -534,55 +557,6 @@ app.post("/create-checkout-session", async (req, res) => {
 });
 
 
-
-app.get("/pickup-slot-status", async (req, res) => {
-  try {
-    // 1) Read published CSV
-    const response = await fetch(sheetUrlNoCache());
-    if (!response.ok) throw new Error("Failed to fetch Google Sheets");
-    const csvText = await response.text();
-    const rows = parseCsv(csvText).slice(1); // Skip header
-    const allDays = rows.map(cols => {
-      const [date, available] = cols;
-      return { date: normalize(date), available: parseInt(available, 10) || 0 };
-    });
-
-    // 2) Sum non-Flour quantities grouped by shipping_date from JSON cart
-    const query = await pool.query(`
-      SELECT shipping_date,
-             SUM( (elem->>'quantity')::int ) FILTER (WHERE (elem->>'name') !~* 'Flour' ) AS items_ordered
-      FROM (
-        SELECT shipping_date, jsonb_array_elements(cart::jsonb) AS elem
-        FROM orders
-        WHERE shipping_date IS NOT NULL
-      ) t
-      GROUP BY shipping_date;
-    `);
-
-    const orderedMap = {};
-    query.rows.forEach(row => {
-      if (row.shipping_date) {
-        orderedMap[normalize(row.shipping_date)] = parseInt(row.items_ordered, 10) || 0;
-      }
-    });
-
-    // 3) Merge
-    const result = allDays.map(day => {
-      const ordered = orderedMap[day.date] || 0;
-      return {
-        date: day.date,
-        available: day.available,
-        ordered,
-        remaining: day.available - ordered
-      };
-    });
-
-    res.json(result);
-  } catch (err) {
-    console.error("❌ Error building pickup-slot-status:", err);
-    res.status(500).json({ error: "Failed to get pickup slot status" });
-  }
-});
 
 
 // ✅ Export Orders as CSV for Admin Download

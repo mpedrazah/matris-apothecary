@@ -256,17 +256,13 @@ async function checkout() {
   const email = document.getElementById("email").value;
   const emailOptIn = document.getElementById("email-opt-in")?.checked || false;
   const deliveryMethod = document.getElementById("delivery-method").value;
+  const discountCode = (document.getElementById("discount-code")?.value || "")
+    .trim().toUpperCase();
 
-  if (!email) {
-    alert("Please enter your email.");
-    return;
-  }
+  if (!email) { alert("Please enter your email."); return; }
 
   const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-  if (cart.length === 0) {
-    alert("Your cart is empty.");
-    return;
-  }
+  if (cart.length === 0) { alert("Your cart is empty."); return; }
 
   const shippingInfo = deliveryMethod === "shipping" ? {
     name: document.getElementById("shipping-name").value,
@@ -277,8 +273,7 @@ async function checkout() {
   } : null;
 
   if (deliveryMethod === "shipping" && Object.values(shippingInfo).some(v => !v)) {
-    alert("Please fill out all shipping fields.");
-    return;
+    alert("Please fill out all shipping fields."); return;
   }
 
   const paymentMethod = window.event?.target?.id === "venmo-button" ? "Venmo" : "Card";
@@ -294,18 +289,16 @@ async function checkout() {
       emailOptIn,
       delivery_method: deliveryMethod,
       shipping_method: shippingMethod,
-      shipping_info: shippingInfo
+      shipping_info: shippingInfo,
+      discount_code: discountCode           // ✅ send it
     })
   });
 
   const data = await response.json();
-  if (data.url) {
-    window.location.href = data.url;
-  } else {
-    alert("Checkout error.");
-    console.error(data.error);
-  }
+  if (data.url) window.location.href = data.url;
+  else { alert("Checkout error."); console.error(data.error); }
 }
+
 
 
 // ✅ Make function globally accessible
