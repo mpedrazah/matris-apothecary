@@ -1028,3 +1028,32 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--primary-color);
   font-weight: 700;
 }
+
+/* Callout / notice box */
+.notice-box {
+  --callout-accent: var(--accent-color, #8a5b3d);
+  background: #fff8ec;
+  border: 1px solid #f2d3a2;
+  border-left: 6px solid var(--callout-accent);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+  display: flex;
+  gap: .75rem;
+  align-items: flex-start;
+  max-width: 900px;
+  margin: 1rem auto; /* centers it on the page */
+}
+
+.notice-box p {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: #4a3b30;
+}
+
+.notice-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  margin-top: .1rem;
+}
