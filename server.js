@@ -183,19 +183,27 @@ async function setupDatabase(retries = 5, delay = 5000) {
       console.log("✅ Database connected successfully!");
 
       await client.query(`
-        CREATE TABLE IF NOT EXISTS orders (
-          id SERIAL PRIMARY KEY,
-          timestamp TIMESTAMP DEFAULT NOW(),
-          name TEXT,
-          email TEXT,
-          pickup_day TEXT,
-          items TEXT,
-          total_price NUMERIC(10,2),
-          payment_method TEXT,
-          email_opt_in BOOLEAN DEFAULT FALSE,
-          order_date TIMESTAMP DEFAULT NOW()
-        )
-      `);
+  CREATE TABLE IF NOT EXISTS orders (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT,
+    delivery_method TEXT,                 -- 'pickup' | 'shipping'
+    address TEXT,
+    city TEXT,
+    state TEXT,
+    zip TEXT,
+    shipping_date TEXT,                   -- keep NULL for pickup; you coordinate later
+    cart TEXT,                            -- JSON string
+    payment_method TEXT,                  -- 'Card' | 'Venmo'
+    total NUMERIC(10,2),
+    created_at TIMESTAMP DEFAULT NOW(),
+    shipping_method TEXT,                 -- 'flat' | 'usps_first_class' | ...
+    shipping_fee NUMERIC(10,2) DEFAULT 0,
+    email_opt_in BOOLEAN DEFAULT FALSE
+  );
+`);
+
 
       // Ensure new columns exist (safe to run repeatedly)
       await client.query(`
@@ -282,31 +290,33 @@ app.post("/save-order", async (req, res) => {
     const shippingDateValue = null; // We coordinate pickup later via email
 
     const result = await pool.query(
-      `INSERT INTO orders
-        (name, email, phone, delivery_method, address, city, state, zip,
-         shipping_date, cart, payment_method, total, created_at, shipping_method, shipping_fee, email_opt_in)
-       VALUES
-        ($1,   $2,    $3,    $4,              $5,     $6,   $7,    $8,
-         $9,            $10, $11,            $12,   NOW(),   $13,            $14,          $15)
-       RETURNING *;`,
-      [
-        name || null,
-        email,
-        null, // phone (not collected yet)
-        delivery_method,
-        addr.address || null,
-        addr.city || null,
-        addr.state || null,
-        addr.zip || null,
-        shippingDateValue,                 // always null for now
-        JSON.stringify(cart),
-        payment_method,
-        final_total,
-        methodKey,
-        shipping_fee,
-        emailOptInValue
-      ]
-    );
+  `INSERT INTO orders
+     (name, email, phone, delivery_method, address, city, state, zip,
+      shipping_date, cart, payment_method, total, created_at,
+      shipping_method, shipping_fee, email_opt_in)
+   VALUES
+     ($1,   $2,    $3,    $4,              $5,     $6,   $7,    $8,
+      $9,            $10, $11,            $12,   NOW(),
+      $13,            $14,          $15)
+   RETURNING *;`,
+  [
+    name || email.split("@")[0],          // ensure NOT NULL
+    email,
+    null,                                 // phone (add if you collect it)
+    delivery_method,
+    addr.address || null,
+    addr.city || null,
+    addr.state || null,
+    addr.zip || null,
+    shippingDateValue,                    // null for pickup
+    JSON.stringify(cart),
+    payment_method,
+    final_total,
+    methodKey,
+    shipping_fee,
+    emailOptInValue
+  ]
+);
 
     // Optional: confirmation email
     if (emailOptInValue) {
@@ -331,10 +341,14 @@ app.post("/save-order", async (req, res) => {
 });
 
 
+function safelyParse(json) {
+  try { return JSON.parse(json); } catch { return null; }
+}
+
 async function saveOrderToDatabaseFromWebhook(session) {
   const md = session.metadata || {};
-  const cd = session.customer_details || {};               // Stripe checkout provides this
-  const sd = session.shipping_details || {};               // contains { name, phone, address? }
+  const cd = session.customer_details || {};
+  const sd = session.shipping_details || {};
   const mdShip = md.shipping_info ? safelyParse(md.shipping_info) : null;
 
   const email = session.customer_email || cd.email || md.email || null;
@@ -346,14 +360,12 @@ async function saveOrderToDatabaseFromWebhook(session) {
     ? session.amount_total / 100
     : parseFloat(md.totalAmount || "0") || 0;
 
-  // Prefer real names from Stripe; fall back to metadata; finally to email localpart
   const name =
     sd.name ||
     cd.name ||
     (mdShip && mdShip.name) ||
     (email ? email.split("@")[0] : "Customer");
 
-  // Address fields (best effort)
   const addrObj = sd.address || cd.address || (mdShip ? {
     line1: mdShip.address,
     city: mdShip.city,
@@ -367,12 +379,9 @@ async function saveOrderToDatabaseFromWebhook(session) {
   const zip     = addrObj?.postal_code || null;
 
   const cart = safelyParse(md.cart) || [];
-
-  // If you're coordinating pickup later, leave shipping_date NULL
-  const shipping_date = null;
+  const shipping_date = null; // you’ll coordinate pickup later
   const phone = sd.phone || cd.phone || null;
 
-  // Insert using the full column list your /save-order endpoint uses
   const result = await pool.query(
     `INSERT INTO orders
        (name, email, phone, delivery_method, address, city, state, zip,
@@ -392,6 +401,7 @@ async function saveOrderToDatabaseFromWebhook(session) {
 
   return result.rows[0];
 }
+
 
 // tiny helper
 function safelyParse(json) {
@@ -611,17 +621,9 @@ app.get("/export-orders", async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT
-        id,
-        name,
-        email,
-        pickup_day,
-        delivery_method,
-        shipping_method,
-        shipping_fee,
-        items,
-        total_price,
-        payment_method,
-        order_date
+        id, name, email, phone, delivery_method, address, city, state, zip,
+        shipping_date, cart, payment_method, total, created_at,
+        shipping_method, shipping_fee, email_opt_in
       FROM orders
       ORDER BY id DESC
     `);
@@ -633,44 +635,41 @@ app.get("/export-orders", async (req, res) => {
     const csvWriter = createCsvWriter({
       path: "orders.csv",
       header: [
-        { id: "id",               title: "Order ID" },
-        { id: "name",             title: "Name" },
-        { id: "email",            title: "Email" },
-        { id: "pickup_day",       title: "Pickup Day" },
-        { id: "delivery_method",  title: "Delivery Method" },   // pickup | shipping
-        { id: "shipping_method",  title: "Shipping Method" },   // flat | usps_first_class | ...
-        { id: "shipping_fee",     title: "Shipping Fee" },
-        { id: "items",            title: "Items" },
-        { id: "total_price",      title: "Total Price" },       // final total (includes shipping)
-        { id: "payment_method",   title: "Payment Method" },
-        { id: "order_date",       title: "Order Date" },
+        { id: "id",              title: "Order ID" },
+        { id: "name",            title: "Name" },
+        { id: "email",           title: "Email" },
+        { id: "phone",           title: "Phone" },
+        { id: "delivery_method", title: "Delivery Method" },
+        { id: "address",         title: "Address" },
+        { id: "city",            title: "City" },
+        { id: "state",           title: "State" },
+        { id: "zip",             title: "Zip" },
+        { id: "shipping_date",   title: "Shipping/Pickup Date" },
+        { id: "cart",            title: "Cart (JSON)" },
+        { id: "payment_method",  title: "Payment Method" },
+        { id: "total",           title: "Total" },
+        { id: "created_at",      title: "Created At" },
+        { id: "shipping_method", title: "Shipping Method" },
+        { id: "shipping_fee",    title: "Shipping Fee" },
+        { id: "email_opt_in",    title: "Email Opt-In" }
       ],
     });
 
-    const formattedRows = result.rows.map(row => ({
-      id: row.id,
-      name: row.name || "",
-      email: row.email || "",
-      pickup_day: row.pickup_day || "",
-      delivery_method: row.delivery_method || "",
-      shipping_method: row.shipping_method || "",
-      shipping_fee: Number(row.shipping_fee || 0).toFixed(2),
-      items: row.items || "",
-      total_price: Number(row.total_price || 0).toFixed(2),
-      payment_method: row.payment_method || "",
-      order_date: row.order_date ? row.order_date.toISOString() : ""
+    const formattedRows = result.rows.map(r => ({
+      ...r,
+      total: Number(r.total || 0).toFixed(2),
+      shipping_fee: Number(r.shipping_fee || 0).toFixed(2),
+      created_at: r.created_at ? new Date(r.created_at).toISOString() : "",
+      cart: typeof r.cart === "string" ? r.cart : JSON.stringify(r.cart || [])
     }));
 
     await csvWriter.writeRecords(formattedRows);
-    console.log("✅ Orders exported successfully!");
-
     res.download("orders.csv");
   } catch (error) {
     console.error("❌ Error exporting orders:", error);
     res.status(500).json({ error: "Failed to export orders." });
   }
 });
-
 
 
 
