@@ -244,63 +244,36 @@ app.post("/save-order", async (req, res) => {
     const {
       name,
       email,
-      pickup_day,          // for pickup; stored in shipping_date
-      total_price,         // subtotal from client (we'll add shipping_fee)
+      total_price,         // subtotal from client; server adds shipping_fee
       payment_method,
       email_opt_in,
       cart,                // JSON array
       delivery_method,     // "pickup" | "shipping"
       shipping_method,     // e.g., "flat" | "usps_first_class" | "usps_priority"
-      shipping_info        // { name, address, city, state, zip }
+      shipping_info        // { name, address, city, state, zip } when shipping
     } = req.body;
 
     // Basic validation
     if (!email || !total_price || !payment_method || !cart || !delivery_method) {
       return res.status(400).json({ success: false, error: "Missing required fields." });
     }
-    if (delivery_method === "pickup" && !pickup_day) {
-      return res.status(400).json({ success: false, error: "pickup_day is required for local pickup." });
-    }
-
-    // ---- Pickup availability check ----
-    if (delivery_method === "pickup") {
-      const pickupLimit = await getPickupLimitFromGoogleSheets(pickup_day);
-      if (!pickupLimit) {
-        return res.status(400).json({ success: false, error: `Pickup day '${pickup_day}' not found in availability.` });
-      }
-
-      const itemCountResult = await pool.query(`
-        SELECT COALESCE(
-          SUM( (elem->>'quantity')::int ) FILTER (WHERE (elem->>'name') !~* 'Flour' ), 0
-        ) AS total_items
-        FROM (
-          SELECT jsonb_array_elements(cart::jsonb) AS elem
-          FROM orders
-          WHERE shipping_date = $1
-        ) t;
-      `, [pickup_day]);
-
-      const itemsAlreadyOrdered = parseInt(itemCountResult.rows[0].total_items || 0, 10);
-      const cartItemTotal = cart.reduce((sum, item) => (item.isFlour ? sum : sum + (item.quantity || 1)), 0);
-      const remainingSlots = pickupLimit - itemsAlreadyOrdered;
-      if (cartItemTotal > remainingSlots) {
-        return res.status(400).json({
-          success: false,
-          error: `Only ${remainingSlots} pickup slots remain for ${pickup_day}. You have ${cartItemTotal} items in your cart.`
-        });
-      }
-    }
 
     // ---- Server-side shipping fee + final total ----
+    const SHIPPING_FEES = {
+      pickup: 0.00,
+      flat: 7.00,
+      usps_first_class: 5.00,
+      usps_priority: 9.00
+    };
     const methodKey = (shipping_method || (delivery_method === "shipping" ? "flat" : "pickup")).toLowerCase();
     const shipping_fee = Number.isFinite(SHIPPING_FEES[methodKey]) ? SHIPPING_FEES[methodKey] : 0;
     const subtotal = parseFloat(total_price) || 0;
     const final_total = parseFloat((subtotal + shipping_fee).toFixed(2));
     const emailOptInValue = email_opt_in === true;
 
-    // ---- Insert into your existing columns ----
+    // ---- Insert into DB ----
     const addr = shipping_info || {};
-    const shippingDateValue = delivery_method === "pickup" ? pickup_day : null;
+    const shippingDateValue = null; // We coordinate pickup later via email
 
     const result = await pool.query(
       `INSERT INTO orders
@@ -313,13 +286,13 @@ app.post("/save-order", async (req, res) => {
       [
         name || null,
         email,
-        null, // phone (add later if you collect it)
+        null, // phone (not collected yet)
         delivery_method,
         addr.address || null,
         addr.city || null,
         addr.state || null,
         addr.zip || null,
-        shippingDateValue,
+        shippingDateValue,                 // always null for now
         JSON.stringify(cart),
         payment_method,
         final_total,
@@ -329,20 +302,20 @@ app.post("/save-order", async (req, res) => {
       ]
     );
 
-    // Optional: confirmation email (build readable items from cart)
+    // Optional: confirmation email
     if (emailOptInValue) {
       const itemsText = cart.map(i => `${i.name} (x${i.quantity || 1})`).join(", ");
       await sendOrderConfirmationEmail(
-        email,                // email
-        itemsText,            // items
-        final_total,          // totalAmount  ✅ was wrong before
-        payment_method,       // paymentMethod
-        delivery_method,      // deliveryMethod
-        methodKey,            // shippingMethod
-        shipping_fee,         // shippingFee
-        shipping_info || null // shippingInfo
+        email,
+        itemsText,
+        final_total,
+        payment_method,
+        delivery_method,
+        methodKey,
+        shipping_fee,
+        shipping_info || null
       );
-          }
+    }
 
     res.json({ success: true, order: result.rows[0] });
   } catch (error) {
@@ -350,6 +323,7 @@ app.post("/save-order", async (req, res) => {
     res.status(500).json({ success: false, error: error.message || "Failed to save order." });
   }
 });
+
 
 async function saveOrderToDatabaseFromWebhook(session) {
   const md = session.metadata || {};
@@ -428,9 +402,9 @@ async function sendOrderConfirmationEmail(
       `;
     }
     return `
-      <p><strong>Fulfillment:</strong> Local Pickup</p>
-      <p>You can pickup your order from the porch at Address</p>
-    `;
+    <p><strong>Fulfillment:</strong> Local Pickup</p>
+    <p>We’ll email you shortly to coordinate a pickup date/time once your order is ready.</p>
+  `;
   })();
 
   const header = `<p>Thank you for your order!</p>`;

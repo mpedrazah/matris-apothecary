@@ -1,0 +1,8 @@
+node_modules/
+.env
+.env.*
+orders.csv
+opted_in_emails.csv
+*.log
+dist/
+build/

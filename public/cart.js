@@ -24,19 +24,20 @@ function recomputeTotals() {
   const shipEl = document.getElementById("shipping-fee");
   const totalEl = document.getElementById("cart-total");
   const payFeeEl = document.getElementById("payment-fee");
-  if (!feeEl || !shipEl || !totalEl) return; // not on checkout page
+  if (!feeEl || !shipEl || !totalEl) return;
 
-  // subtotal with any discount applied
-  const subtotal = cart.reduce((sum, item) => {
-    const base = item.price;
+  // always read the latest cart from storage in case it changed elsewhere
+  const currentCart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  const subtotal = currentCart.reduce((sum, item) => {
+    const base = Number(item.price) || 0;
     const discounted = discountAmount > 0 ? base * (1 - discountAmount) : base;
-    return sum + discounted * item.quantity;
+    return sum + discounted * (item.quantity || 1);
   }, 0);
 
   const deliveryMethod = getDeliveryMethod();
   const shippingFee = deliveryMethod === "shipping" ? SHIPPING_RATES.shipping : 0;
 
-  // your UI rule: Stripe adds 3%, Venmo waives it
   let convenienceFee = parseFloat((subtotal * 0.03).toFixed(2));
   let venmoDiscount = 0;
   if (paymentMethod === "Venmo") {
@@ -48,11 +49,14 @@ function recomputeTotals() {
 
   shipEl.textContent = `Shipping Fee: $${shippingFee.toFixed(2)}`;
   feeEl.textContent = `Online Convenience Fee: $${convenienceFee.toFixed(2)}`;
-  payFeeEl.textContent = paymentMethod === "Venmo"
-    ? `Venmo Discount: -$${venmoDiscount.toFixed(2)}`
-    : "";
+  if (payFeeEl) {
+    payFeeEl.textContent = paymentMethod === "Venmo"
+      ? `Venmo Discount: -$${venmoDiscount.toFixed(2)}`
+      : "";
+  }
   totalEl.textContent = `Total: $${total.toFixed(2)}`;
 }
+
 
 
 // ✅ Fetch Pickup Slots from Google Sheets
@@ -102,8 +106,7 @@ function showToast(message) {
 
 // Function to add item to cart
 function addToCart(name, price, image) {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
+  // use the global `cart` and keep it in sync with localStorage
   const existingItem = cart.find(item => item.name === name);
   if (existingItem) {
     existingItem.quantity += 1;
@@ -113,8 +116,10 @@ function addToCart(name, price, image) {
 
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartCount();
+  recomputeTotals();
   showToast(`${name} added to cart.`);
 }
+
 
 
 // ✅ Ensure it's globally accessible
@@ -138,7 +143,7 @@ function applyDiscount() {
   renderCartItems(); // Update total price after discount
 }
 
-let venmoPaymentAttempted = false; // ✅ Prevent duplicate submissions
+let venmoPaymentAttempted = false; // Prevent duplicate submissions
 
 async function payWithVenmo() {
   if (venmoPaymentAttempted) return;
@@ -156,12 +161,11 @@ async function payWithVenmo() {
   const discountCode = document.getElementById("discount-code")?.value.trim().toUpperCase();
 
   if (!email) {
-  alert("Please enter your email.");
-  venmoPaymentAttempted = false;
-  return;
-}
+    alert("Please enter your email.");
+    venmoPaymentAttempted = false;
+    return;
+  }
 
-  // 📦 Get shipping info if selected
   const shippingInfo = deliveryMethod === "shipping" ? {
     name: document.getElementById("shipping-name").value,
     address: document.getElementById("shipping-address-line").value,
@@ -176,7 +180,7 @@ async function payWithVenmo() {
     return;
   }
 
-  // 💵 Apply discount to cart
+  // Apply discount to cart
   let subtotal = 0;
   const updatedCart = cart.map(item => {
     let price = item.price;
@@ -187,33 +191,29 @@ async function payWithVenmo() {
     return { name: item.name, price, quantity: item.quantity };
   });
 
-  // 🧾 Calculate final price
   const shippingFee = deliveryMethod === "shipping" ? 7.00 : 0;
   let venmoAmount = subtotal + shippingFee;
   venmoAmount = Math.max(venmoAmount, 0).toFixed(2);
 
-  // 📝 Summary for email and Venmo note
   const orderSummary = updatedCart.map(item => `${item.name} (x${item.quantity})`).join(", ");
   const noteLines = [
-  "Matris Apothecary Order",
-  deliveryMethod === "shipping" ? "Shipping Order" : "Local Pickup",
-  orderSummary
-];
+    "Matris Apothecary Order",
+    deliveryMethod === "shipping" ? "Shipping Order" : "Local Pickup (we’ll email to coordinate)",
+    orderSummary
+  ];
   const note = encodeURIComponent(noteLines.join("\n"));
 
-  // 📨 Order object
   const orderData = {
-  name: email.split("@")[0],
-  email,
-  items: orderSummary,
-  total_price: venmoAmount,
-  payment_method: "Venmo",
-  email_opt_in: emailOptIn,
-  cart: updatedCart,
-  delivery_method: deliveryMethod,
-  shipping_info: shippingInfo
-};
-
+    name: email.split("@")[0],
+    email,
+    items: orderSummary,
+    total_price: venmoAmount,
+    payment_method: "Venmo",
+    email_opt_in: emailOptIn,
+    cart: updatedCart,
+    delivery_method: deliveryMethod,
+    shipping_info: shippingInfo
+  };
 
   try {
     const response = await fetch(`${API_BASE}/save-order`, {
@@ -225,7 +225,6 @@ async function payWithVenmo() {
     const result = await response.json();
     if (!result.success) throw new Error("Failed to save order.");
 
-    // 🧭 Redirect to Venmo
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     const venmoLink = isMobile
       ? `venmo://paycharge?txn=pay&recipients=HarrisonHousehold&amount=${venmoAmount}&note=${note}`
@@ -233,35 +232,22 @@ async function payWithVenmo() {
 
     if (isMobile) {
       window.location.href = venmoLink;
-      setTimeout(() => {
-        window.location.href = "success.html";
-      }, 3000);
+      setTimeout(() => { window.location.href = "success.html"; }, 3000);
     } else {
       const venmoWindow = window.open(venmoLink, "_blank");
       if (!venmoWindow) alert("Venmo did not open. Please complete payment manually.");
-      setTimeout(() => {
-        window.location.href = "success.html";
-      }, 5000);
+      setTimeout(() => { window.location.href = "success.html"; }, 5000);
     }
 
     localStorage.removeItem("cart");
     updateCartCount();
-
   } catch (error) {
     console.error("❌ Venmo order submission failed:", error);
     alert("There was an issue processing your Venmo payment.");
   }
 
-  setTimeout(() => {
-    venmoPaymentAttempted = false;
-  }, 30000);
+  setTimeout(() => { venmoPaymentAttempted = false; }, 30000);
 }
-
-// ✅ Make it globally available
-window.payWithVenmo = payWithVenmo;
-
-
-
 
 
 // ✅ Make function globally accessible
@@ -282,7 +268,6 @@ async function checkout() {
     return;
   }
 
-  // Build shipping info if needed
   const shippingInfo = deliveryMethod === "shipping" ? {
     name: document.getElementById("shipping-name").value,
     address: document.getElementById("shipping-address-line").value,
@@ -296,13 +281,10 @@ async function checkout() {
     return;
   }
 
-  // Which button started checkout?
   const paymentMethod = window.event?.target?.id === "venmo-button" ? "Venmo" : "Card";
-
-  // Pick a shipping method key (matches server’s SHIPPING_FEES keys)
   const shippingMethod = deliveryMethod === "shipping" ? "flat" : "pickup";
 
-  const response = await fetch("/create-checkout-session", {
+  const response = await fetch(`${API_BASE}/create-checkout-session`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -318,7 +300,7 @@ async function checkout() {
 
   const data = await response.json();
   if (data.url) {
-    window.location.href = data.url; // Stripe redirect
+    window.location.href = data.url;
   } else {
     alert("Checkout error.");
     console.error(data.error);
@@ -326,17 +308,8 @@ async function checkout() {
 }
 
 
-
-
-
 // ✅ Make function globally accessible
 window.checkout = checkout;
-
-
-
-// ✅ Make function globally accessible
-window.checkout = checkout;
-
 
 
 let paymentMethod = "Stripe"; // Default to Stripe
@@ -415,26 +388,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
   });
 });
-
-
-function updateCartCount() {
-  console.log("🔄 Running updateCartCount()...");
-
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-  // Show total number of items, including flour
-  const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-  const cartCountElement = document.getElementById("cart-count");
-  if (cartCountElement) {
-    cartCountElement.textContent = totalCount;
-    console.log("✅ Cart count updated:", totalCount);
-  } else {
-    console.warn("❌ `#cart-count` element not found. Retrying in 5s...");
-    setTimeout(updateCartCount, 5000);
-  }
-}
-
 
 
 
