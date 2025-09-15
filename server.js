@@ -333,25 +333,71 @@ app.post("/save-order", async (req, res) => {
 
 async function saveOrderToDatabaseFromWebhook(session) {
   const md = session.metadata || {};
-  const email = session.customer_email || md.email;
-  const cart = JSON.parse(md.cart || "[]");
+  const cd = session.customer_details || {};               // Stripe checkout provides this
+  const sd = session.shipping_details || {};               // contains { name, phone, address? }
+  const mdShip = md.shipping_info ? safelyParse(md.shipping_info) : null;
+
+  const email = session.customer_email || cd.email || md.email || null;
   const delivery_method = md.delivery_method || "pickup";
-  const total = parseFloat(md.totalAmount || "0") || 0;
-  const shipping_method = md.shipping_method || null;
+  const shipping_method = md.shipping_method || (delivery_method === "shipping" ? "flat" : "pickup");
   const shipping_fee = parseFloat(md.shipping_fee || "0") || 0;
   const emailOptIn = (md.emailOptIn === "true");
+  const total = typeof session.amount_total === "number"
+    ? session.amount_total / 100
+    : parseFloat(md.totalAmount || "0") || 0;
 
-  // NOTE: Requires columns: cart (json/text), shipping_method, shipping_fee
+  // Prefer real names from Stripe; fall back to metadata; finally to email localpart
+  const name =
+    sd.name ||
+    cd.name ||
+    (mdShip && mdShip.name) ||
+    (email ? email.split("@")[0] : "Customer");
+
+  // Address fields (best effort)
+  const addrObj = sd.address || cd.address || (mdShip ? {
+    line1: mdShip.address,
+    city: mdShip.city,
+    state: mdShip.state,
+    postal_code: mdShip.zip
+  } : null);
+
+  const address = addrObj?.line1 || null;
+  const city    = addrObj?.city || null;
+  const state   = addrObj?.state || null;
+  const zip     = addrObj?.postal_code || null;
+
+  const cart = safelyParse(md.cart) || [];
+
+  // If you're coordinating pickup later, leave shipping_date NULL
+  const shipping_date = null;
+  const phone = sd.phone || cd.phone || null;
+
+  // Insert using the full column list your /save-order endpoint uses
   const result = await pool.query(
     `INSERT INTO orders
-      (email, delivery_method, cart, payment_method, total, created_at, email_opt_in, shipping_method, shipping_fee)
+       (name, email, phone, delivery_method, address, city, state, zip,
+        shipping_date, cart, payment_method, total, created_at,
+        shipping_method, shipping_fee, email_opt_in)
      VALUES
-      ($1,    $2,              $3,   $4,            $5,    NOW(),    $6,           $7,              $8)
+       ($1,   $2,    $3,    $4,              $5,     $6,   $7,    $8,
+        $9,            $10, $11,            $12,   NOW(),
+        $13,            $14,          $15)
      RETURNING *;`,
-    [email, delivery_method, JSON.stringify(cart), "card", total, emailOptIn, shipping_method, shipping_fee]
+    [
+      name, email, phone, delivery_method, address, city, state, zip,
+      shipping_date, JSON.stringify(cart), "card", total,
+      shipping_method, shipping_fee, emailOptIn
+    ]
   );
+
   return result.rows[0];
 }
+
+// tiny helper
+function safelyParse(json) {
+  try { return JSON.parse(json); } catch { return null; }
+}
+
 
 
 
@@ -536,16 +582,16 @@ app.post("/create-checkout-session", async (req, res) => {
       cancel_url: "https://www.matrisapothecary.com/cancel.html",
       customer_email: email,
       metadata: {
-        cart: JSON.stringify(discountedItems.map(i => ({
-          name: i.name, price: i.discountedPrice, quantity: i.quantity
-        }))),
+        cart: JSON.stringify(cart),
         payment_method,
         delivery_method,
         shipping_method: methodKey,
         shipping_fee: shippingFee.toFixed(2),
         emailOptIn: emailOptIn?.toString() || "false",
         discount_code: (discount_code || "").toUpperCase(),
-        totalAmount: (discountedSubtotal + convenienceFee + shippingFee).toFixed(2)
+        totalAmount: (subtotal + convenienceFee + shippingFee).toFixed(2),
+        // ✅ add this so webhook can hydrate name/address if needed
+        shipping_info: shipping_info ? JSON.stringify(shipping_info) : ""
       }
     });
 
