@@ -510,7 +510,6 @@ async function sendOrderConfirmationEmail(
 
 
 // ✅ Stripe Checkout API
-// In /create-checkout-session:
 app.post("/create-checkout-session", async (req, res) => {
   try {
     const {
@@ -520,6 +519,7 @@ app.post("/create-checkout-session", async (req, res) => {
       emailOptIn,
       delivery_method,
       shipping_method,
+      shipping_info,          // ✅ include this
       discount_code = ""
     } = req.body;
 
@@ -536,20 +536,20 @@ app.post("/create-checkout-session", async (req, res) => {
     // ✅ apply discount server-side (items only)
     const rate = DISCOUNT_CODES[(discount_code || "").toUpperCase()] || 0;
     const discountedItems = cart.map(item => {
-      const base = parseFloat(item.price);
+      const base = Number(item.price) || 0;
       const discounted = Math.max(base * (1 - rate), 0);
       return { ...item, discountedPrice: discounted };
     });
 
     const discountedSubtotal = discountedItems.reduce(
-      (sum, i) => sum + i.discountedPrice * (i.quantity || 1),
+      (sum, i) => sum + (i.discountedPrice * (i.quantity || 1)),
       0
     );
 
-    // 3% fee for Stripe (on discounted subtotal)
-    const convenienceFee = parseFloat((discountedSubtotal * 0.03).toFixed(2));
+    // 3% Stripe fee on the discounted subtotal
+    const convenienceFee = Number((discountedSubtotal * 0.03).toFixed(2));
 
-    // Optional guard: Stripe Checkout cannot process a $0 total
+    // Guard: Stripe Checkout can’t process a $0 total
     const grandTotal = discountedSubtotal + shippingFee + convenienceFee;
     if (Math.round(grandTotal * 100) <= 0) {
       return res.status(400).json({
@@ -592,15 +592,16 @@ app.post("/create-checkout-session", async (req, res) => {
       cancel_url: "https://www.matrisapothecary.com/cancel.html",
       customer_email: email,
       metadata: {
-        cart: JSON.stringify(cart),
+        cart: JSON.stringify(cart),                          // original cart for emails/admin
         payment_method,
         delivery_method,
         shipping_method: methodKey,
         shipping_fee: shippingFee.toFixed(2),
         emailOptIn: emailOptIn?.toString() || "false",
         discount_code: (discount_code || "").toUpperCase(),
-        totalAmount: (subtotal + convenienceFee + shippingFee).toFixed(2),
-        // ✅ add this so webhook can hydrate name/address if needed
+        // ✅ use the DISCOUNTED subtotal here
+        totalAmount: (discountedSubtotal + convenienceFee + shippingFee).toFixed(2),
+        // ✅ now this exists
         shipping_info: shipping_info ? JSON.stringify(shipping_info) : ""
       }
     });
