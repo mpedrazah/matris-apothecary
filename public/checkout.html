@@ -50,15 +50,12 @@
       </div>
 
       <!-- Pickup Day -->
-      <div class="pickup-container" id="pickup-section">
-        <label for="pickup-day">Schedule Pickup:</label>
-        <select id="pickup-day" name="pickup-day">
-          <!-- JS will fill this -->
-        </select>
-        <p style="color: #b00020; font-size: 0.9rem; margin-top: 8px;">
-          Please note: it may take 3-4 weeks to make your order depending on inventory.
-        </p>
-      </div>
+      <div class="lead-time" role="note" aria-live="polite">
+    <span class="icon">⏳</span>
+    <p>
+      <strong>Please note:</strong> it may take <strong>3–4 weeks</strong> to make your order depending on inventory. You will receive an email confirmation with pickup/shipping details. Thank you for your patience!
+    </p>
+  </div>
 
       <!-- Shipping Address -->
       <div id="shipping-address" style="display: none;">
@@ -128,13 +125,11 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const select = document.getElementById("delivery-method");
-    const pickup = document.getElementById("pickup-section");
     const ship   = document.getElementById("shipping-address");
 
     const apply = () => {
       const method = select.value;
-      pickup.style.display = method === "pickup" ? "block" : "none";
-      ship.style.display   = method === "shipping" ? "block" : "none";
+      ship.style.display = method === "shipping" ? "block" : "none";
       if (typeof recomputeTotals === "function") recomputeTotals();
     };
 

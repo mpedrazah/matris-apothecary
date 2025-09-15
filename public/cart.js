@@ -2,8 +2,6 @@
 const API_BASE = "https://matris-apothecary.up.railway.app"; // Update with Render URL
 
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
-let pickupSlots = {};
-let remainingSlotsForSelectedDay = null;
 
 
 let discountAmount = 0; // Stores the applied discount
@@ -58,19 +56,6 @@ function recomputeTotals() {
 
 
 // ✅ Fetch Pickup Slots from Google Sheets
-async function fetchPickupSlotsFromGoogleSheets() {
-  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR9RorEdXv2I0em9QqqrYdnijngwT2XpB7mh8jUQOVfSLpkHrte2P3eb3oXVkMzAzJFtfn-S9jUwhTs/pub?gid=0&single=true&output=csv";
-
-  try {
-    const response = await fetch(sheetURL);
-    if (!response.ok) throw new Error("Failed to fetch Google Sheets data");
-
-    const csvText = await response.text();
-    parsePickupSlotsData(csvText);
-  } catch (error) {
-    console.error("❌ Error fetching pickup slots:", error);
-  }
-}
 
 // ✅ Save Order to Backend CSV
 async function saveOrderToCSV(orderData) {
@@ -91,119 +76,6 @@ async function saveOrderToCSV(orderData) {
     alert("Error saving order. Please try again.");
   }
 }
-
-
-let pickupSlotStatus = {}; // global cache
-
-async function fetchPickupSlotStatus() {
-  function normalizeDateString(dateStr) {
-    // Trim, collapse multiple spaces, and remove accidental trailing commas or whitespace
-    return dateStr.trim().replace(/\s+/g, " ").replace(/,\s*$/, "");
-  }
-
-  try {
-    const response = await fetch(`${API_BASE}/pickup-slot-status`);
-    const data = await response.json();
-
-    pickupSlotStatus = data.reduce((acc, row) => {
-      const cleanDate = normalizeDateString(row.date);
-      acc[cleanDate] = {
-        pickupLimit: row.available,
-        itemsAlreadyOrdered: row.ordered,
-        remaining: row.remaining
-      };
-      return acc;
-    }, {});
-
-    console.log("✅ Loaded pickup slot status:", pickupSlotStatus);
-
-    // ✅ Wait to populate dropdown
-    populatePickupDayDropdown();
-
-    // ✅ Set default pickup_day manually (important!)
-    const pickupDayElement = document.getElementById("pickup-day");
-    if (pickupDayElement && pickupDayElement.value) {
-      const normalized = normalizeDateString(pickupDayElement.value);
-      remainingSlotsForSelectedDay = pickupSlotStatus[normalized]?.remaining || 0;
-    }
-
-  } catch (err) {
-    console.error("❌ Failed to load pickup slot status:", err);
-  }
-}
-
-// Convert CSV into JavaScript Object
-function parsePickupSlotsData(csvText) {
-  const rows = csvText.trim().split("\n").slice(1); // Skip header row
-  pickupSlots = {}; // Reset slots
-
-  rows.forEach(row => {
-    const [date, available, booked] = row.split(","); // Extract columns
-    if (date && available) {
-      pickupSlots[date] = {
-        available: parseInt(available),
-        booked: parseInt(booked) || 0
-      };
-    }
-  });
-
-  console.log("✅ Processed Pickup Slots:", pickupSlots);
-}
-
-
-function populatePickupDayDropdown() {
-  const pickupDayElement = document.getElementById("pickup-day");
-  if (!pickupDayElement) return;
-
-  pickupDayElement.innerHTML = ""; // Clear old options
-
-  let firstAvailable = null;
-
-  Object.keys(pickupSlotStatus).forEach(date => {
-    const { remaining } = pickupSlotStatus[date];
-    const option = document.createElement("option");
-    option.value = date;
-
-        if (remaining <= 0) {
-      option.disabled = true;
-      option.textContent = `${date} (Unavailable)`;
-    } else {
-      option.textContent = date; // ← Clean display
-
-
-      if (!firstAvailable) {
-        firstAvailable = date;
-      }
-    }
-
-    pickupDayElement.appendChild(option);
-  });
-
-  if (firstAvailable) {
-    pickupDayElement.value = firstAvailable;
-    remainingSlotsForSelectedDay = pickupSlotStatus[firstAvailable].remaining;
-
-    console.log("✅ pickupDayElement.value = ", pickupDayElement.value);
-    console.log("✅ remainingSlotsForSelectedDay = ", remainingSlotsForSelectedDay);
-  } else {
-    pickupDayElement.value = "";
-    remainingSlotsForSelectedDay = 0;
-  }
-
-  console.log("📌 Initial pickup day selected:", pickupDayElement.value);
-  console.log("📦 Remaining slots for selected:", remainingSlotsForSelectedDay);
-
-  checkCartAvailability();
-
-  pickupDayElement.addEventListener("change", () => {
-    const selectedDay = pickupDayElement.value;
-    remainingSlotsForSelectedDay = pickupSlotStatus[selectedDay]?.remaining || 0;
-    console.log("🔁 Pickup day changed:", selectedDay);
-    checkCartAvailability();
-  });
-}
-
-
 
 
 // ✅ Toast Notification Function
@@ -280,15 +152,14 @@ async function payWithVenmo() {
 
   const email = document.getElementById("email")?.value.trim();
   const deliveryMethod = document.getElementById("delivery-method")?.value;
-  const pickup_day = document.getElementById("pickup-day")?.value;
   const emailOptIn = document.getElementById("email-opt-in")?.checked || false;
   const discountCode = document.getElementById("discount-code")?.value.trim().toUpperCase();
 
-  if (!email || (deliveryMethod === "pickup" && !pickup_day)) {
-    alert("Please enter your email and select a pickup date.");
-    venmoPaymentAttempted = false;
-    return;
-  }
+  if (!email) {
+  alert("Please enter your email.");
+  venmoPaymentAttempted = false;
+  return;
+}
 
   // 📦 Get shipping info if selected
   const shippingInfo = deliveryMethod === "shipping" ? {
@@ -324,25 +195,25 @@ async function payWithVenmo() {
   // 📝 Summary for email and Venmo note
   const orderSummary = updatedCart.map(item => `${item.name} (x${item.quantity})`).join(", ");
   const noteLines = [
-    "Matris Apothecary Order",
-    deliveryMethod === "shipping" ? "Shipping Order" : `Pickup: ${pickup_day}`,
-    orderSummary
-  ];
+  "Matris Apothecary Order",
+  deliveryMethod === "shipping" ? "Shipping Order" : "Local Pickup",
+  orderSummary
+];
   const note = encodeURIComponent(noteLines.join("\n"));
 
   // 📨 Order object
   const orderData = {
-    name: email.split("@")[0],
-    email,
-    pickup_day,
-    items: orderSummary,
-    total_price: venmoAmount,
-    payment_method: "Venmo",
-    email_opt_in: emailOptIn,
-    cart: updatedCart,
-    delivery_method: deliveryMethod,
-    shipping_info: shippingInfo
-  };
+  name: email.split("@")[0],
+  email,
+  items: orderSummary,
+  total_price: venmoAmount,
+  payment_method: "Venmo",
+  email_opt_in: emailOptIn,
+  cart: updatedCart,
+  delivery_method: deliveryMethod,
+  shipping_info: shippingInfo
+};
+
 
   try {
     const response = await fetch(`${API_BASE}/save-order`, {
@@ -399,14 +270,9 @@ async function checkout() {
   const email = document.getElementById("email").value;
   const emailOptIn = document.getElementById("email-opt-in")?.checked || false;
   const deliveryMethod = document.getElementById("delivery-method").value;
-  const pickupDay = document.getElementById("pickup-day")?.value || null;
 
   if (!email) {
     alert("Please enter your email.");
-    return;
-  }
-  if (deliveryMethod === "pickup" && !pickupDay) {
-    alert("Please select a pickup day.");
     return;
   }
 
@@ -442,23 +308,23 @@ async function checkout() {
     body: JSON.stringify({
       cart,
       email,
-      pickup_day: pickupDay,
       payment_method: paymentMethod,
       emailOptIn,
       delivery_method: deliveryMethod,
-      shipping_method: shippingMethod,  // 👈 send this
+      shipping_method: shippingMethod,
       shipping_info: shippingInfo
     })
   });
 
   const data = await response.json();
   if (data.url) {
-    window.location.href = data.url;
+    window.location.href = data.url; // Stripe redirect
   } else {
     alert("Checkout error.");
     console.error(data.error);
   }
 }
+
 
 
 
@@ -486,7 +352,6 @@ function setPaymentMethod(method) {
 function renderCartItems() {
   const cartContainer = document.getElementById("cart-items");
   const totalContainer = document.getElementById("cart-total");
-  const feeContainer = document.getElementById("convenience-fee");
   if (!cartContainer || !totalContainer) return;
 
   cartContainer.innerHTML = "";
@@ -518,10 +383,9 @@ function renderCartItems() {
     `;
   });
 
-  // 👉 central totals (handles shipping + fees)
-  recomputeTotals();
-  checkCartAvailability();
+  recomputeTotals(); // ✅ keep totals in sync
 }
+
 
 
 
@@ -580,81 +444,26 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-// ✅ Update Quantity for a Cart Item
 function updateQuantity(index, newQuantity) {
-  cart[index].quantity = parseInt(newQuantity);
+  cart[index].quantity = parseInt(newQuantity, 10);
   localStorage.setItem("cart", JSON.stringify(cart));
   renderCartItems();
   updateCartCount();
-  checkCartAvailability(); // ✅ Add this
 }
 
-// ✅ Remove Item from Cart
 function removeFromCart(index) {
   cart.splice(index, 1);
   localStorage.setItem("cart", JSON.stringify(cart));
   renderCartItems();
   updateCartCount();
-  checkCartAvailability();
 }
 
-async function loadRemainingSlots(pickupDay) {
-  try {
-    const response = await fetch(`${API_BASE}/remaining-slots?pickup_day=${encodeURIComponent(pickupDay)}`);
-    const data = await response.json();
-    remainingSlotsForSelectedDay = data.pickupLimit - data.itemsAlreadyOrdered;
 
-    console.log(`📦 Remaining slots for ${pickupDay}:`, remainingSlotsForSelectedDay);
-
-    checkCartAvailability(); // Run check now that we have the updated count
-  } catch (error) {
-    console.error("❌ Error loading remaining slots:", error);
-  }
-}
-
-// Function to check cart availability against pickup slots
-function checkCartAvailability() {
-  const pickupDayElem = document.getElementById("pickup-day");
-  const warningMessage = document.getElementById("warning-message");
-  const stripeBtn = document.getElementById("stripe-button");
-  const venmoBtn = document.getElementById("venmo-button");
-
-  if (!pickupDayElem || !pickupDayElem.value || remainingSlotsForSelectedDay === null) return;
-
-  const totalCartItems = cart.reduce((sum, item) => {
-  return item.isFlour ? sum : sum + item.quantity;
-}, 0);
-  const remaining = remainingSlotsForSelectedDay;
-
-  console.log(`🛒 Cart total: ${totalCartItems} vs Remaining slots: ${remaining}`);
-
-  if (totalCartItems > remaining) {
-    warningMessage.style.display = "block";
-    warningMessage.innerText = `⚠️ Only ${remaining} slots left. You have ${totalCartItems} items.`;
-    stripeBtn.disabled = true;
-    stripeBtn.style.opacity = "0.5";
-    stripeBtn.style.cursor = "not-allowed";
-
-    venmoBtn.disabled = true;
-    venmoBtn.style.opacity = "0.5";
-    venmoBtn.style.cursor = "not-allowed";
-  } else {
-    warningMessage.style.display = "none";
-    stripeBtn.disabled = false;
-    stripeBtn.style.opacity = "1";
-    stripeBtn.style.cursor = "pointer";
-
-    venmoBtn.disabled = false;
-    venmoBtn.style.opacity = "1";
-    venmoBtn.style.cursor = "pointer";
-  }
-}
 
 
 
 // Load cart on page load
 document.addEventListener("DOMContentLoaded", () => {
-  fetchPickupSlotStatus();  // 🔁 new function replaces fetchPickupSlotsFromGoogleSheets
   renderCartItems();
   updateCartCount();
   recomputeTotals(); // shipping
@@ -666,7 +475,6 @@ window.renderCartItems = renderCartItems;
 window.updateQuantity = updateQuantity;
 window.removeFromCart = removeFromCart;
 window.updateCartCount = updateCartCount;
-window.checkCartAvailability = checkCartAvailability;
 window.addToCart = addToCart;
 
 

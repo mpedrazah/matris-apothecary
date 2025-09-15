@@ -53,7 +53,7 @@ const csvFilePath = "email_subscribers.csv"; // Store opted-in emails
 // ---- Shipping config (edit amounts as you like) ----
 const SHIPPING_FEES = {
   pickup: 0.00,
-  flat: 5.00,              // default if shipping with no specific method
+  flat: 7.00,              // default if shipping with no specific method
   usps_first_class: 5.00,
   usps_priority: 9.00
 };
@@ -84,55 +84,80 @@ console.log("🧪 ENV: ", {
 });
 
 
+// ✅ Stripe Webhook (must be BEFORE app.use(express.json()))
 app.post("/webhook", express.raw({ type: "application/json" }), async (req, res) => {
-  console.log("⚡ Incoming webhook request received.");
+  console.log("⚡ Incoming Stripe webhook");
   const sig = req.headers["stripe-signature"];
 
   let event;
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
-    console.log("✅ Webhook Event Received:", event.type);
+    event = stripe.webhooks.constructEvent(
+      req.body,                               // raw Buffer
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET       // from Stripe Dashboard
+    );
+    console.log("✅ Webhook verified:", event.type);
   } catch (err) {
-    console.error("❌ Webhook signature verification failed:", err.message);
+    console.error("❌ Webhook verification failed:", err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // Process only successful payments
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
+  try {
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object;
+        const md = session.metadata || {};
 
-    console.log("✅ Payment received! Processing order:", session);
+        // Pull essentials from session/metadata
+        const email           = session.customer_email || md.email;
+        const deliveryMethod  = md.delivery_method || (md.pickup_day ? "pickup" : "shipping") || "pickup";
+        const shippingMethod  = md.shipping_method || (deliveryMethod === "shipping" ? "flat" : "pickup");
+        const shippingFee     = parseFloat(md.shipping_fee || "0") || 0;
+        const paymentMethod   = md.payment_method || "Card";
 
-    const email = session.customer_email;
-    const metadata = session.metadata;
+        // Prefer Stripe’s amount_total if present; otherwise fall back to metadata
+        const totalAmount = typeof session.amount_total === "number"
+          ? session.amount_total / 100
+          : parseFloat(md.totalAmount || "0") || 0;
 
-    // ✅ Safe parsing of totalAmount
-    const rawAmount = parseFloat(metadata.totalAmount);
-    const total_price = isNaN(rawAmount) ? 0.00 : parseFloat(rawAmount.toFixed(2));
+        // Build item list for the confirmation email from metadata.cart
+        let itemsText = "";
+        try {
+          const cart = JSON.parse(md.cart || "[]");
+          itemsText = cart.map(i => `${i.name} (x${i.quantity || 1})`).join(", ");
+        } catch (_) {
+          itemsText = "";
+        }
 
-    const orderData = {
-      email,
-      pickup_day: metadata.pickup_day,
-      items: JSON.parse(metadata.cart).map(item => `${item.name} (x${item.quantity})`).join(", "),
-      total_price,
-      payment_method: metadata.payment_method,
-      email_opt_in: metadata.emailOptIn && metadata.emailOptIn === "true"
-    };
+        // Persist order (your helper will read from session.metadata as needed)
+        await saveOrderToDatabaseFromWebhook(session);
+        console.log("✅ Order saved from webhook");
 
-    try {
-      await saveOrderToDatabaseFromWebhook(session);
-      console.log("✅ Order saved successfully to database!");
-      await sendOrderConfirmationEmail(orderData.email, orderData.items, orderData.pickup_day, orderData.total_price, orderData.payment_method);
-      console.log("✅ Confirmation email sent successfully!");
-    } catch (error) {
-      console.error("❌ Error processing order:", error);
-      return res.status(500).send("Error processing order.");
+        // Send confirmation
+        await sendOrderConfirmationEmail(
+          email,           // email
+          itemsText,       // items (string list)
+          totalAmount,     // total amount NUMBER
+          paymentMethod,   // "Card" / "Venmo" etc.
+          deliveryMethod,  // "pickup" | "shipping"
+          shippingMethod,  // "flat" | "pickup" | ...
+          shippingFee,     // numeric shipping fee
+          null             // shippingInfo (optional; include if you capture it)
+        );
+        console.log("✅ Confirmation email sent");
+        break;
+      }
+
+      default:
+        console.log("ℹ️ Unhandled event type:", event.type);
     }
+
+    return res.json({ received: true });
+  } catch (err) {
+    console.error("❌ Error handling webhook event:", err);
+    return res.status(500).send("Webhook handler error");
   }
-
-  res.json({ received: true });
 });
-
 
 app.use(express.json());
 
@@ -214,57 +239,6 @@ async function saveOrderToDatabase(order) {
 
   }
 }
-
-async function getPickupLimitFromGoogleSheets(pickupDay) {
-  try {
-    const response = await fetch(sheetUrlNoCache());
-    if (!response.ok) throw new Error("Failed to fetch Google Sheets");
-
-    const csvText = await response.text();
-    const rows = parseCsv(csvText).slice(1); // skip header
-
-    for (const cols of rows) {
-      const [date, limit] = cols;
-      if (normalize(date) === normalize(pickupDay)) {
-        return parseInt(limit, 10);
-      }
-    }
-    return null; // Not found
-  } catch (error) {
-    console.error("❌ Error fetching from Google Sheets:", error);
-    return null;
-  }
-}
-
-
-
-app.get("/remaining-slots", async (req, res) => {
-  const pickup_day = req.query.pickup_day;
-  if (!pickup_day) return res.status(400).json({ error: "pickup_day required" });
-
-  const pickupLimit = await getPickupLimitFromGoogleSheets(pickup_day);
-  if (!pickupLimit) return res.status(404).json({ error: "Date not found" });
-
-  try {
-    const itemCountResult = await pool.query(`
-      SELECT COALESCE(
-        SUM( (elem->>'quantity')::int ) FILTER (WHERE (elem->>'name') !~* 'Flour' ),
-        0
-      ) AS total_items
-      FROM (
-        SELECT jsonb_array_elements(cart::jsonb) AS elem
-        FROM orders
-        WHERE shipping_date = $1
-      ) t;
-    `, [pickup_day]);
-
-    const itemsAlreadyOrdered = parseInt(itemCountResult.rows[0].total_items || 0, 10);
-    res.json({ pickupLimit, itemsAlreadyOrdered });
-  } catch (err) {
-    console.error("❌ Error computing remaining slots:", err);
-    res.status(500).json({ error: "Failed to compute remaining slots" });
-  }
-});
 
 
 
@@ -363,17 +337,16 @@ app.post("/save-order", async (req, res) => {
     if (emailOptInValue) {
       const itemsText = cart.map(i => `${i.name} (x${i.quantity || 1})`).join(", ");
       await sendOrderConfirmationEmail(
-        email,
-        itemsText,
-        shippingDateValue || "N/A",
-        final_total,
-        payment_method,
-        delivery_method,
-        methodKey,
-        shipping_fee,
-        shipping_info || null
+        email,                // email
+        itemsText,            // items
+        final_total,          // totalAmount  ✅ was wrong before
+        payment_method,       // paymentMethod
+        delivery_method,      // deliveryMethod
+        methodKey,            // shippingMethod
+        shipping_fee,         // shippingFee
+        shipping_info || null // shippingInfo
       );
-    }
+          }
 
     res.json({ success: true, order: result.rows[0] });
   } catch (error) {
@@ -386,20 +359,24 @@ async function saveOrderToDatabaseFromWebhook(session) {
   const md = session.metadata || {};
   const email = session.customer_email || md.email;
   const cart = JSON.parse(md.cart || "[]");
-  const shipping_date = md.pickup_day || null;
-  const delivery_method = shipping_date ? "pickup" : "shipping";
+  const delivery_method = md.delivery_method || "pickup";
   const total = parseFloat(md.totalAmount || "0") || 0;
+  const shipping_method = md.shipping_method || null;
+  const shipping_fee = parseFloat(md.shipping_fee || "0") || 0;
+  const emailOptIn = (md.emailOptIn === "true");
 
+  // NOTE: Requires columns: cart (json/text), shipping_method, shipping_fee
   const result = await pool.query(
     `INSERT INTO orders
-      (email, delivery_method, shipping_date, cart, payment_method, total, created_at, email_opt_in)
+      (email, delivery_method, cart, payment_method, total, created_at, email_opt_in, shipping_method, shipping_fee)
      VALUES
-      ($1,    $2,              $3,            $4,   $5,             $6,   NOW(),     $7)
+      ($1,    $2,              $3,   $4,            $5,    NOW(),    $6,           $7,              $8)
      RETURNING *;`,
-    [email, delivery_method, shipping_date, JSON.stringify(cart), "card", total, (md.emailOptIn === "true")]
+    [email, delivery_method, JSON.stringify(cart), "card", total, emailOptIn, shipping_method, shipping_fee]
   );
   return result.rows[0];
 }
+
 
 
 
@@ -424,7 +401,6 @@ app.get("/get-orders", async (req, res) => {
 async function sendOrderConfirmationEmail(
   email,
   items,
-  pickupDay,
   totalAmount,
   paymentMethod,
   deliveryMethod = "pickup",
@@ -458,8 +434,6 @@ async function sendOrderConfirmationEmail(
     // Pickup
     return `
       <p><strong>Fulfillment:</strong> Local Pickup</p>
-      <p><strong>Pickup Date:</strong> ${pickupDay}*</p>
-      <p>*Please pickup your order within your pickup window.</p>
       <p>You can pickup your order from the porch at Address</p>
     `;
   })();
@@ -501,29 +475,29 @@ async function sendOrderConfirmationEmail(
 
 
 // ✅ Stripe Checkout API
+// ✅ Stripe Checkout API
 app.post("/create-checkout-session", async (req, res) => {
   try {
     const {
       cart,
       email,
-      pickup_day,
       payment_method,
       emailOptIn,
-      delivery_method,          // "pickup" | "shipping"
-      shipping_method           // e.g. "flat" | "usps_first_class" | ...
+      delivery_method,       // "pickup" | "shipping"
+      shipping_method        // e.g. "flat" | "usps_first_class" | ...
     } = req.body;
 
-    if (!cart || !email || !pickup_day || !payment_method) {
+    if (!cart || !email || !payment_method) {
       return res.status(400).json({ error: "Missing required fields for Stripe checkout." });
     }
 
-    // Subtotal from items (server is the source of truth)
+    // Subtotal from items (server = source of truth)
     const subtotal = cart.reduce((sum, item) => {
       const unit = parseFloat(item.price);
       return sum + unit * (item.quantity || 1);
     }, 0);
 
-    // 3% Stripe convenience fee (you waive this on Venmo only)
+    // 3% convenience fee (waived for Venmo only; this is Stripe checkout)
     const convenienceFee = parseFloat((subtotal * 0.03).toFixed(2));
 
     // Shipping fee (server-side)
@@ -570,13 +544,11 @@ app.post("/create-checkout-session", async (req, res) => {
       customer_email: email,
       metadata: {
         cart: JSON.stringify(cart),
-        pickup_day,
         payment_method,
         delivery_method,
         shipping_method: methodKey,
         shipping_fee: shippingFee.toFixed(2),
         emailOptIn: emailOptIn?.toString() || "false",
-        // Include shipping in total metadata (Stripe is still the source of truth)
         totalAmount: (subtotal + convenienceFee + shippingFee).toFixed(2)
       }
     });
