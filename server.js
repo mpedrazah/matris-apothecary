@@ -98,9 +98,9 @@ app.post("/webhook", express.raw({ type: "application/json" }), async (req, res)
   let event;
   try {
     event = stripe.webhooks.constructEvent(
-      req.body,                               // raw Buffer
+      req.body,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET       // from Stripe Dashboard
+      process.env.STRIPE_WEBHOOK_SECRET
     );
     console.log("✅ Webhook verified:", event.type);
   } catch (err) {
@@ -114,19 +114,19 @@ app.post("/webhook", express.raw({ type: "application/json" }), async (req, res)
         const session = event.data.object;
         const md = session.metadata || {};
 
-        // Pull essentials from session/metadata
+        // Pull essentials
         const email           = session.customer_email || md.email;
         const deliveryMethod  = md.delivery_method || (md.pickup_day ? "pickup" : "shipping") || "pickup";
         const shippingMethod  = md.shipping_method || (deliveryMethod === "shipping" ? "flat" : "pickup");
         const shippingFee     = parseFloat(md.shipping_fee || "0") || 0;
         const paymentMethod   = md.payment_method || "Card";
 
-        // Prefer Stripe’s amount_total if present; otherwise fall back to metadata
+        // Total from Stripe if possible
         const totalAmount = typeof session.amount_total === "number"
           ? session.amount_total / 100
           : parseFloat(md.totalAmount || "0") || 0;
 
-        // Build item list for the confirmation email from metadata.cart
+        // Items (for the email body)
         let itemsText = "";
         try {
           const cart = JSON.parse(md.cart || "[]");
@@ -135,20 +135,33 @@ app.post("/webhook", express.raw({ type: "application/json" }), async (req, res)
           itemsText = "";
         }
 
-        // Persist order (your helper will read from session.metadata as needed)
+        // ✅ Build shipping info for email display (prefer Stripe shipping_details, fallback to metadata.shipping_info)
+        const mdShip = md.shipping_info ? safelyParse(md.shipping_info) : null;
+        const shippingInfoForEmail =
+          (deliveryMethod === "shipping")
+            ? {
+                name:    session.shipping_details?.name                     || mdShip?.name    || "",
+                address: session.shipping_details?.address?.line1           || mdShip?.address || "",
+                city:    session.shipping_details?.address?.city            || mdShip?.city    || "",
+                state:   session.shipping_details?.address?.state           || mdShip?.state   || "",
+                zip:     session.shipping_details?.address?.postal_code     || mdShip?.zip     || ""
+              }
+            : null;
+
+        // Save order (DB)
         await saveOrderToDatabaseFromWebhook(session);
         console.log("✅ Order saved from webhook");
 
-        // Send confirmation
+        // ✅ Send confirmation email with the address block
         await sendOrderConfirmationEmail(
-          email,           // email
-          itemsText,       // items (string list)
-          totalAmount,     // total amount NUMBER
-          paymentMethod,   // "Card" / "Venmo" etc.
-          deliveryMethod,  // "pickup" | "shipping"
-          shippingMethod,  // "flat" | "pickup" | ...
-          shippingFee,     // numeric shipping fee
-          null             // shippingInfo (optional; include if you capture it)
+          email,
+          itemsText,
+          totalAmount,
+          paymentMethod,
+          deliveryMethod,
+          shippingMethod,
+          shippingFee,
+          shippingInfoForEmail
         );
         console.log("✅ Confirmation email sent");
         break;
@@ -164,6 +177,7 @@ app.post("/webhook", express.raw({ type: "application/json" }), async (req, res)
     return res.status(500).send("Webhook handler error");
   }
 });
+
 
 app.use(express.json());
 
@@ -519,7 +533,7 @@ app.post("/create-checkout-session", async (req, res) => {
       emailOptIn,
       delivery_method,
       shipping_method,
-      shipping_info,          // ✅ include this
+      shipping_info,          // keep sending this
       discount_code = ""
     } = req.body;
 
@@ -533,7 +547,7 @@ app.post("/create-checkout-session", async (req, res) => {
         ? (Number.isFinite(SHIPPING_FEES[methodKey]) ? SHIPPING_FEES[methodKey] : 0)
         : 0;
 
-    // ✅ apply discount server-side (items only)
+    // apply discount server-side (items only)
     const rate = DISCOUNT_CODES[(discount_code || "").toUpperCase()] || 0;
     const discountedItems = cart.map(item => {
       const base = Number(item.price) || 0;
@@ -549,7 +563,7 @@ app.post("/create-checkout-session", async (req, res) => {
     // 3% Stripe fee on the discounted subtotal
     const convenienceFee = Number((discountedSubtotal * 0.03).toFixed(2));
 
-    // Guard: Stripe Checkout can’t process a $0 total
+    // Guard for $0 total
     const grandTotal = discountedSubtotal + shippingFee + convenienceFee;
     if (Math.round(grandTotal * 100) <= 0) {
       return res.status(400).json({
@@ -591,6 +605,11 @@ app.post("/create-checkout-session", async (req, res) => {
       success_url: "https://www.matrisapothecary.com/success.html",
       cancel_url: "https://www.matrisapothecary.com/cancel.html",
       customer_email: email,
+
+      // ✅ Ask Stripe to collect the shipping address whenever shipping is chosen
+      shipping_address_collection:
+        delivery_method === "shipping" ? { allowed_countries: ["US"] } : undefined,
+
       metadata: {
         cart: JSON.stringify(cart),                          // original cart for emails/admin
         payment_method,
@@ -599,9 +618,9 @@ app.post("/create-checkout-session", async (req, res) => {
         shipping_fee: shippingFee.toFixed(2),
         emailOptIn: emailOptIn?.toString() || "false",
         discount_code: (discount_code || "").toUpperCase(),
-        // ✅ use the DISCOUNTED subtotal here
+        // ✅ store discounted total for reference in webhook/email
         totalAmount: (discountedSubtotal + convenienceFee + shippingFee).toFixed(2),
-        // ✅ now this exists
+        // ✅ carry the user-entered shipping info too (used as fallback)
         shipping_info: shipping_info ? JSON.stringify(shipping_info) : ""
       }
     });
@@ -612,6 +631,7 @@ app.post("/create-checkout-session", async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 });
+
 
 
 
