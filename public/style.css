@@ -1143,3 +1143,44 @@ main,
   color: #fff;
 }
 .hero a { color: #fff; }
+
+/* HERO: force white no matter what */
+.hero,
+.hero * {
+  color: #fff !important;
+}
+
+/* keep links white too */
+.hero a:link,
+.hero a:visited,
+.hero a:hover,
+.hero a:active {
+  color: #fff !important;
+}
+
+/* ——— Feminine hero typography (white) ——— */
+.hero, .hero * { color: #fff !important; text-shadow: 0 1px 2px rgba(0,0,0,.25); }
+
+.hero h1 {
+  font-family: 'Playfair Display', serif !important;
+  font-weight: 700;
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+}
+
+.hero p {
+  font-family: 'Open Sans', sans-serif !important; /* light, clean subhead */
+  font-weight: 300;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  opacity: 0.95;
+}
+
+/* Optional: softer, more “beauty” CTA shape */
+.hero .btn {
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+}
