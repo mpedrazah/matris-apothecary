@@ -491,6 +491,7 @@ async function sendOrderConfirmationEmail(
     <p><strong>Total:</strong> $${Number(totalAmount).toFixed(2)}</p>
     <br>Thank you for your business!</br>
     <p>Feel free to email me with any questions or concerns by replying to this email.</p>
+    <p>-Brianna, Matris Apothecary</p>
   `;
 
   const venmoWarning = `<p style="color: red; font-weight: bold;">⚠️ Your order will not be fulfilled until payment is received via Venmo.</p>`;
