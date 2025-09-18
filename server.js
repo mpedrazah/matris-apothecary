@@ -485,7 +485,7 @@ async function sendOrderConfirmationEmail(
     return `
       <div style="margin:12px 0;">
         <strong>Fulfillment:</strong> Local Pickup<br>
-        We’ll email you shortly to coordinate a pickup date/time once your order is ready.
+        I’ll email you shortly to coordinate a pickup date/time once your order is ready.
       </div>
     `;
   })();
@@ -502,7 +502,7 @@ async function sendOrderConfirmationEmail(
   <div style="background:#faf7f6; padding:24px; font-family: 'Open Sans', Arial, sans-serif; color:#3b2f2f;">
     <div style="max-width:640px; margin:0 auto; background:#ffffff; border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,0.06); overflow:hidden;">
       <div style="background:#ac6c6f; color:#fff; padding:18px 22px; text-align:center;">
-        <h2 style="margin:0; font-size:22px; font-weight:700; letter-spacing:.3px;">Thank you so much for your order ✨</h2>
+        <h2 style="margin:0; font-size:22px; font-weight:700; letter-spacing:.3px;">✨ Order Confirmation ✨</h2>
       </div>
 
       <div style="padding:22px;">
@@ -526,7 +526,7 @@ async function sendOrderConfirmationEmail(
 
         <hr style="border:none; border-top:1px solid #eee; margin:18px 0;">
 
-        <p style="margin:0 0 10px 0;">Thank you for supporting small-batch, ancestrally-minded skincare. If you have any questions at all, simply reply to this email—I'd love to help!</p>
+        <p style="margin:0 0 10px 0;">Thank you for supporting my cottage shop. If you have any questions at all, simply reply to this email—I'd love to help!</p>
 
         <div style="margin-top:14px;">
           <p style="margin:0 0 2px 0;">With gratitude,</p>
