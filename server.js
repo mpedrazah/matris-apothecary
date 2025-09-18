@@ -493,7 +493,7 @@ async function sendOrderConfirmationEmail(
   const venmoWarning =
     paymentMethod === "Venmo"
       ? `<div style="margin:16px 0; padding:10px 12px; background:#fff2f2; border:1px solid #ffd6d6; border-radius:8px; color:#b00020; font-weight:700;">
-           ⚠️ Your order will not be fulfilled until payment is received via Venmo.
+           Note: Your order will not be fulfilled until payment is received via Venmo.
          </div>`
       : "";
 
@@ -502,7 +502,7 @@ async function sendOrderConfirmationEmail(
   <div style="background:#faf7f6; padding:24px; font-family: 'Open Sans', Arial, sans-serif; color:#3b2f2f;">
     <div style="max-width:640px; margin:0 auto; background:#ffffff; border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,0.06); overflow:hidden;">
       <div style="background:#ac6c6f; color:#fff; padding:18px 22px; text-align:center;">
-        <h2 style="margin:0; font-size:22px; font-weight:700; letter-spacing:.3px;">✨ Order Confirmation</h2>
+        <h2 style="margin:0; font-size:22px; font-weight:700; letter-spacing:.3px;">Order Confirmation</h2>
       </div>
 
       <div style="padding:22px;">
@@ -545,7 +545,7 @@ async function sendOrderConfirmationEmail(
 
   // Plain-text fallback
   const text = [
-    "Thank you so much for your order ✨",
+    "Thank you so much for your order",
     "",
     "You purchased:",
     items || "-",
@@ -565,7 +565,7 @@ ${[shippingInfo.city, shippingInfo.state, shippingInfo.zip].filter(Boolean).join
     "",
     `Total: $${Number(totalAmount).toFixed(2)}`,
     `Payment Method: ${paymentMethod || "-"}`,
-    paymentMethod === "Venmo" ? "⚠️ Your order will not be fulfilled until payment is received via Venmo." : "",
+    paymentMethod === "Venmo" ? "Your order will not be fulfilled until payment is received via Venmo." : "",
     "",
     "Thank you for supporting small-batch, ancestrally-minded skincare. If you have any questions, just reply to this email.",
     "",
