@@ -459,56 +459,130 @@ async function sendOrderConfirmationEmail(
     return;
   }
 
-  const orderDetails = items.split(", ").map(item => `• ${item}`).join("<br>");
+  const orderDetails = items
+    ? items.split(", ").map(item => `• ${item}`).join("<br>")
+    : "—";
 
   const fulfillmentLines = (() => {
     if (deliveryMethod === "shipping") {
       const prettyMethod = String(shippingMethod || "").replace(/_/g, " ");
       const addressHtml = shippingInfo
-        ? `<p><strong>Ship To:</strong><br>
-            ${shippingInfo.name || ""}<br>
-            ${shippingInfo.address || ""}<br>
-            ${shippingInfo.city || ""}, ${shippingInfo.state || ""} ${shippingInfo.zip || ""}
-           </p>`
+        ? `<div style="margin-top:8px; line-height:1.5;">
+             <strong style="display:block; margin-bottom:4px;">Ship To</strong>
+             ${shippingInfo.name || ""}<br>
+             ${shippingInfo.address || ""}<br>
+             ${[shippingInfo.city, shippingInfo.state, shippingInfo.zip].filter(Boolean).join(", ")}
+           </div>`
         : "";
       return `
-        <p><strong>Fulfillment:</strong> Shipping</p>
-        <p><strong>Shipping Method:</strong> ${prettyMethod} — $${Number(shippingFee).toFixed(2)}</p>
-        ${addressHtml}
+        <div style="margin:12px 0;">
+          <strong>Fulfillment:</strong> Shipping<br>
+          <strong>Method:</strong> ${prettyMethod} — $${Number(shippingFee).toFixed(2)}
+          ${addressHtml}
+        </div>
       `;
     }
     return `
-    <p><strong>Fulfillment:</strong> Local Pickup</p>
-    <p>We’ll email you shortly to coordinate a pickup date/time once your order is ready.</p>
-  `;
+      <div style="margin:12px 0;">
+        <strong>Fulfillment:</strong> Local Pickup<br>
+        We’ll email you shortly to coordinate a pickup date/time once your order is ready.
+      </div>
+    `;
   })();
 
-  const header = `<p>Greetings!</p>`;
-  const bodyCore = `
-    <p><strong>You have purchased:</strong></p>
-    <p>${orderDetails}</p>
-    ${fulfillmentLines}
-    <p><strong>Total:</strong> $${Number(totalAmount).toFixed(2)}</p>
-    <br>Thank you for your business!</br>
-    <p>Feel free to email me with any questions or concerns by replying to this email.</p>
-    <p>-Brianna, Matris Apothecary</p>
+  const venmoWarning =
+    paymentMethod === "Venmo"
+      ? `<div style="margin:16px 0; padding:10px 12px; background:#fff2f2; border:1px solid #ffd6d6; border-radius:8px; color:#b00020; font-weight:700;">
+           ⚠️ Your order will not be fulfilled until payment is received via Venmo.
+         </div>`
+      : "";
+
+  // Cute, friendly HTML with inline styles for email client compatibility
+  const html = `
+  <div style="background:#faf7f6; padding:24px; font-family: 'Open Sans', Arial, sans-serif; color:#3b2f2f;">
+    <div style="max-width:640px; margin:0 auto; background:#ffffff; border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,0.06); overflow:hidden;">
+      <div style="background:#ac6c6f; color:#fff; padding:18px 22px; text-align:center;">
+        <h2 style="margin:0; font-size:22px; font-weight:700; letter-spacing:.3px;">Thank you so much for your order ✨</h2>
+      </div>
+
+      <div style="padding:22px;">
+        ${venmoWarning}
+
+        <p style="margin:0 0 10px 0;">Greetings!</p>
+
+        <div style="margin:12px 0;">
+          <strong style="display:block; margin-bottom:6px;">You purchased:</strong>
+          <div style="background:#fff9f8; border:1px solid #f2d6d6; border-radius:10px; padding:12px 14px;">
+            ${orderDetails}
+          </div>
+        </div>
+
+        ${fulfillmentLines}
+
+        <div style="margin:12px 0;">
+          <strong>Total:</strong> $${Number(totalAmount).toFixed(2)}<br>
+          <strong>Payment Method:</strong> ${paymentMethod || "—"}
+        </div>
+
+        <hr style="border:none; border-top:1px solid #eee; margin:18px 0;">
+
+        <p style="margin:0 0 10px 0;">Thank you for supporting small-batch, ancestrally-minded skincare. If you have any questions at all, simply reply to this email—I'd love to help!</p>
+
+        <div style="margin-top:14px;">
+          <p style="margin:0 0 2px 0;">With gratitude,</p>
+          <p style="margin:0; font-family: 'Playfair Display', Georgia, serif; font-size:20px; font-style:italic;">Brianna</p>
+          <p style="margin:2px 0 0 0; color:#6b6b6b;">Founder, Matris Apothecary</p>
+        </div>
+
+        <div style="margin-top:18px; padding:12px 14px; background:#f9f4f0; border-left:4px solid #ac6c6f; border-radius:8px;">
+          <em style="display:block; color:#5a4a48;">“The Earth glorifies the power of God.”</em>
+          <span style="display:block; color:#8a7a78; margin-top:4px;">— Hildegard von Bingen</span>
+        </div>
+      </div>
+    </div>
+  </div>
   `;
 
-  const venmoWarning = `<p style="color: red; font-weight: bold;">⚠️ Your order will not be fulfilled until payment is received via Venmo.</p>`;
-  const html = (paymentMethod === "Venmo") ? `${header}${bodyCore}${venmoWarning}` : `${header}${bodyCore}`;
-
-  // Plain-text fallback (very simple stripping)
-  const text = html
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/p>/gi, "\n\n")
-    .replace(/<[^>]+>/g, "")
-    .trim();
+  // Plain-text fallback
+  const text = [
+    "Thank you so much for your order ✨",
+    "",
+    "You purchased:",
+    items || "-",
+    "",
+    deliveryMethod === "shipping"
+      ? `Fulfillment: Shipping
+Method: ${String(shippingMethod || "").replace(/_/g, " ")} — $${Number(shippingFee).toFixed(2)}${
+          shippingInfo
+            ? `
+Ship To:
+${shippingInfo.name || ""}
+${shippingInfo.address || ""}
+${[shippingInfo.city, shippingInfo.state, shippingInfo.zip].filter(Boolean).join(", ")}`
+            : ""
+        }`
+      : "Fulfillment: Local Pickup\nWe’ll email you shortly to coordinate a pickup date/time once your order is ready.",
+    "",
+    `Total: $${Number(totalAmount).toFixed(2)}`,
+    `Payment Method: ${paymentMethod || "-"}`,
+    paymentMethod === "Venmo" ? "⚠️ Your order will not be fulfilled until payment is received via Venmo." : "",
+    "",
+    "Thank you for supporting small-batch, ancestrally-minded skincare. If you have any questions, just reply to this email.",
+    "",
+    "With gratitude,",
+    "Brianna",
+    "Founder, Matris Apothecary",
+    "",
+    "“The Earth glorifies the power of God.” — Hildegard von Bingen",
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   const msg = {
     to: email,
     from: { email: EMAIL_FROM, name: "Matris Apothecary" },
     replyTo: EMAIL_FROM,
-    cc: "matrisapothecary@gmail.com", // optional – keep if you want
+    cc: "matrisapothecary@gmail.com", // optional
     subject: "Your Matris Apothecary Order Confirmation",
     text,
     html,
@@ -521,7 +595,6 @@ async function sendOrderConfirmationEmail(
     console.error("❌ Error sending email via SendGrid:", error?.response?.body || error);
   }
 }
-
 
 
 // ✅ Stripe Checkout API
