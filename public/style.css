@@ -632,21 +632,22 @@ button:hover {
   outline: none;
 }
 
-#email-container {
-  max-width: 100%; /* Ensure it doesn't overflow */
-  width: 90%; /* Keep it slightly smaller than full width */
-  margin: 0 auto; /* Center it */
-  box-sizing: border-box; /* Ensure padding doesn't increase width */
-  overflow: hidden; /* Prevent content from causing extra width */
+/* was #email-container { … } — needs to be a CLASS */
+.email-container {
+  max-width: 100%;
+  width: 90%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow: hidden;
   background: #f9f9f9;
   padding: 20px;
-  padding-top: 20px;
-  margin-top: 80px;
+  margin-top: 80px;           /* pushes it below the fixed header */
   border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   text-align: center;
   max-width: 400px;
 }
+
 
 
 .email-container label {
@@ -1135,10 +1136,10 @@ main,
   margin-block: 12px;
 }
 
-.hero {
-  position: relative;
-  color: #fff;                 /* base: make text white */
-  text-shadow: 0 1px 2px rgba(0,0,0,.25); /* optional contrast */
+/* Force white text inside hero */
+.hero { color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.25); }
+
+.hero :is(h1,h2,h3,h4,h5,h6,p,li,a,span,strong) {
+  color: #fff;
 }
-.hero * { color: inherit; }    /* headings, spans, etc. */
-.hero a { color: #fff; }       /* links specifically */
+.hero a { color: #fff; }
