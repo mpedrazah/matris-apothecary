@@ -483,7 +483,7 @@ async function sendOrderConfirmationEmail(
   `;
   })();
 
-  const header = `<p>Thank you for your order!</p>`;
+  const header = `<p>Greetings!</p>`;
   const bodyCore = `
     <p><strong>You have purchased:</strong></p>
     <p>${orderDetails}</p>
