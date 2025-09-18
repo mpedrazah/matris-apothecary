@@ -8,8 +8,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css?v=8">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet"/>
-  <meta property="og:title" content="Matris Apothecary - Tallow Creams & Mineral Sunscreen" />
-  <meta property="og:description" content="Nutrient-rich, small batched skincare." />
+  <meta property="og:title" content="Matris Apothecary - Hand-batched traditional health & beauty products" />
+  <meta property="og:description" content="Hand-batched traditional health & beauty products" />
   <meta property="og:image" content="images/logo.webp" />
   <meta property="og:url" content="https://www.matrisapothecary.com" />
 </head>
@@ -62,14 +62,28 @@
     <h2 class="text-3xl font-bold text-center mb-8">Featured Products</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
       <!-- Bug Balm -->
-      <div class="bg-white p-6 rounded-2xl shadow text-center">
-        <img src="images/tallowbugbalm.jpg" alt="Bug Balm" class="w-full h-48 object-cover rounded mb-4">
-        <h3 class="text-xl font-semibold mb-2">Bug Balm</h3>
-        <p class="text-sm text-gray-600 mb-2">Repels mosquitoes, flies, and ticks. Safe for ages 2+.</p>
-        <p class="mb-1">2 oz — $15.00</p>
-        <p class="text-sm mb-2">Ingredients: Local grass-fed tallow, lemon balm, lavender, castor oil, shea butter, beeswax, and essential oils.</p>
-        <button class="add-to-cart" onclick="addToCart('Bug Balm', 15.00, 'images/tallowbugbalm.jpg')">Add to Cart</button>
-      </div>
+      <div class="product-card">
+  <img class="product-image" src="images/moisturizingcreamboth.jpg" alt="Tallow Moisturizing Cream">
+  <div class="product-info">
+    <h3>Tallow Moisturizing Cream</h3>
+    <p class="product-description"></p>
+
+    <label for="moisturizing-fragrance"><strong>Fragrance:</strong></label>
+    <select id="moisturizing-fragrance">
+      <option>Unscented</option>
+      <option>Rose</option>
+      <option>Frankincense</option>
+    </select>
+     
+    <label for="moisturizing-size"><strong>Size:</strong></label>
+    <select id="moisturizing-size">
+      <option value="2" data-price="15">2 oz — $15.00</option>
+      <option value="4" data-price="25">4 oz — $25.00</option>
+    </select>
+<p class="text-sm"><strong>Ingredients:</strong> Local 100% grass-fed beef tallow, organic jojoba oil, essential oils (for fragrance). </p>
+    <button class="add-to-cart" onclick="addMoisturizingCreamToCart()">Add to Cart</button>
+  </div>
+</div>
       <div class="bg-white p-6 rounded-2xl shadow text-center">
         <img src="images/sunscreen2oz.jpg" alt="Tallow Sunscreen" class="w-full h-48 object-cover rounded mb-4">
         <h3 class="text-xl font-semibold mb-2">Tallow Sunscreen (SPF 30)</h3>
