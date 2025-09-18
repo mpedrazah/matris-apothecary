@@ -502,7 +502,7 @@ async function sendOrderConfirmationEmail(
   <div style="background:#faf7f6; padding:24px; font-family: 'Open Sans', Arial, sans-serif; color:#3b2f2f;">
     <div style="max-width:640px; margin:0 auto; background:#ffffff; border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,0.06); overflow:hidden;">
       <div style="background:#ac6c6f; color:#fff; padding:18px 22px; text-align:center;">
-        <h2 style="margin:0; font-size:22px; font-weight:700; letter-spacing:.3px;">✨ Order Confirmation ✨</h2>
+        <h2 style="margin:0; font-size:22px; font-weight:700; letter-spacing:.3px;">✨ Order Confirmation</h2>
       </div>
 
       <div style="padding:22px;">
