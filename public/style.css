@@ -1057,3 +1057,80 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1;
   margin-top: .1rem;
 }
+
+/* Safe defaults for mobile scrolling */
+html, body {
+  height: auto;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Use dynamic viewport units so the URL bar/keyboard don't crop content */
+.page,
+main {
+  min-height: 100vh;
+}
+@supports (height: 100dvh) {
+  .page,
+  main {
+    min-height: 100dvh; /* iOS 15+/Android Chrome */
+  }
+}
+
+/* Header & footer safe areas for notches */
+:root {
+  --header-h: 64px; /* adjust to your header height */
+}
+.site-header {
+  position: sticky;   /* friendlier than fixed on mobile */
+  top: 0;
+  z-index: 1000;
+  background: #fff;
+  padding-top: env(safe-area-inset-top);
+  border-bottom: 1px solid #eee;
+}
+
+/* Push content below the header */
+body,
+main {
+  padding-top: calc(var(--header-h) + env(safe-area-inset-top));
+}
+
+/* If you have a sticky bottom checkout bar / buttons */
+.sticky-cta {
+  position: sticky;
+  bottom: 0;
+  z-index: 1000;
+  background: #fff;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid #eee;
+}
+/* Make room so last inputs aren’t hidden behind sticky footer */
+main,
+.checkout {
+  padding-bottom: calc(80px + env(safe-area-inset-bottom)); /* adjust 80px to footer height */
+}
+
+/* Form elements: full-width, no zoom-on-focus in iOS */
+.checkout input,
+.checkout select,
+.checkout textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-size: 16px; /* prevents iOS auto-zoom */
+}
+
+/* Avoid clipping if a parent accidentally sets overflow: hidden */
+body,
+main,
+.checkout {
+  overflow: visible;
+}
+
+/* Simple spacing so fields aren’t jammed at the top on mobile */
+.form-section,
+.form-row {
+  margin-block: 12px;
+}
