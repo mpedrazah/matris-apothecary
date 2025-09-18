@@ -1184,3 +1184,30 @@ main,
   padding: 0.75rem 1.5rem;
   font-weight: 600;
 }
+
+/* === Sitewide: header should not crop content === */
+header {
+  position: sticky !important;
+  top: 0;
+  z-index: 1000;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  padding-top: env(safe-area-inset-top); /* iOS notch-safe */
+}
+
+/* stop pushing content down with a guess */
+body { padding-top: 0 !important; }
+
+/* pages that were compensating with big top margins */
+.checkout-wrapper,
+.email-container { margin-top: 16px !important; }
+
+/* mobile dropdown should appear just under the nav */
+@media (max-width: 640px) {
+  nav { position: relative; }
+  #mobile-menu {
+    position: absolute;
+    top: 100% !important;   /* instead of a hardcoded 60px */
+    left: 0; right: 0;
+  }
+}
