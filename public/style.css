@@ -1239,3 +1239,13 @@ body { padding-top: 0 !important; }
 .hero--full .hero-text h1 { font-family: "Playfair Display", serif; font-weight: 700; font-size: clamp(2rem, 5vw, 3rem); margin-bottom: .75rem; color: #fff; }
 .hero--full .hero-text p { font-size: clamp(1rem, 2.5vw, 1.125rem); margin-bottom: 1rem; color: #fff; }
 .hero--full .btn { background: var(--primary-color); color: #fff; border-radius: 999px; padding: .75rem 1.25rem; display: inline-block; }
+
+.product-gallery { margin-bottom: .75rem; }
+.product-main { width: 100%; max-width: 260px; border-radius: 12px; cursor: zoom-in; }
+.product-thumbs { display: flex; gap: .5rem; justify-content: center; margin-top: .5rem; }
+.product-thumbs img {
+  width: 58px; height: 58px; object-fit: cover; border-radius: 8px; opacity: .75;
+  border: 1px solid #ddd; cursor: pointer; transition: opacity .15s, transform .15s;
+}
+.product-thumbs img:hover { opacity: 1; transform: scale(1.03); }
+.product-thumbs img.active { opacity: 1; border-color: var(--primary-color); }
