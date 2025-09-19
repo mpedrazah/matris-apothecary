@@ -60,69 +60,79 @@
 </section>
 
 
- <!-- Featured Section -->
-<div class="product-card"
-     data-images='["images/moisturizingcreamboth3.jpg","images/moisturizingcream2oz.jpg","images/moisturizingcream4oz.jpg"]'>
+<!-- Featured Section -->
+<section id="featured-products" class="py-12 bg-[#fafafa]">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-8">Featured Products</h2>
 
-  <div class="product-gallery">
-    <!-- keep your current main image src -->
-    <img class="product-main" src="images/moisturizingcreamboth3.jpg" alt="Tallow Moisturizing Cream">
-    <div class="product-thumbs"></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+      <!-- Moisturizing Cream -->
+      <article class="product-card bg-white p-6 rounded-2xl shadow text-center"
+        data-images='["images/moisturizingcreamboth3.jpg","images/moisturizingcream2oz.jpg","images/moisturizingcream4oz.jpg"]'>
+        
+        <div class="product-gallery mb-4">
+          <img class="product-main mx-auto rounded product-image" src="images/moisturizingcreamboth3.jpg" alt="Tallow Moisturizing Cream">
+          <div class="product-thumbs mt-3 flex justify-center gap-2"></div>
+        </div>
+
+        <h3 class="text-xl font-semibold mb-2">Tallow Moisturizing Cream</h3>
+        <p class="text-sm text-gray-600 mb-2">Rich, nourishing daily moisturizer.</p>
+
+        <label for="moisturizing-fragrance" class="block text-sm font-medium mb-1"><strong>Fragrance:</strong></label>
+        <select id="moisturizing-fragrance" class="mb-2 border rounded px-2 py-1 w-full">
+          <option>Unscented</option>
+          <option>Rose</option>
+          <option>Frankincense</option>
+        </select>
+
+        <label for="moisturizing-size" class="block text-sm font-medium mb-1"><strong>Size:</strong></label>
+        <select id="moisturizing-size" class="mb-4 border rounded px-2 py-1 w-full">
+          <option value="2" data-price="15">2 oz — $15.00</option>
+          <option value="4" data-price="25">4 oz — $25.00</option>
+        </select>
+
+        <p class="text-sm mb-3">
+          <strong>Ingredients:</strong> Local 100% grass-fed beef tallow, organic jojoba oil, essential oils (for fragrance).
+        </p>
+
+        <button class="add-to-cart" onclick="addMoisturizingCreamToCart()">Add to Cart</button>
+      </article>
+
+      <!-- Sunscreen -->
+      <article class="product-card bg-white p-6 rounded-2xl shadow text-center"
+        data-images='["images/sunscreen2oz.jpg","images/sunscreen4oz.jpg"]'>
+
+        <div class="product-gallery mb-4">
+          <img class="product-main mx-auto rounded product-image" src="images/sunscreen2oz.jpg" alt="Tallow Sunscreen (SPF 30)">
+          <div class="product-thumbs mt-3 flex justify-center gap-2"></div>
+        </div>
+
+        <h3 class="text-xl font-semibold mb-2">Tallow Sunscreen (SPF 30)</h3>
+        <p class="text-sm text-gray-600 mb-2"></p>
+
+        <label for="sunscreen-fragrance" class="block text-sm font-medium mb-1"><strong>Fragrance:</strong></label>
+        <select id="sunscreen-fragrance" class="mb-2 border rounded px-2 py-1 w-full">
+          <option>Unscented</option>
+          <option>Blood Orange</option>
+        </select>
+
+        <label for="sunscreen-size" class="block text-sm font-medium mb-1"><strong>Size:</strong></label>
+        <select id="sunscreen-size" class="mb-4 border rounded px-2 py-1 w-full">
+          <option value="2" data-price="15">2 oz — $15.00</option>
+          <option value="4" data-price="25">4 oz — $25.00</option>
+        </select>
+
+        <p class="text-sm mb-3">
+          <strong>Ingredients:</strong> Local 100% grass-fed beef tallow, organic beeswax, organic extra virgin olive oil,
+          organic unrefined coconut oil, non-nano zinc oxide, essential oils (for fragrance).
+        </p>
+
+        <button class="add-to-cart" onclick="addSunscreenToCart()">Add to Cart</button>
+      </article>
+
+    </div>
   </div>
-  <h3 class="text-xl font-semibold mb-2">Moisturizing Cream</h3>
-  <p class="text-sm text-gray-600 mb-2">Rich, nourishing daily moisturizer.</p>
-
-  <label for="moisturizing-fragrance" class="block text-sm font-medium mb-1"><strong>Fragrance:</strong></label>
-  <select id="moisturizing-fragrance" class="mb-2 border rounded px-2 py-1 w-full">
-    <option>Unscented</option>
-    <option>Rose</option>
-    <option>Frankincense</option>
-  </select>
-
-  <label for="moisturizing-size" class="block text-sm font-medium mb-1">Size:</label>
-  <select id="moisturizing-size" class="mb-4 border rounded px-2 py-1 w-full">
-    <option value="2" data-price="15">2 oz — $15.00 </option>
-    <option value="4" data-price="25">4 oz — $25.00</option>
-  </select>
-<p class="text-sm"><strong>Ingredients:</strong> Local 100% grass-fed beef tallow, organic jojoba oil, essential oils (for fragrance).
- </p>
- 
-  <button class="add-to-cart"
-          onclick="addMoisturizingCreamToCart()">Add to Cart</button>
-</div>
-
-
-
-    <!-- Tallow Sunscreen -->
-  <div class="product-card"
-     data-images='["images/sunscreen2oz.jpg","images/sunscreen4oz.jpg"]'>
-
-  <div class="product-gallery">
-    <!-- keep your current main image src -->
-    <img class="product-main" src="images/sunscreen2oz.jpg" alt="Tallow Sunscreen (SPF 30)">
-    <div class="product-thumbs"></div>
-  </div>
-
-  <h3 class="text-xl font-semibold mb-2">Tallow Sunscreen (SPF 30)</h3>
-  <p class="text-sm text-gray-600 mb-2"></p>
-
-  <label for="sunscreen-fragrance" class="block text-sm font-medium mb-1"><strong>Fragrance:</strong></label>
-  <select id="sunscreen-fragrance" class="mb-2 border rounded px-2 py-1 w-full">
-    <option>Unscented</option>
-    <option>Blood Orange</option>
-  </select>
-
-  <label for="sunscreen-size" class="block text-sm font-medium mb-1">Size:</label>
-  <select id="sunscreen-size" class="mb-4 border rounded px-2 py-1 w-full">
-    <option value="2" data-price="15">2 oz — $15.00 </option>
-    <option value="4" data-price="25">4 oz — $25.00</option>
-  </select>
-<p class="text-sm"><strong>Ingredients:</strong> Local 100% grass-fed beef tallow, organic beeswax, organic extra virgin olive oil, 
-  organic unrefined coconut oil, non-nano zinc oxide, essential oils (for fragrance).
- </p>
-  <!-- uses your existing handler -->
-  <button class="add-to-cart" onclick="addSunscreenToCart()">Add to Cart</button>
-</div>
 </section>
 
 
@@ -137,5 +147,41 @@
 
   <script defer src="cart.js"></script>
   <script defer src="script.js"></script>
+<script>
+  // Build thumbnails from data-images, swap main image on click
+  document.querySelectorAll('.product-card').forEach(card => {
+    const data = card.getAttribute('data-images');
+    if (!data) return;
+
+    let images;
+    try { images = JSON.parse(data); } catch { images = []; }
+    const main = card.querySelector('.product-main');
+    const thumbs = card.querySelector('.product-thumbs');
+    if (!main || !thumbs || !images.length) return;
+
+    images.forEach((src, idx) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'border rounded overflow-hidden';
+      btn.style.width = '56px';
+      btn.style.height = '56px';
+      btn.style.padding = '0';
+
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = 'thumbnail';
+      img.className = 'w-full h-full object-cover';
+
+      btn.appendChild(img);
+      btn.addEventListener('click', () => { main.src = src; });
+
+      // mark first thumb as selected (optional)
+      if (idx === 0) btn.classList.add('ring-2');
+
+      thumbs.appendChild(btn);
+    });
+  });
+</script>
+
 </body>
 </html>
