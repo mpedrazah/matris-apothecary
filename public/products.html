@@ -82,16 +82,23 @@
     <div class="product-thumbs"></div>
   </div>
 
-  
-  <p class="mb-2">2 oz — $18.00</p>
+  <label for="cream-fragrance" class="block text-sm font-medium mb-1"><strong>Fragrance:</strong></label>
+  <select id="cream-fragrance" class="mb-2 border rounded px-2 py-1 w-full">
+    <option>Unscented</option>
+    <option>Rose</option>
+    <option>Frankincense</option>
+  </select>
 
-  <!-- if your live card has size/fragrance selects, leave them in exactly as you have them -->
-
-  <!-- add to cart uses the CURRENTLY SHOWN main image -->
+  <label for="cream-size" class="block text-sm font-medium mb-1">Size:</label>
+  <select id="cream-size" class="mb-4 border rounded px-2 py-1 w-full">
+    <option value="2" data-price="15">2 oz — $15.00 </option>
+    <option value="4" data-price="25">4 oz — $25.00</option>
+  </select>
+<p class="text-sm"><strong>Ingredients:</strong> Local 100% grass-fed beef tallow, organic jojoba oil, essential oils (for fragrance).
+ </p>
+ 
   <button class="add-to-cart"
-          onclick="addToCart('Moisturizing Cream', 18.00, this.closest('.product-card').querySelector('.product-main').src)">
-    Add to Cart
-  </button>
+          onclick="addMoisturizingCreamToCart()">Add to Cart</button>
 </div>
 
 
@@ -120,7 +127,9 @@
     <option value="2" data-price="15">2 oz — $15.00 </option>
     <option value="4" data-price="25">4 oz — $25.00</option>
   </select>
-
+<p class="text-sm"><strong>Ingredients:</strong> Local 100% grass-fed beef tallow, organic beeswax, organic extra virgin olive oil, 
+  organic unrefined coconut oil, non-nano zinc oxide, essential oils (for fragrance).
+ </p>
   <!-- uses your existing handler -->
   <button class="add-to-cart" onclick="addSunscreenToCart()">Add to Cart</button>
 </div>
