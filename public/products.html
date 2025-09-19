@@ -74,15 +74,15 @@
    <!-- Moisturizing Cream -->
 <div class="product-card"
      data-images='["images/moisturizingcreamboth3.jpg","images/moisturizingcream2oz.jpg","images/moisturizingcream4oz.jpg"]'>
-
+<h3 class="text-xl font-semibold mb-2">Moisturizing Cream</h3>
+  <p class="text-sm text-gray-600 mb-2">Rich, nourishing daily moisturizer.</p>
   <div class="product-gallery">
     <!-- keep your current main image src -->
     <img class="product-main" src="images/moisturizingcreamboth3.jpg" alt="Tallow Moisturizing Cream">
     <div class="product-thumbs"></div>
   </div>
 
-  <h3 class="text-xl font-semibold mb-2">Moisturizing Cream</h3>
-  <p class="text-sm text-gray-600 mb-2">Rich, nourishing daily moisturizer.</p>
+  
   <p class="mb-2">2 oz — $18.00</p>
 
   <!-- if your live card has size/fragrance selects, leave them in exactly as you have them -->
@@ -107,9 +107,9 @@
   </div>
 
   <h3 class="text-xl font-semibold mb-2">Tallow Sunscreen (SPF 30)</h3>
-  <p class="text-sm text-gray-600 mb-2">2 oz — $15.00 | 4 oz — $25.00</p>
+  <p class="text-sm text-gray-600 mb-2"></p>
 
-  <label for="sunscreen-fragrance" class="block text-sm font-medium mb-1">Fragrance:</label>
+  <label for="sunscreen-fragrance" class="block text-sm font-medium mb-1"><strong>Fragrance:</strong></label>
   <select id="sunscreen-fragrance" class="mb-2 border rounded px-2 py-1 w-full">
     <option>Unscented</option>
     <option>Blood Orange</option>
@@ -117,8 +117,8 @@
 
   <label for="sunscreen-size" class="block text-sm font-medium mb-1">Size:</label>
   <select id="sunscreen-size" class="mb-4 border rounded px-2 py-1 w-full">
-    <option value="2" data-price="15">2 oz</option>
-    <option value="4" data-price="25">4 oz</option>
+    <option value="2" data-price="15">2 oz — $15.00 </option>
+    <option value="4" data-price="25">4 oz — $25.00</option>
   </select>
 
   <!-- uses your existing handler -->
