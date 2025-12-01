@@ -440,6 +440,12 @@ app.get("/get-orders", async (req, res) => {
   }
 });
 
+// turn "$25.00", " 25.00 ", "25,000.50" -> 25.00
+function moneyToNumber(v) {
+  if (typeof v === "number") return v;
+  const n = parseFloat(String(v ?? "").replace(/[^0-9.-]/g, ""));
+  return Number.isFinite(n) ? n : 0;
+}
 
 
 // ✅ Send Order Confirmation Email
@@ -453,6 +459,10 @@ async function sendOrderConfirmationEmail(
   shippingFee = 0,
   shippingInfo = null
 ) {
+  const totalNum = moneyToNumber(totalAmount);
+  const feeNum   = moneyToNumber(shippingFee);
+
+
   if (!email) {
     console.error("❌ Email is missing. Cannot send confirmation.");
     return;
@@ -519,7 +529,7 @@ async function sendOrderConfirmationEmail(
         ${fulfillmentLines}
 
         <div style="margin:12px 0;">
-          <strong>Total:</strong> $${Number(totalAmount).toFixed(2)}<br>
+          <strong>Total:</strong> $${totalNum.toFixed(2)}
           <strong>Payment Method:</strong> ${paymentMethod || "—"}
         </div>
 
@@ -649,11 +659,11 @@ app.post("/admin/resend-confirmation", async (req, res) => {
     await sendOrderConfirmationEmail(
       o.email,
       itemsText,
-      Number(o.total || 0),
+      moneyToNumber(o.total || 0),
       o.payment_method || "Card",
       o.delivery_method || "pickup",
       o.shipping_method || "pickup",
-      Number(o.shipping_fee || 0),
+      moneyToNumber(o.shipping_fee || 0),
       shippingInfo
     );
 
