@@ -59,10 +59,11 @@
         <p class="product-description"><strong>Size:</strong> 3.5–4 oz handcut bars — $10.00</p>
         <label><strong>Fragrance:</strong></label>
         <select id="soap-fragrance">
-          <option>Bergamot & Lemon</option>
-          <option>Grapefruit & Sage</option>
+        <!--   <option>Bergamot & Lemon</option>
+          <option>Grapefruit & Sage</option>-->
+          <option>Unscented</option>
         </select>
-        <p class="text-sm"><strong>Ingredients:</strong> Local 100% grass-fed beef tallow, organic extra virgin olive oil, organic coconut oil, organic castor oil, essential oils (for fragrance), locally grown flower petals, purified water, lye. </p>
+        <p class="text-sm"><strong>Ingredients:</strong> Local 100% grass-fed beef tallow, organic extra virgin olive oil, organic coconut oil, organic castor oil, locally grown flower petals, purified water, lye. </p>
         
         <button class="add-to-cart" onclick="
               const fragrance = document.getElementById('soap-fragrance').value;
@@ -71,6 +72,31 @@
       </div>
     </div>
 
+    <!-- Tallow Lotion  Bar -->
+<div class="product-card"
+     data-images='["images/lotionbar1.jpg","images/lotionbar2.jpg"]'>
+
+  <div class="product-gallery">
+    <!-- keep your current main image src -->
+    <img class="product-main" src="images/lotionbar1.jpg" alt="Tallow Lotion Bar">
+    <div class="product-thumbs"></div>
+  </div>
+<h3 class="text-xl font-semibold mb-2">Tallow Lotion Bar</h3>
+  <p class="product-description"><strong>Size:</strong> 2 oz handcut bars — $15.00</p>
+  <label for="lotion-fragrance" class="block text-sm font-medium mb-1"><strong>Fragrance:</strong></label>
+  <select id="lotion-fragrance" class="mb-2 border rounded px-2 py-1 w-full">
+    <option>Unscented</option>
+    <option>Rose</option>
+    <option>Frankincense</option>
+  </select>
+
+<p class="text-sm"><strong>Ingredients:</strong> Local 100% grass-fed beef tallow, organic shea butter, organic jojoba oil, organic coconut oil, organic beeswax, essential oils (for fragrance). </p>
+ 
+  <button class="add-to-cart"
+          onclick="addLotionBarToCart()">Add to Cart</button>
+</div>
+
+    
    <!-- Moisturizing Cream -->
 <div class="product-card"
      data-images='["images/moisturizingcreamboth3.jpg","images/moisturizingcream2oz.jpg","images/moisturizingcream4oz.jpg"]'>
@@ -146,7 +172,7 @@
           <option>Untinted</option>
           <option>Tinted</option>
         </select>
-        <p class="text-sm"><strong>Ingredients:</strong> Local 100% grass-fed beef tallow, organic shea butter, organic beeswax, mica powder (for tint).
+        <p class="text-sm"><strong>Ingredients:</strong> Local 100% grass-fed beef tallow, organic shea butter, organic beeswax, peppermint essential oil, mica powder (for tint).
  </p>
         <button class="add-to-cart" onclick="
               const tint = document.getElementById('tint').value;
@@ -155,8 +181,7 @@
       </div>
     </div>
 
-    <!-- Happy Lips & Skin Balm -->
-      <!-- Happy Lips & Skin Balm -->
+    <!-- Healing Salve 
 <div class="product-card">
   <img src="images/healingsalve.jpg" alt="Healing Salve">
   <h3>Healing Salve</h3>
@@ -173,7 +198,7 @@
 </p>
 
   <button class="add-to-cart" onclick="addHappyBalmToCart()">Add to Cart</button>
-</div>
+</div> -->
 
 
       <!-- Springtime Salve -->
@@ -186,7 +211,7 @@
         <button class="add-to-cart" onclick="addToCart('Springtime Salve', 15.00, 'images/springtimesalve.jpg')">Add to Cart</button>
       </div>
 
-      <!-- Bug Balm -->
+      <!-- Bug Balm 
       <div class="product-card">
         <img src="images/tallowbugbalm.jpg" alt="Bug Balm">
         <h3>Bug Balm</h3>
@@ -194,10 +219,9 @@
         <p><strong>Size:</strong> 2 oz — $15.00</p>
         <p class="text-sm"><strong>Ingredients:</strong> Local 100% grass-fed beef tallow & organic extra virgin olive oil infused with lemon balm and lavender, organic castor oil, organic shea butter, organic beeswax, lemongrass essential oil, citronella essential oil, Cedarwood essential oil.</p>
         <button class="add-to-cart" onclick="addToCart('Bug Balm', 15.00, 'images/tallowbugbalm.jpg')">Add to Cart</button>
-      </div>
+      </div>-->
 
       <!--Magnesium Cream -->
-      <!-- Tallow Magnesium Cream -->
     <div class="product-card">
       <img class="product-image" src="images/magnesiumcream.jpg" alt="Tallow Magnesium Cream">
       <div class="product-info">
@@ -210,7 +234,7 @@
         <label for="mag-cream-size"><strong>Size:</strong></label>
         <select id="mag-cream-size">
           <option value="2" data-price="15">2 oz - $15.00</option>
-          <option value="4" data-price="25">4 oz - $25.00</option>
+        <!--  <option value="4" data-price="25">4 oz - $25.00</option>-->
         </select>
 
         <p class="text-sm">

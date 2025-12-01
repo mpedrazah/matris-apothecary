@@ -533,3 +533,16 @@ function addMagnesiumCreamToCart() {
   const price = parseFloat(sel.options[sel.selectedIndex].dataset.price);
   addToCart(`Tallow Magnesium Cream (${size} oz)`, price, 'images/magnesiumcream.jpg');
 }
+
+
+function addLotionBarToCart() {
+  const fragranceSelect = document.getElementById("lotion-fragrance");
+  const fragrance = fragranceSelect.value;
+
+  const name = `Tallow Moisturizing Cream (2 oz - ${fragrance})`;
+
+  // Choose different images based on size
+  const image = "images/lotionbar1.jpg"
+
+  addToCart(name, price, image);
+}
