@@ -599,6 +599,73 @@ ${[shippingInfo.city, shippingInfo.state, shippingInfo.zip].filter(Boolean).join
 }
 
 
+// .env
+// ADMIN_TOKEN=super-long-random-string
+
+// --- Admin-only: resend confirmation by order id ---
+app.post("/admin/resend-confirmation", async (req, res) => {
+  try {
+    const token = req.headers["x-admin-token"];
+    if (!token || token !== process.env.ADMIN_TOKEN) {
+      return res.status(401).json({ success: false, error: "Unauthorized" });
+    }
+
+    const { order_id } = req.body || {};
+    if (!order_id) {
+      return res.status(400).json({ success: false, error: "Missing order_id" });
+    }
+
+    // fetch order
+    const { rows } = await pool.query(
+      "SELECT * FROM orders WHERE id = $1 LIMIT 1",
+      [order_id]
+    );
+    if (!rows.length) {
+      return res.status(404).json({ success: false, error: "Order not found" });
+    }
+
+    const o = rows[0];
+
+    // rebuild items text from cart JSON
+    let itemsText = "";
+    try {
+      const cart = typeof o.cart === "string" ? JSON.parse(o.cart) : (o.cart || []);
+      itemsText = cart.map(i => `${i.name} (x${i.quantity || 1})`).join(", ");
+    } catch {
+      itemsText = "";
+    }
+
+    const shippingInfo =
+      o.delivery_method === "shipping"
+        ? {
+            name: o.name || "",
+            address: o.address || "",
+            city: o.city || "",
+            state: o.state || "",
+            zip: o.zip || ""
+          }
+        : null;
+
+    await sendOrderConfirmationEmail(
+      o.email,
+      itemsText,
+      Number(o.total || 0),
+      o.payment_method || "Card",
+      o.delivery_method || "pickup",
+      o.shipping_method || "pickup",
+      Number(o.shipping_fee || 0),
+      shippingInfo
+    );
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error("❌ /admin/resend-confirmation error:", err);
+    return res.status(500).json({ success: false, error: "Failed to resend email" });
+  }
+});
+
+
+
 // ✅ Stripe Checkout API
 app.post("/create-checkout-session", async (req, res) => {
   try {

@@ -1,7 +1,7 @@
 // admin-orders.js
 const API_BASE = "https://www.matrisapothecary.com";
 
-// ---------- helpers ----------
+/* ===================== helpers ===================== */
 const escapeHTML = (s) =>
   String(s ?? "").replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
@@ -43,14 +43,25 @@ const calcItemsSubtotal = (cartArr) =>
   cartArr.reduce((sum, i) => {
     const price =
       Number(
-        // prefer discountedPrice if it exists; otherwise use price
+        // prefer discountedPrice if present; else use price
         (i && (i.discountedPrice ?? i.price)) || 0
       ) || 0;
     const qty = Number(i?.quantity || 1);
     return sum + price * qty;
   }, 0);
 
-// ---------- fetch + render ----------
+/* ===== Admin-token (prompt once, cache in sessionStorage) ===== */
+let ADMIN_TOKEN = sessionStorage.getItem("adminToken") || "";
+async function ensureAdminToken() {
+  if (ADMIN_TOKEN) return ADMIN_TOKEN;
+  const t = prompt("Enter admin token to resend emails:");
+  if (!t) throw new Error("Admin token required");
+  ADMIN_TOKEN = t.trim();
+  sessionStorage.setItem("adminToken", ADMIN_TOKEN);
+  return ADMIN_TOKEN;
+}
+
+/* ===================== fetch + render ===================== */
 async function fetchOrders() {
   try {
     const res = await fetch(`${API_BASE}/get-orders`, { credentials: "include" });
@@ -63,6 +74,7 @@ async function fetchOrders() {
     }
 
     displayOrders(orders);
+    attachResendHandlers();
   } catch (err) {
     console.error("❌ Error fetching orders:", err);
     document.getElementById("orders-list").innerHTML =
@@ -119,8 +131,9 @@ function displayOrders(orders) {
         totalDisplay = isFiniteNum(computed) && computed > 0 ? fmtMoney(computed) : "—";
       }
 
+      // Add resend control + status line
       return `
-        <article class="order-card">
+        <article class="order-card" data-order-id="${id}">
           <header class="order-header">
             <div><strong>Order #${id}</strong></div>
             <div class="order-date">${created}</div>
@@ -138,6 +151,11 @@ function displayOrders(orders) {
 
             <div class="row"><span class="label">Items:</span> ${itemsHTML}</div>
             <div class="row total"><span class="label">Total:</span> ${totalDisplay}</div>
+
+            <div class="row" style="margin-top:10px; display:flex; gap:8px; align-items:center;">
+              <button class="resend-email-btn" data-order-id="${id}">Resend Email</button>
+              <span class="resend-status" style="font-size:.9rem; color:#666;"></span>
+            </div>
           </div>
         </article>
       `;
@@ -145,12 +163,65 @@ function displayOrders(orders) {
     .join("");
 }
 
-// ---------- export ----------
+/* ===================== resend controls ===================== */
+function attachResendHandlers() {
+  const buttons = document.querySelectorAll(".resend-email-btn");
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", onResendClick);
+  });
+}
+
+async function onResendClick(e) {
+  const btn = e.currentTarget;
+  const orderId = btn.dataset.orderId;
+  const card = btn.closest(".order-card");
+  const status = card?.querySelector(".resend-status");
+  try {
+    const token = await ensureAdminToken();
+    btn.disabled = true;
+    btn.textContent = "Sending…";
+    if (status) status.textContent = "";
+
+    const resp = await fetch(`${API_BASE}/admin/resend-confirmation`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-admin-token": token
+      },
+      body: JSON.stringify({ order_id: Number(orderId) })
+    });
+
+    if (!resp.ok) {
+      const msg = await resp.text();
+      throw new Error(msg || `HTTP ${resp.status}`);
+    }
+    const data = await resp.json();
+    if (!data?.success) {
+      throw new Error(data?.error || "Unknown error");
+    }
+
+    if (status) {
+      status.style.color = "#2f7a3e";
+      status.textContent = "✅ Email resent successfully.";
+    }
+  } catch (err) {
+    console.error("Resend failed:", err);
+    if (status) {
+      status.style.color = "#b00020";
+      status.textContent = `❌ Failed to resend: ${err.message || err}`;
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Resend Email";
+  }
+}
+
+/* ===================== export ===================== */
 function exportOrders() {
   window.location.href = `${API_BASE}/export-orders`;
 }
 
-// ---------- init ----------
+/* ===================== init ===================== */
 document.addEventListener("DOMContentLoaded", () => {
   const exportBtn = document.getElementById("export-orders-btn");
   if (exportBtn) exportBtn.addEventListener("click", exportOrders);

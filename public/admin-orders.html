@@ -1,56 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Orders - Matris Apothecary</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- ✅ Firebase SDK via CDN -->
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Orders - Matris Apothecary</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 
+  <!-- Minimal styles so cards look good -->
+  <style>
+    .admin-note{max-width:900px;margin:0.5rem auto 0;padding:.5rem 1rem;border-left:4px solid #ac6c6f;background:#fff7f7;border-radius:8px;color:#444}
+    .admin-orders-container{max-width:1000px;margin:2rem auto;padding:1rem}
+    .orders-list{display:grid;gap:1rem}
+    .order-card{background:#fff;border:1px solid #eee;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,.06);padding:1rem 1.25rem}
+    .order-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f0f0f0;padding-bottom:.5rem;margin-bottom:.75rem}
+    .order-body .row{margin:.35rem 0;display:flex;gap:.5rem;flex-wrap:wrap}
+    .order-body .label{min-width:165px;color:#666;font-weight:600}
+    .items-list{list-style:none;margin:.25rem 0 0;padding:0}
+    .items-list li{margin:.15rem 0}
+    .row.total{margin-top:.6rem;font-size:1.05rem}
+    .resend-email-btn{padding:.55rem .9rem;border-radius:10px;border:0;background:#6a8667;color:#fff;cursor:pointer}
+    .resend-email-btn:disabled{opacity:.65;cursor:not-allowed}
+    @media (max-width:640px){.order-body .label{min-width:130px}}
+  </style>
 </head>
 <body>
 
-    <!-- Navigation Bar -->
-    <header>
-        <div class="logo-container">
-            <img src="images/logo_whitebg.png" alt="Matris Apothecary Logo" class="logo">
-        </div>
-        <nav>
-    <button id="menu-toggle" class="hamburger" aria-label="Open menu" aria-expanded="false">☰</button>
-    <ul id="mobile-menu" class="mobile-hidden">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="products.html">Shop</a></li>
-      <li><a href="admin-orders.html">Admin Orders</a></li>
-    </ul>
-  </nav>
-    </header>
+  <!-- Navigation Bar -->
+  <header>
+    <div class="logo-container">
+      <img src="images/logo_whitebg.png" alt="Matris Apothecary Logo" class="logo">
+    </div>
+    <nav>
+      <button id="menu-toggle" class="hamburger" aria-label="Open menu" aria-expanded="false">☰</button>
+      <ul id="mobile-menu" class="mobile-hidden">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="products.html">Shop</a></li>
+        <li><a href="admin-orders.html">Admin Orders</a></li>
+      </ul>
+    </nav>
+  </header>
 
-    <!-- Orders Section -->
+  <!-- (Optional) admin reminder -->
+  <div class="admin-note">Admin-only view. Resend requires your admin token when you click the button.</div>
 
-    <section class="admin-orders-container">
-        <h2>Customer Orders</h2>
-        <button onclick="exportOptedInEmails()">Download Opted-in Emails 📩</button>
-        <button onclick="exportOrders()">Download Orders CSV 📦</button>
+  <!-- Orders Section -->
+  <section class="admin-orders-container">
+    <h2>Customer Orders</h2>
 
-        <div id="orders-list" class="orders-list">
-            <p>Loading orders...</p> <!-- Placeholder until data loads -->
-        </div>
-    </section>
+    <!-- add IDs so JS can bind if you prefer addEventListener -->
+    <button id="export-email-optins-btn" onclick="exportOptedInEmails()">Download Opted-in Emails 📩</button>
+    <button id="export-orders-btn" onclick="exportOrders()">Download Orders CSV 📦</button>
 
-    
-    <script>
-    function exportOrders() {
-        window.location.href = "/export-orders";
-    }
-    </script>
+    <div id="orders-list" class="orders-list">
+      <p>Loading orders...</p>
+    </div>
+  </section>
 
-    <script>
-    function exportOptedInEmails() {
-        window.location.href = "/export-email-optins";
-    }
-    </script>
-    <script src="admin-orders.js"></script>
-    <script defer src="script.js"></script>
+  <script>
+    function exportOrders(){ window.location.href = "/export-orders"; }
+    function exportOptedInEmails(){ window.location.href = "/export-email-optins"; }
+  </script>
+
+  <script src="admin-orders.js"></script>
+  <script defer src="script.js"></script>
 </body>
 </html>
