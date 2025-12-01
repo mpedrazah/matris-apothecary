@@ -540,7 +540,7 @@ function addLotionBarToCart() {
   const fragrance = fragranceSelect.value;
 
   const name = `Tallow Moisturizing Cream (2 oz - ${fragrance})`;
-
+  const price = 15.00
   // Choose different images based on size
   const image = "images/lotionbar1.jpg"
 
