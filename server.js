@@ -85,7 +85,7 @@ console.log("🧪 ENV: ", {
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ? "✅ set" : "❌ missing",
   STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET ? "✅ set" : "❌ missing",
   DATABASE_URL: process.env.DATABASE_URL ? "✅ set" : "❌ missing",
-  SENDGRID_API_KEY: process.env.SENDGRID_API_KEY ? "✅ set" : "❌ missing",
+  RESEND_API_KEY: process.env.RESEND_API_KEY ? "✅ set" : "❌ missing",
   EMAIL_FROM: process.env.EMAIL_FROM ? "✅ set" : "❌ missing",
 });
 
@@ -181,11 +181,10 @@ app.post("/webhook", express.raw({ type: "application/json" }), async (req, res)
 
 app.use(express.json());
 
-
-const sgMail = require("@sendgrid/mail");
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+// Resend Email Setup
+const { Resend } = require("resend");
+const resend = new Resend(process.env.RESEND_API_KEY);
 const EMAIL_FROM = process.env.EMAIL_FROM || "no-reply@matrisapothecary.com";
-
 
 
 
@@ -578,21 +577,24 @@ ${[shippingInfo.city, shippingInfo.state, shippingInfo.zip].filter(Boolean).join
     .filter(Boolean)
     .join("\n");
 
-  const msg = {
-    to: email,
-    from: { email: EMAIL_FROM, name: "Matris Apothecary" },
-    replyTo: EMAIL_FROM,
-    cc: "matrisapothecary@gmail.com", // optional
-    subject: "Your Matris Apothecary Order Confirmation",
-    text,
-    html,
-  };
+    try {
+    const { data, error } = await resend.emails.send({
+      from: `Matris Apothecary <${EMAIL_FROM}>`, // must be a verified domain in Resend
+      to: email,                                  // string or array
+      cc: "matrisapothecary@gmail.com",           // optional
+      reply_to: EMAIL_FROM,                       // string or array
+      subject: "Your Matris Apothecary Order Confirmation",
+      html,
+      text,
+    });
 
-  try {
-    await sgMail.send(msg);
-    console.log("✅ Order confirmation email sent to:", email);
-  } catch (error) {
-    console.error("❌ Error sending email via SendGrid:", error?.response?.body || error);
+    if (error) {
+      console.error("❌ Resend send error:", error);
+    } else {
+      console.log("✅ Order confirmation email sent via Resend:", data?.id || email);
+    }
+  } catch (err) {
+    console.error("❌ Error sending email via Resend:", err);
   }
 }
 
