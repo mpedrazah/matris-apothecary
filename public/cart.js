@@ -477,7 +477,6 @@ function updateCartCount() {
 }
 
 
-
 function addMoisturizingCreamToCart() {
   const sizeSelect = document.getElementById("moisturizing-size");
   const fragranceSelect = document.getElementById("moisturizing-fragrance");
@@ -495,8 +494,6 @@ function addMoisturizingCreamToCart() {
 
   addToCart(name, price, image);
 }
-
-
 
 
 function addSunscreenToCart() {
@@ -527,13 +524,6 @@ function addHappyBalmToCart() {
   addToCart(name, price, image);
 }
 
-function addMagnesiumCreamToCart() {
-  const sel = document.getElementById('mag-cream-size');
-  const size = sel.value;
-  const price = parseFloat(sel.options[sel.selectedIndex].dataset.price);
-  addToCart(`Tallow Magnesium Cream (${size} oz)`, price, 'images/magnesiumcream.jpg');
-}
-
 
 function addLotionBarToCart() {
   const fragranceSelect = document.getElementById("lotion-fragrance");
@@ -547,5 +537,29 @@ function addLotionBarToCart() {
   addToCart(name, price, image);
 }
 
-function addSimpleCreamToCart() { const sel = document.getElementById("simple-cream-size"); const size = sel.value; const price = parseFloat(sel.options[sel.selectedIndex].dataset.price); const image = size === "2" ? "images/simple_tallow_cream_2oz.jpg" : "images/simple_tallow_cream_4oz.jpg"; addToCart(`Simple Tallow Moisturizing Cream (${size} oz)`, price, image); } function addFrankincenseCreamToCart() { const sel = document.getElementById("frankincense-cream-size"); const size = sel.value; const price = parseFloat(sel.options[sel.selectedIndex].dataset.price); const image = size === "2" ? "images/frankincense_tallow_cream_2oz.jpg" : "images/frankincense_tallow_cream_2oz.jpg"; addToCart(`Frankincense Tallow Moisturizing Cream (${size} oz)`, price, image); } function addLipBalmToCart() { const sel = document.getElementById("lip-balm-option"); const option = sel.value; addToCart(`Tallow Lip Balm (${option})`, 7.00, "images/lip_balm.jpg"); } function addMagnesiumCreamToCart() { addToCart("Tallow Magnesium Cream (2 oz)", 15.00, "images/magnesium_cream.jpg"); } 
-function addSizedProductToCart(productName, selectId, imagePath) { const sel = document.getElementById(selectId); const size = sel.value; const price = parseFloat(sel.options[sel.selectedIndex].dataset.price); addToCart(`${productName} (${size} oz)`, price, imagePath); }
+function addSimpleCreamToCart() { 
+  const sel = document.getElementById("simple-cream-size"); 
+  const size = sel.value; 
+  const price = parseFloat(sel.options[sel.selectedIndex].dataset.price); 
+  const image = size === "2" ? "images/moisturizing_2oz.jpg" : "images/moisturizing_4oz.jpg"; 
+  addToCart(`Simple Tallow Moisturizing Cream (${size} oz)`, price, image); } 
+
+function addFrankincenseCreamToCart() { 
+  const sel = document.getElementById("frankincense-cream-size"); 
+  const size = sel.value; 
+  const price = parseFloat(sel.options[sel.selectedIndex].dataset.price); 
+  const image = size === "2" ? "images/frankincense_2oz.jpg" : "images/frankincense_4oz.jpg"; 
+  addToCart(`Frankincense Tallow Moisturizing Cream (${size} oz)`, price, image); } 
+
+function addLipBalmToCart() { 
+  const sel = document.getElementById("lip-balm-option"); 
+  const option = sel.value; addToCart(`Tallow Lip Balm (${option})`, 7.00, "images/lip_balm.jpg"); }
+
+function addMagnesiumCreamToCart() {
+  addToCart("Tallow Magnesium Cream (2 oz)", 15.00, "images/magnesium_2oz.jpg"); } 
+
+function addSizedProductToCart(productName, selectId, imagePath) { 
+  const sel = document.getElementById(selectId); 
+  const size = sel.value; 
+  const price = parseFloat(sel.options[sel.selectedIndex].dataset.price); 
+  addToCart(`${productName} (${size} oz)`, price, imagePath); }
