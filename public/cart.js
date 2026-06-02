@@ -563,3 +563,15 @@ function addSizedProductToCart(productName, selectId, imagePath) {
   const size = sel.value; 
   const price = parseFloat(sel.options[sel.selectedIndex].dataset.price); 
   addToCart(`${productName} (${size} oz)`, price, imagePath); }
+
+function addFeaturedFrankincenseCreamToCart() {
+  const sel = document.getElementById("featured-frankincense-cream-size");
+  const size = sel.value;
+  const price = parseFloat(sel.options[sel.selectedIndex].dataset.price);
+
+  const image = size === "2"
+    ? "images/frankincense_2oz.jpg"
+    : "images/frankincense_4oz.jpg";
+
+  addToCart(`Frankincense Tallow Moisturizing Cream (${size} oz)`, price, image);
+}
