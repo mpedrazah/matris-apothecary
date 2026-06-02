@@ -347,7 +347,6 @@
     Local 100% grass-fed beef tallow &amp; organic jojoba oil infused with frankincense resin.
   </p>
  <button class="add-to-cart" onclick="addFrankincenseCreamToCart()">Add to Cart</button>
-    Add to Cart
   </button>
 </div>
       
@@ -393,32 +392,7 @@
     Coming Soon
   </button>
 </div>
-<!-- Tallow Lip Balm -->
-<div class="product-card"
-     data-images='["images/tallowlipbalm.jpg"]'>
-  <div class="product-gallery">
-    <img class="product-main" src="images/tallowlipbalm.jpg" alt="Tallow Lip Balm">
-    <div class="product-thumbs"></div>
-  </div>
-  <h3 class="text-xl font-semibold mb-2">Tallow Lip Balm</h3>
-  <p class="text-sm text-gray-600 mb-3">
-    Nourishing tallow lip balm for everyday moisture.
-    <br><br>
-    Safe for all ages.
-  </p>
-  <label for="lip-balm-option" class="block text-sm font-medium mb-1"><strong>Option:</strong></label>
-  <select id="lip-balm-option" class="mb-4 border rounded px-2 py-1 w-full">
-    <option>Untinted</option>
-    <option>Tinted</option>
-  </select>
-  <p class="text-sm">
-    <strong>Ingredients:</strong>
-    Local 100% grass-fed beef tallow, organic shea butter, pure beeswax, vitamin E oil, peppermint essential oil, mica powder for tint.
-  </p>
-  <button class="add-to-cart" onclick="addLipBalmToCart()">Add to Cart</button>
-    Add to Cart
-  </button>
-</div>
+
 <!-- Tallow Magnesium Cream -->
 <div class="product-card"
      data-images='["images/magnesiumcream.jpg"]'>
@@ -446,13 +420,35 @@
   </p>
   <p class="text-sm">
     <strong>Ingredients:</strong>
-    Local 100% grass-fed beef tallow, organic jojoba oil, organic beeswax, magnesium chloride, purified water, lavender essential oil.
+     Local 100% grass-fed beef tallow, organic jojoba oil, organic beeswax, magnesium chloride, purified water, lavender essential oil.
+
   </p>
  <button class="add-to-cart" onclick="addMagnesiumCreamToCart()">Add to Cart</button>
     Add to Cart
   </button>
 </div>
 
+    <!-- Tallow Lip Balm  -->
+    <div class="product-card">
+      <img class="product-image" src="images/lipbalms.jpg" alt="Tallow Lip Balm">
+      <div class="product-info">
+        <h3>Tallow Lip Balm</h3>
+        <p class="product-description"> Safe for all ages.
+ <br></br>$7.00</p>
+        <label><strong>Options:</strong></label>
+        <select id="tint">
+          <option>Untinted</option>
+          <option>Tinted</option>
+        </select>
+        <p class="text-sm"><strong>Ingredients:</strong> Local 100% grass-fed beef tallow, organic shea butter, pure beeswax, vitamin E oil, peppermint essential oil, mica powder (for tint). 
+
+ </p>
+        <button class="add-to-cart" onclick="
+              const tint = document.getElementById('tint').value;
+              addToCart(`Tallow Lip Balm (${tint})`, 7.00, 'images/lipbalms.jpg');
+            ">Add to Cart</button>
+      </div>
+    </div>
 
   </div>
 </section>
