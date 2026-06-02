@@ -227,8 +227,8 @@ async function payWithVenmo() {
 
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     const venmoLink = isMobile
-      ? `venmo://paycharge?txn=pay&recipients=HarrisonHousehold&amount=${venmoAmount}&note=${note}`
-      : `https://venmo.com/HarrisonHousehold?txn=pay&amount=${venmoAmount}&note=${note}`;
+      ? `venmo://paycharge?txn=pay&recipients=MatrisApothecary&amount=${venmoAmount}&note=${note}`
+      : `https://venmo.com/MatrisApothecary?txn=pay&amount=${venmoAmount}&note=${note}`;
 
     if (isMobile) {
       window.location.href = venmoLink;
