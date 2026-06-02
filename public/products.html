@@ -51,36 +51,60 @@
 <section class="product-grid">
   <div class="grid-container">
 
-    <!-- Shampoo & Body Soap Bar -->
-    <div class="product-card">
-      <img class="product-image" src="images/soapbars.jpg" alt="Tallow Shampoo & Body Soap Bar">
-      <div class="product-info">
-        <h3>Tallow Shampoo & Body Soap Bar</h3>
-        <p class="product-description">A blend of saponified oils & fats great for cleansing & conditioning not only skin, but also hair.*
-Note: If using as a shampoo, feel free to reach out for tips on the full process of using shampoo bars on hair.
-<br></br>
-*Fragranced with essential oils for a more delicate, natural scent.
+<!-- Shampoo & Body Soap Bar -->
+<div class="product-card">
+  <img class="product-image" src="images/soapbars.jpg" alt="Tallow Shampoo & Body Soap Bar">
 
-Safe for all ages.
+  <div class="product-info">
+    <h3>Tallow Shampoo & Body Soap Bar</h3>
 
-            <strong>Size:</strong> 3.5–4 oz handcut bars — $10.00</p>
-        <label><strong>Fragrance:</strong></label>
-        <select id="soap-fragrance">
-        <!--   <option>Bergamot & Lemon</option>
-          <option>Grapefruit & Sage</option>-->
-          <option>Unscented</option>
-        </select>
-        <p class="text-sm"><strong>Ingredients:</strong> Local 100% grass-fed beef tallow, organic extra virgin olive oil, organic coconut oil, organic castor oil,  
-            essential oils (for fragrance), locally grown or organically sourced flower petals,  herbs, and/or resin, purified water, lye.
+    <p class="product-description">
+      A nourishing blend of saponified oils and fats designed to gently cleanse and condition both skin and hair.
 
-        </p>
-        
-        <button class="add-to-cart" onclick="
-              const fragrance = document.getElementById('soap-fragrance').value;
-              addToCart(`Tallow Shampoo & Body Soap (${fragrance})`, 10.00, 'images/soapbars.jpg');
-            ">Add to Cart</button>
-      </div>
-    </div>
+      <br><br>
+
+      <em>If using as a shampoo bar, feel free to reach out for tips on transitioning from conventional shampoo.</em>
+
+      <br><br>
+
+      Fragranced with pure essential oils for a subtle, natural scent.
+
+      <br><br>
+
+      Safe for all ages.
+
+      <br><br>
+
+      <strong>Size:</strong> 3.5–4 oz hand-cut bars — $10.00
+    </p>
+
+    <label for="soap-fragrance"><strong>Fragrance:</strong></label>
+    <select id="soap-fragrance">
+      <option>Unscented</option>
+      <option>Citrus & Melrose (French Clay)</option>
+      <option>Grapefruit & Sweet Marjoram</option>
+      <option>Lavender, Chamomile & Rose (French Clay)</option>
+      <option>Frankincense & Balsam</option>
+    </select>
+
+    <p class="text-sm">
+      <strong>Ingredients:</strong>
+      Local 100% grass-fed beef tallow, organic extra virgin olive oil,
+      organic coconut oil, organic castor oil, purified water, lye,
+      essential oils (for fragranced varieties), and locally grown or
+      organically sourced botanicals, flower petals, herbs, and/or resins.
+    </p>
+
+    <button
+      class="add-to-cart"
+      onclick="
+        const fragrance = document.getElementById('soap-fragrance').value;
+        addToCart(`Tallow Shampoo & Body Soap (${fragrance})`, 10.00, 'images/soapbars.jpg');
+      ">
+      Add to Cart
+    </button>
+  </div>
+</div>
 
     <!-- Tallow Lotion  Bar -->
 <div class="product-card"
