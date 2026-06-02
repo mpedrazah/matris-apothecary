@@ -67,68 +67,135 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
-      <!-- Moisturizing Cream -->
+      <!-- Frankincense Tallow Moisturizing Cream -->
       <article class="product-card bg-white p-6 rounded-2xl shadow text-center"
-        data-images='["images/moisturizingcreamboth3.jpg","images/moisturizingcream2oz.jpg","images/moisturizingcream4oz.jpg"]'>
-        
+        data-images='["images/frankincense_2oz.jpg","images/frankincense_4oz.jpg"]'>
+
         <div class="product-gallery mb-4">
-          <img class="product-main mx-auto rounded product-image" src="images/moisturizingcreamboth3.jpg" alt="Tallow Moisturizing Cream">
+          <img class="product-main mx-auto rounded product-image" src="images/frankincense_4oz.jpg" alt="Frankincense Tallow Moisturizing Cream">
           <div class="product-thumbs mt-3 flex justify-center gap-2"></div>
         </div>
 
-        <h3 class="text-xl font-bold mb-2">Tallow Moisturizing Cream</h3>
-        <p class="text-sm text-gray-600 mb-2">Rich, nourishing daily moisturizer.</p>
+        <h3 class="text-xl font-bold mb-2">Frankincense Tallow Moisturizing Cream</h3>
 
-        <label for="moisturizing-fragrance" class="block text-sm font-medium mb-1"><strong>Fragrance:</strong></label>
-        <select id="moisturizing-fragrance" class="mb-2 border rounded px-2 py-1 w-full">
-          <option>Unscented</option>
-          <option>Rose</option>
-          <option>Frankincense</option>
-        </select>
+        <p class="text-sm text-gray-600 mb-3">
+          The original face &amp; body moisturizer, now infused with frankincense to support blemish-prone and mature skin.
+          Whole-plant extraction allows for the gentle benefits of frankincense resin, including boswellic acids, versus the use of essential oils alone.
+          <br><br>
+          Safe for all ages.
+          <br><br>
+          <em>Please note: The presence of fine frankincense resin remaining after infusion gives this cream a slightly more grainy texture.</em>
+        </p>
 
-        <label for="moisturizing-size" class="block text-sm font-medium mb-1"><strong>Size:</strong></label>
-        <select id="moisturizing-size" class="mb-4 border rounded px-2 py-1 w-full">
-          <option value="2" data-price="15">2 oz — $15.00</option>
-          <option value="4" data-price="25">4 oz — $25.00</option>
+        <div class="text-sm mb-3 text-left">
+          <strong>Benefits:</strong>
+          <ul style="margin-top:6px; padding-left:20px;">
+            <li>Boswellic acids support skin renewal &amp; help protect from free radicals</li>
+            <li>Deeply nourishes with vitamins A, D, E, K &amp; B12</li>
+            <li>Non-comedogenic; won’t clog pores</li>
+            <li>Supports collagen production</li>
+            <li>Helps soothe dry, sensitive, eczema-prone &amp; rosacea-prone skin</li>
+            <li>Earthy, calming scent from all-natural resin</li>
+          </ul>
+        </div>
+
+        <label for="featured-frankincense-cream-size" class="block text-sm font-medium mb-1">
+          <strong>Size:</strong>
+        </label>
+        <select id="featured-frankincense-cream-size" class="mb-4 border rounded px-2 py-1 w-full">
+          <option value="2" data-price="16">2 oz — $16.00</option>
+          <option value="4" data-price="28">4 oz — $28.00</option>
         </select>
 
         <p class="text-sm mb-3">
-          <strong>Ingredients:</strong> Local 100% grass-fed beef tallow, organic jojoba oil, essential oils (for fragrance).
+          <strong>Ingredients:</strong>
+          Local 100% grass-fed beef tallow &amp; organic jojoba oil infused with frankincense resin.
         </p>
 
-        <button class="add-to-cart" onclick="addMoisturizingCreamToCart()">Add to Cart</button>
+        <button class="add-to-cart" onclick="addFeaturedFrankincenseCreamToCart()">
+          Add to Cart
+        </button>
       </article>
 
 
-      <!-- Tallow Lotion Bar -->
+      <!-- Tallow Magnesium Cream -->
       <article class="product-card bg-white p-6 rounded-2xl shadow text-center"
-        data-images='["images/lotionbar1.jpeg","images/lotionbar2.jpeg"]'>
+        data-images='["images/magnesium_2oz.jpg","images/magnesium_4oz.jpg"]'>
 
         <div class="product-gallery mb-4">
-          <img class="product-main mx-auto rounded product-image" src="images/lotionbar1.jpeg" alt="Tallow Lotion Bar">
+          <img class="product-main mx-auto rounded product-image" src="images/magnesium_4oz.jpg" alt="Tallow Magnesium Cream">
           <div class="product-thumbs mt-3 flex justify-center gap-2"></div>
         </div>
 
-        <h3 class="text-xl font-bold mb-2">Tallow Lotion Bar</h3>
-        <p class="text-sm text-gray-600 mb-2"><strong>Size:</strong> 2 oz handcut bars — $15.00</p>
+        <h3 class="text-xl font-bold mb-2">Tallow Magnesium Cream</h3>
 
-        <label for="lotion-fragrance" class="block text-sm font-medium mb-1"><strong>Fragrance:</strong></label>
-        <select id="lotion-fragrance" class="mb-3 border rounded px-2 py-1 w-full">
-          <option>Unscented</option>
-          <option>Rose</option>
-          <option>Lavender</option>
+        <p class="text-sm text-gray-600 mb-3">
+          A soothing body cream that supports muscle recovery, stress relief &amp; better sleep.
+          <br><br>
+          Safe for all ages.
+        </p>
+
+        <div class="text-sm mb-3 text-left">
+          <strong>Benefits:</strong>
+          <ul style="margin-top:6px; padding-left:20px;">
+            <li>Benefits of grass-fed beef tallow</li>
+            <li>Highly absorbable magnesium chloride supports muscle comfort</li>
+            <li>Helps support restful sleep routines</li>
+            <li>Calming lavender aromatherapy</li>
+          </ul>
+        </div>
+
+        <p class="text-sm mb-4">
+          <strong>Size:</strong> 2 oz — $15.00
+        </p>
+
+        <p class="text-sm mb-3">
+          <strong>Ingredients:</strong>
+          Local 100% grass-fed beef tallow, organic jojoba oil, organic beeswax, magnesium chloride, purified water, lavender essential oil.
+        </p>
+
+        <button class="add-to-cart" onclick="addMagnesiumCreamToCart()">
+          Add to Cart
+        </button>
+      </article>
+
+
+      <!-- Tallow Lip Balm -->
+      <article class="product-card bg-white p-6 rounded-2xl shadow text-center">
+        <img class="product-image mx-auto rounded mb-4" src="images/lipbalms.jpg" alt="Tallow Lip Balm">
+
+        <h3 class="text-xl font-bold mb-2">Tallow Lip Balm</h3>
+
+        <p class="text-sm text-gray-600 mb-3">
+          Safe for all ages.
+          <br><br>
+          <strong>$7.00</strong>
+        </p>
+
+        <label for="featured-lip-balm-option" class="block text-sm font-medium mb-1">
+          <strong>Options:</strong>
+        </label>
+        <select id="featured-lip-balm-option" class="mb-4 border rounded px-2 py-1 w-full">
+          <option>Untinted</option>
+          <option>Tinted</option>
         </select>
 
         <p class="text-sm mb-3">
-          <strong>Ingredients:</strong> Local 100% grass-fed beef tallow, organic shea butter, organic jojoba oil,
-          organic coconut oil, organic beeswax, essential oils (for fragrance).
+          <strong>Ingredients:</strong>
+          Local 100% grass-fed beef tallow, organic shea butter, pure beeswax, vitamin E oil, peppermint essential oil, mica powder for tint.
         </p>
 
-        <button class="add-to-cart" onclick="addLotionBarToCart()">Add to Cart</button>
+        <button class="add-to-cart" onclick="
+          const tint = document.getElementById('featured-lip-balm-option').value;
+          addToCart(`Tallow Lip Balm (${tint})`, 7.00, 'images/lipbalms.jpg');
+        ">
+          Add to Cart
+        </button>
       </article>
-          </div>
-        </div>
-      </section>
+
+    </div>
+  </div>
+</section>
 
 
   <!-- Footer -->
